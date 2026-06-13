@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.9",
+  "kind": "provenance",
+  "tool": "go-FuSa",
+  "toolVersion": "0.30.0",
+  "language": "go",
+  "generatedAt": "2026-06-13T19:54:22.975900526Z",
+  "format": "x-FuSa provenance v1",
+  "module": "github.com/SoundMatt/go-LIN",
+  "goVersion": "go1.25.11",
+  "goos": "linux",
+  "goarch": "amd64",
+  "vcsRevision": "23954a891b3ef057187c90af6f0f99d6e8eed672",
+  "vcsModified": true
+}
