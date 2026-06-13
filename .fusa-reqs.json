@@ -1,0 +1,205 @@
+{
+  "version": "1",
+  "requirements": [
+    {
+      "id": "REQ-LIN-001",
+      "title": "Frame validation — ID and data length",
+      "description": "ValidateFrame shall reject any frame whose ID exceeds 0x3F or whose data length is zero or greater than 8 bytes.",
+      "asil": "ASIL-B",
+      "rationale": "SG-05: prevent invalid frame IDs or oversized payloads from reaching application code.",
+      "tags": ["core", "validation"]
+    },
+    {
+      "id": "REQ-LIN-002",
+      "title": "Bus and MasterBus interfaces",
+      "description": "The Bus interface (Publish, Subscribe, Close) and MasterBus extension (SendHeader) shall be the sole interaction point between application code and all LIN transport implementations.",
+      "asil": "ASIL-B",
+      "rationale": "Interface-first design ensures transports are swappable without changing application code.",
+      "tags": ["core", "interface"]
+    },
+    {
+      "id": "REQ-LIN-003",
+      "title": "Protected Identifier (PID) computation",
+      "description": "ProtectID shall compute P0 = ID0^ID1^ID2^ID4 and P1 = !(ID1^ID3^ID4^ID5) and return the 8-bit PID. VerifyPID shall return an error when parity is incorrect.",
+      "asil": "ASIL-B",
+      "rationale": "SG-01: incorrect PID allows wrong frame ID to be accepted by a slave, potentially commanding the wrong actuator.",
+      "tags": ["core", "pid", "checksum"]
+    },
+    {
+      "id": "REQ-LIN-004",
+      "title": "Checksum computation",
+      "description": "CalcChecksum shall compute the LIN 1.x classic checksum (data bytes only) and LIN 2.x enhanced checksum (PID + data bytes) using inverted carry-around 8-bit addition.",
+      "asil": "ASIL-B",
+      "rationale": "SG-02: undetected checksum error allows corrupted data to reach the application.",
+      "tags": ["core", "checksum"]
+    },
+    {
+      "id": "REQ-VIRT-001",
+      "title": "Virtual bus creation",
+      "description": "virtual.New shall return a ready-to-use in-process Bus with an empty response table and no subscribers.",
+      "asil": "ASIL-B",
+      "rationale": "Provides the reference implementation for development and testing.",
+      "tags": ["virtual"]
+    },
+    {
+      "id": "REQ-VIRT-002",
+      "title": "Virtual bus Publish",
+      "description": "Publish shall atomically register a response payload for the given frame ID, replacing any prior entry. Publish(nil) shall remove the registration. Publish after Close shall return an error.",
+      "asil": "ASIL-B",
+      "rationale": "Slave-side response registration must be atomic to prevent data races.",
+      "tags": ["virtual", "slave"]
+    },
+    {
+      "id": "REQ-VIRT-003",
+      "title": "Virtual bus SendHeader",
+      "description": "SendHeader shall look up the registered response for id, compute the PID and checksum, synthesise a Frame, broadcast it to all matching subscribers, and return the Frame. When no response is registered, it shall return ErrNoResponse.",
+      "asil": "ASIL-B",
+      "rationale": "Simulates the complete LIN master-slave frame exchange in-process.",
+      "tags": ["virtual", "master"]
+    },
+    {
+      "id": "REQ-VIRT-004",
+      "title": "Virtual bus subscriber isolation",
+      "description": "A subscriber with filter ID=X shall not receive frames for any ID other than X. A subscriber with All=true shall receive all frames. When a subscriber channel is full, the frame shall be dropped without blocking Send.",
+      "asil": "ASIL-B",
+      "rationale": "Prevents cross-frame-ID leakage; drop-on-full mirrors real LIN hardware behaviour.",
+      "tags": ["virtual", "isolation"]
+    },
+    {
+      "id": "REQ-VIRT-005",
+      "title": "Virtual bus Close",
+      "description": "Close shall close all subscriber channels, make the bus unusable, and be safe to call more than once.",
+      "asil": "ASIL-B",
+      "rationale": "Resource cleanup must be idempotent to avoid double-close panics.",
+      "tags": ["virtual", "lifecycle"]
+    },
+    {
+      "id": "REQ-LDF-001",
+      "title": "LDF file parsing",
+      "description": "Parse shall read an LDF file and populate protocol version, language version, baud rate, master node name, and slave node list. Parse shall return an error for files it cannot read.",
+      "asil": "ASIL-A",
+      "rationale": "LDF is the authoritative source of LIN cluster configuration.",
+      "tags": ["ldf"]
+    },
+    {
+      "id": "REQ-LDF-002",
+      "title": "LDF frame descriptor extraction",
+      "description": "Parse shall populate frame descriptors (name, ID, publisher, length, signal-to-bit-offset mappings) from the LDF Frames section. Frame() shall return a copy, not a shared reference.",
+      "asil": "ASIL-A",
+      "rationale": "SG-03: incorrect frame descriptor leads to wrong signal decoding.",
+      "tags": ["ldf", "frame"]
+    },
+    {
+      "id": "REQ-LDF-003",
+      "title": "LDF signal definition and decoding",
+      "description": "Parse shall populate signal definitions (name, bit width, init value, publisher, subscribers). Decode(id, data) shall extract each signal from the raw payload using LSB-first Intel byte order.",
+      "asil": "ASIL-A",
+      "rationale": "SG-03: bit-offset errors produce out-of-range actuator commands.",
+      "tags": ["ldf", "signal", "decode"]
+    },
+    {
+      "id": "REQ-LDF-004",
+      "title": "LDF schedule table parsing",
+      "description": "Parse shall populate schedule tables (entry name mapped to frame ID and slot delay in milliseconds). Schedule() shall return a copy.",
+      "asil": "ASIL-A",
+      "rationale": "Schedule tables drive master timing; incorrect delays affect bus load.",
+      "tags": ["ldf", "schedule"]
+    },
+    {
+      "id": "REQ-MASTER-001",
+      "title": "Master node schedule execution",
+      "description": "Node.Run shall iterate through the schedule table, call SendHeader for each slot, invoke OnFrame or OnError callbacks, sleep for the slot delay, and return when ctx is cancelled.",
+      "asil": "ASIL-B",
+      "rationale": "SG-01: master must transmit headers in the correct sequence and timing.",
+      "tags": ["master", "schedule"]
+    },
+    {
+      "id": "REQ-MASTER-002",
+      "title": "Master SendHeader",
+      "description": "Node.SendHeader shall delegate to MasterBus.SendHeader and return the resulting Frame or error.",
+      "asil": "ASIL-B",
+      "rationale": "Single header transmission must propagate errors to the caller.",
+      "tags": ["master"]
+    },
+    {
+      "id": "REQ-MASTER-003",
+      "title": "Master schedule validation",
+      "description": "SetSchedule shall reject schedules that are empty or contain frame IDs exceeding 0x3F.",
+      "asil": "ASIL-B",
+      "rationale": "Invalid schedule entries would cause SendHeader to transmit garbage PIDs.",
+      "tags": ["master", "validation"]
+    },
+    {
+      "id": "REQ-SLAVE-001",
+      "title": "Slave node creation",
+      "description": "slave.New shall return a Node that is ready to register responses and subscribe to frames.",
+      "asil": "ASIL-B",
+      "rationale": "Provides the high-level slave API on top of lin.Bus.",
+      "tags": ["slave"]
+    },
+    {
+      "id": "REQ-SLAVE-002",
+      "title": "Slave response registration",
+      "description": "SetResponse shall call bus.Publish for the given ID and data, and track registered IDs. SetResponse(nil) shall remove the registration. SetResponse with ID > 0x3F shall return an error.",
+      "asil": "ASIL-B",
+      "rationale": "Slave must only respond to valid frame IDs.",
+      "tags": ["slave"]
+    },
+    {
+      "id": "REQ-SLAVE-003",
+      "title": "Slave subscription",
+      "description": "Subscribe shall delegate to bus.Subscribe and return the frame channel.",
+      "asil": "ASIL-B",
+      "rationale": "Slaves observe the bus to monitor master requests and peer responses.",
+      "tags": ["slave"]
+    },
+    {
+      "id": "REQ-SAFETY-001",
+      "title": "E2E Config",
+      "description": "Config.DataID and Config.SourceID shall be embedded in every protected payload to uniquely identify the data element and sender.",
+      "asil": "ASIL-B",
+      "rationale": "Allows receiver to distinguish payloads from different senders and data elements.",
+      "tags": ["safety", "e2e"]
+    },
+    {
+      "id": "REQ-SAFETY-002",
+      "title": "E2E Protector",
+      "description": "NewProtector shall return a Protector with a monotonically increasing sequence counter starting at 0.",
+      "asil": "ASIL-B",
+      "rationale": "Sequence counter must start deterministically to allow gap detection.",
+      "tags": ["safety", "e2e"]
+    },
+    {
+      "id": "REQ-SAFETY-003",
+      "title": "E2E protection",
+      "description": "Protect shall prepend a 10-byte header containing DataID, SourceID, SequenceCounter, and CRC-16/CCITT-FALSE over header+payload (CRC slot treated as zero during computation).",
+      "asil": "ASIL-B",
+      "rationale": "SG-04: E2E header enables CRC and freshness checking on receive.",
+      "tags": ["safety", "e2e", "crc"]
+    },
+    {
+      "id": "REQ-SAFETY-004",
+      "title": "E2E Receiver validation",
+      "description": "Unwrap shall verify the CRC, detect sequence gaps, and return the original payload. It shall return E2EError with ErrHeaderTooShort when the input is shorter than 10 bytes.",
+      "asil": "ASIL-B",
+      "rationale": "SG-04: receiver must reject corrupted or out-of-sequence payloads.",
+      "tags": ["safety", "e2e", "receiver"]
+    },
+    {
+      "id": "REQ-SAFETY-005",
+      "title": "E2E CRC mismatch detection",
+      "description": "Unwrap shall return E2EError with Kind=ErrCRCMismatch when any byte in the header or payload has been corrupted.",
+      "asil": "ASIL-B",
+      "rationale": "SG-04: single-bit corruption in safety-relevant data must be detected.",
+      "tags": ["safety", "e2e", "crc"]
+    },
+    {
+      "id": "REQ-SEOOC-001",
+      "title": "SEOOC integration assumptions",
+      "description": "The integrating system shall provide a correct LIN physical layer, validate frame IDs before acting on data, and use ValidateFrame on all externally received frames. See SEOOC.md for full assumption list.",
+      "asil": "ASIL-B",
+      "rationale": "go-LIN is a SEOOC; certain safety measures are the integrating system's responsibility.",
+      "tags": ["seooc", "integration"]
+    }
+  ]
+}

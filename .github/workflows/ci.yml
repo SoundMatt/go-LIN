@@ -31,6 +31,7 @@ jobs:
         run: go vet ./...
 
       - name: go test (unit + race)
+        shell: bash
         run: go test -race -count=1 -coverprofile=coverage.out ./...
 
       - name: Upload coverage
