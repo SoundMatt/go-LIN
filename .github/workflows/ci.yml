@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  # ── Cross-platform unit tests ─────────────────────────────────────────────
+  test:
+    name: Test (${{ matrix.os }}, Go ${{ matrix.go }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        go: ["1.25", "1.26"]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go test (unit + race)
+        run: go test -race -count=1 -coverprofile=coverage.out ./...
+
+      - name: Upload coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.go == '1.25'
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage
+          path: coverage.out
+
+  # ── Benchmark smoke run ───────────────────────────────────────────────────
+  benchmark-smoke:
+    name: Benchmark smoke (ubuntu-latest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+
+      - name: go test -bench (smoke, 1 iteration)
+        run: >
+          go test
+          -bench=.
+          -benchtime=1x
+          -benchmem
+          -run=^$
+          ./virtual/...
+
+  # ── Short fuzz runs ───────────────────────────────────────────────────────
+  fuzz-short:
+    name: Fuzz (short, ubuntu-latest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+
+      - name: Clear fuzz corpus cache
+        run: go clean -fuzzcache
+
+      - name: FuzzSendHeader (virtual)
+        run: go test -fuzz=^FuzzSendHeader$ -fuzztime=10s ./virtual/...
+
+      - name: FuzzParse (ldf)
+        run: go test -fuzz=^FuzzParse$ -fuzztime=10s ./ldf/...
+
+      - name: FuzzProtectUnwrap (safety)
+        run: go test -fuzz=^FuzzProtectUnwrap$ -fuzztime=10s ./safety/...
+
+  # ── go-FuSa safety checks ─────────────────────────────────────────────────
+  # Pinned to v0.30.0; exits 1 on any ERROR-level finding.
+  # To upgrade: install the new version locally, run 'gofusa check ./...',
+  # fix all findings, then bump the @version pin below.
+  gofusa:
+    name: go-FuSa safety check (v0.30.0)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+
+      - name: Install go-FuSa
+        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.30.0
+
+      - name: gofusa check
+        run: gofusa check ./...

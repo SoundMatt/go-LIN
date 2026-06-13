@@ -1,0 +1,18 @@
+# go-LIN quickstart — in-process LIN virtual bus demo.
+#
+# Runs a single container demonstrating the virtual bus with a slave
+# goroutine publishing synthetic window-position and mirror-angle frames
+# and a master goroutine driving the schedule and printing received frames.
+#
+# Usage:
+#   docker compose -f docker/docker-compose.yml up --build
+
+services:
+  quickstart:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: quickstart
+    environment:
+      - LIN_INTERVAL_MS=500
+    restart: unless-stopped

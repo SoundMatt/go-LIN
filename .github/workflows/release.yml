@@ -1,0 +1,56 @@
+name: Release
+
+# Runs on every vX.Y.Z tag push.
+# Regenerates all go-FuSa safety artifacts and commits them back to main.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate-safety-artifacts:
+    name: Regenerate safety artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+
+      - name: Install go-FuSa
+        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.30.0
+
+      - name: Regenerate dFMEA table
+        run: gofusa fmea -cyber
+
+      - name: Regenerate safety case
+        run: gofusa safety-case
+
+      - name: Regenerate SBOM, provenance, and artifact manifest
+        run: gofusa release
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit regenerated artifacts
+        run: |
+          TAG="${{ github.ref_name }}"
+          git add fmea.csv fmea.json \
+                  safety-case.json safety-case.md safety-case.mermaid \
+                  sbom.json provenance.json artifact-manifest.json
+          if git diff --cached --quiet; then
+            echo "No artifact changes for $TAG — nothing to commit."
+          else
+            git commit -m "chore: regenerate safety artifacts for $TAG [skip ci]"
+            git push origin HEAD:refs/heads/main
+          fi
