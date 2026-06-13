@@ -1,0 +1,17 @@
+{
+  "version": "1",
+  "project": {
+    "name": "go-LIN",
+    "module": "github.com/SoundMatt/go-LIN",
+    "standard": "iso26262",
+    "asil": "ASIL-B"
+  },
+  "rules": {
+    "exclude": [],
+    "severity": {}
+  },
+  "report": {
+    "format": "json",
+    "output": "check-report.json"
+  }
+}
