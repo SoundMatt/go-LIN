@@ -14,6 +14,7 @@ import (
 	"github.com/SoundMatt/go-LIN/virtual"
 )
 
+//fusa:test REQ-LIN-002
 //fusa:test REQ-VIRT-001
 
 func TestNew(t *testing.T) {
