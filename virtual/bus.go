@@ -16,6 +16,20 @@
 //fusa:req REQ-VIRT-003
 //fusa:req REQ-VIRT-004
 //fusa:req REQ-VIRT-005
+//fusa:req REQ-VIRT-006
+//fusa:req REQ-VIRT-007
+//fusa:req REQ-VIRT-008
+//fusa:req REQ-VIRT-009
+//fusa:req REQ-VIRT-010
+//fusa:req REQ-VIRT-011
+//fusa:req REQ-VIRT-012
+//fusa:req REQ-VIRT-013
+//fusa:req REQ-VIRT-014
+//fusa:req REQ-VIRT-015
+//fusa:req REQ-VIRT-016
+//fusa:req REQ-VIRT-017
+//fusa:req REQ-VIRT-018
+//fusa:req REQ-VIRT-019
 package virtual
 
 import (
@@ -33,8 +47,6 @@ const defaultChanSize = 64
 // call New.
 //
 // Bus implements lin.MasterBus.
-//
-//fusa:req REQ-VIRT-001
 type Bus struct {
 	mu        sync.RWMutex
 	responses map[uint8]responseEntry
@@ -64,10 +76,14 @@ func New() (*Bus, error) {
 }
 
 // Publish registers a response payload for the given frame ID.
-// When SendHeader is called for this ID, the registered data is used to
-// synthesise the frame. Passing nil removes a previously registered response.
+// Publish(id, nil) removes the registration.
+// Publish after Close returns an error.
 //
 //fusa:req REQ-VIRT-002
+//fusa:req REQ-VIRT-003
+//fusa:req REQ-VIRT-004
+//fusa:req REQ-VIRT-005
+//fusa:req REQ-VIRT-019
 func (b *Bus) Publish(id uint8, data []byte) error {
 	if id > lin.MaxID {
 		return fmt.Errorf("lin/virtual: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.MaxID)
@@ -109,10 +125,18 @@ func (b *Bus) PublishClassic(id uint8, data []byte) error {
 
 // SendHeader drives a frame exchange for the given ID.
 // It looks up any registered slave response, synthesises the Frame with the
-// correct PID and checksum, broadcasts it to matching subscribers, and returns
-// the Frame. Returns lin.ErrNoResponse when no response is registered.
+// correct PID and checksum, broadcasts it to all matching subscribers, and
+// returns the Frame.
+// Returns lin.ErrNoResponse when no response is registered.
+// Returns an error when called after Close.
 //
-//fusa:req REQ-VIRT-003
+//fusa:req REQ-VIRT-006
+//fusa:req REQ-VIRT-007
+//fusa:req REQ-VIRT-008
+//fusa:req REQ-VIRT-009
+//fusa:req REQ-VIRT-010
+//fusa:req REQ-VIRT-017
+//fusa:req REQ-VIRT-018
 func (b *Bus) SendHeader(ctx context.Context, id uint8) (lin.Frame, error) {
 	if id > lin.MaxID {
 		return lin.Frame{}, fmt.Errorf("lin/virtual: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.MaxID)
@@ -149,7 +173,10 @@ func (b *Bus) SendHeader(ctx context.Context, id uint8) (lin.Frame, error) {
 // Subscribe returns a channel that delivers frames matching any of the
 // supplied filters. With no filters, all frames are delivered.
 //
-//fusa:req REQ-VIRT-004
+//fusa:req REQ-VIRT-011
+//fusa:req REQ-VIRT-012
+//fusa:req REQ-VIRT-013
+//fusa:req REQ-VIRT-014
 func (b *Bus) Subscribe(filters ...lin.Filter) (<-chan lin.Frame, error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -166,7 +193,8 @@ func (b *Bus) Subscribe(filters ...lin.Filter) (<-chan lin.Frame, error) {
 
 // Close releases all resources and closes all subscriber channels.
 //
-//fusa:req REQ-VIRT-005
+//fusa:req REQ-VIRT-015
+//fusa:req REQ-VIRT-016
 func (b *Bus) Close() error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -189,7 +217,7 @@ func (b *Bus) broadcast(f lin.Frame) {
 			select {
 			case s.ch <- f:
 			default:
-				// drop on full channel — mirrors real LIN bus behaviour
+				// drop on full channel — REQ-VIRT-013
 			}
 		}
 	}

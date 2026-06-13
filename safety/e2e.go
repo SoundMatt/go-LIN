@@ -26,6 +26,16 @@
 //fusa:req REQ-SAFETY-003
 //fusa:req REQ-SAFETY-004
 //fusa:req REQ-SAFETY-005
+//fusa:req REQ-SAFETY-006
+//fusa:req REQ-SAFETY-007
+//fusa:req REQ-SAFETY-008
+//fusa:req REQ-SAFETY-009
+//fusa:req REQ-SAFETY-010
+//fusa:req REQ-SAFETY-011
+//fusa:req REQ-SAFETY-012
+//fusa:req REQ-SAFETY-013
+//fusa:req REQ-SAFETY-014
+//fusa:req REQ-SAFETY-015
 //fusa:req REQ-SEOOC-001
 package safety
 
@@ -41,6 +51,7 @@ const headerSize = 10
 // Config configures end-to-end protection parameters.
 //
 //fusa:req REQ-SAFETY-001
+//fusa:req REQ-SAFETY-002
 type Config struct {
 	// DataID identifies the logical data element (0–65535).
 	DataID uint16
@@ -62,7 +73,9 @@ const (
 
 // E2EError is returned when an E2E safety check fails.
 //
-//fusa:req REQ-SAFETY-005
+//fusa:req REQ-SAFETY-007
+//fusa:req REQ-SAFETY-008
+//fusa:req REQ-SAFETY-009
 type E2EError struct {
 	Kind    ErrorKind
 	Counter uint32
@@ -75,23 +88,36 @@ func (e *E2EError) Error() string {
 }
 
 // Protector adds an E2E header to payloads before transmission.
+// Its SequenceCounter starts at 0 and increments by 1 per Protect call.
+// Protect is safe for concurrent calls.
 //
-//fusa:req REQ-SAFETY-002
+//fusa:req REQ-SAFETY-003
+//fusa:req REQ-SAFETY-004
+//fusa:req REQ-SAFETY-014
 type Protector struct {
 	cfg Config
 	seq atomic.Uint32
 }
 
-// NewProtector creates an E2E protector.
+// NewProtector creates an E2E protector with SequenceCounter initialised to 0.
 //
-//fusa:req REQ-SAFETY-002
+//fusa:req REQ-SAFETY-003
 func NewProtector(cfg Config) *Protector {
 	return &Protector{cfg: cfg}
 }
 
 // Protect prepends the E2E header and returns the protected payload.
+// The output length is exactly headerSize (10) + len(payload).
+// The SequenceCounter is atomically incremented on each call.
 //
+//fusa:req REQ-SAFETY-001
+//fusa:req REQ-SAFETY-002
 //fusa:req REQ-SAFETY-003
+//fusa:req REQ-SAFETY-004
+//fusa:req REQ-SAFETY-005
+//fusa:req REQ-SAFETY-006
+//fusa:req REQ-SAFETY-012
+//fusa:req REQ-SAFETY-014
 func (p *Protector) Protect(payload []byte) []byte {
 	seq := p.seq.Add(1) - 1
 	hdr := buildHeader(p.cfg.DataID, p.cfg.SourceID, seq, payload)
@@ -102,8 +128,13 @@ func (p *Protector) Protect(payload []byte) []byte {
 }
 
 // Receiver validates E2E headers on received payloads.
+// The first Unwrap call accepts any counter value to seed the sequence.
 //
-//fusa:req REQ-SAFETY-004
+//fusa:req REQ-SAFETY-007
+//fusa:req REQ-SAFETY-008
+//fusa:req REQ-SAFETY-009
+//fusa:req REQ-SAFETY-010
+//fusa:req REQ-SAFETY-013
 type Receiver struct {
 	mu      sync.Mutex
 	cfg     Config
@@ -111,18 +142,24 @@ type Receiver struct {
 	first   bool
 }
 
-// NewReceiver creates an E2E receiver.
+// NewReceiver creates an E2E receiver. The first Unwrap accepts any counter.
 //
-//fusa:req REQ-SAFETY-004
+//fusa:req REQ-SAFETY-013
 func NewReceiver(cfg Config) *Receiver {
 	return &Receiver{cfg: cfg, first: true}
 }
 
-// Unwrap validates the E2E header and returns the original payload.
-// Returns E2EError on CRC mismatch, sequence gap, or short payload.
+// Unwrap validates the E2E header and returns an independent copy of the
+// original payload. Returns E2EError on CRC mismatch, sequence gap, or
+// short payload.
 //
-//fusa:req REQ-SAFETY-004
-//fusa:req REQ-SAFETY-005
+//fusa:req REQ-SAFETY-007
+//fusa:req REQ-SAFETY-008
+//fusa:req REQ-SAFETY-009
+//fusa:req REQ-SAFETY-010
+//fusa:req REQ-SAFETY-011
+//fusa:req REQ-SAFETY-013
+//fusa:req REQ-SAFETY-015
 func (r *Receiver) Unwrap(data []byte) ([]byte, error) {
 	if len(data) < headerSize {
 		return nil, &E2EError{
@@ -186,6 +223,8 @@ func buildHeader(dataID, sourceID uint16, seq uint32, payload []byte) []byte {
 }
 
 // crc16 computes CRC-16/CCITT-FALSE (poly=0x1021, init=0xFFFF, refin=false).
+//
+//fusa:req REQ-SAFETY-005
 func crc16(data []byte) uint16 {
 	crc := uint16(0xFFFF)
 	for _, b := range data {
