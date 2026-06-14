@@ -1,6 +1,6 @@
 {
   "format": "go-FuSa Safety Case v1",
-  "generatedAt": "2026-06-13T19:54:22.955335546Z",
+  "generatedAt": "2026-06-14T00:15:39.390578435Z",
   "module": "github.com/SoundMatt/go-LIN",
   "standard": "generic",
   "evidence": [
@@ -16,7 +16,7 @@
       "description": "Requirements traceability matrix",
       "file": ".fusa-reqs.json",
       "status": "present",
-      "detail": "25 requirements"
+      "detail": "100 requirements"
     },
     {
       "id": "verify",
@@ -36,15 +36,13 @@
       "id": "sbom",
       "description": "SBOM (SPDX 3.0.1)",
       "file": "sbom.json",
-      "status": "absent",
-      "detail": "run 'gofusa release' to generate sbom.json"
+      "status": "present"
     },
     {
       "id": "provenance",
       "description": "Build provenance",
       "file": "provenance.json",
-      "status": "absent",
-      "detail": "run 'gofusa release' to generate provenance.json"
+      "status": "present"
     }
   ],
   "clauses": [
@@ -93,8 +91,6 @@
   "gaps": [
     "check",
     "verify",
-    "qualify",
-    "sbom",
-    "provenance"
+    "qualify"
   ]
 }

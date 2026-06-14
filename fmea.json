@@ -1,6 +1,6 @@
 {
   "format": "go-FuSa dFMEA v1",
-  "generated_at": "2026-06-13T19:54:22.879530646Z",
+  "generated_at": "2026-06-14T00:15:39.295362141Z",
   "module": "github.com/SoundMatt/go-LIN",
   "entries": [
     {
@@ -16,7 +16,9 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-LIN-004"
+        "REQ-LIN-008",
+        "REQ-LIN-009",
+        "REQ-LIN-010"
       ],
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -57,7 +59,9 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-LIN-003"
+        "REQ-LIN-004",
+        "REQ-LIN-005",
+        "REQ-LIN-018"
       ],
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -79,7 +83,12 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-LIN-001"
+        "REQ-LIN-001",
+        "REQ-LIN-002",
+        "REQ-LIN-003",
+        "REQ-LIN-015",
+        "REQ-LIN-016",
+        "REQ-LIN-017"
       ],
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -98,8 +107,12 @@
       "effects": [
         "Silent failure propagated to caller"
       ],
-      "severity": "medium",
-      "detection_control": "unit tests",
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-LIN-006",
+        "REQ-LIN-007"
+      ],
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -120,7 +133,8 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-LDF-003"
+        "REQ-LDF-009",
+        "REQ-LDF-010"
       ],
       "cyber_risks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -137,8 +151,12 @@
       "effects": [
         "Incorrect system behavior"
       ],
-      "severity": "low",
-      "detection_control": "unit tests",
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-LDF-005",
+        "REQ-LDF-012"
+      ],
       "cyber_risks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint32(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
@@ -157,7 +175,8 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-LDF-002"
+        "REQ-LDF-005",
+        "REQ-LDF-015"
       ],
       "cyber_risks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -177,7 +196,11 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-LDF-001"
+        "REQ-LDF-001",
+        "REQ-LDF-002",
+        "REQ-LDF-003",
+        "REQ-LDF-004",
+        "REQ-LDF-014"
       ],
       "cyber_risks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -197,7 +220,7 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-LDF-004"
+        "REQ-LDF-011"
       ],
       "cyber_risks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -217,7 +240,8 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-LDF-003"
+        "REQ-LDF-007",
+        "REQ-LDF-013"
       ],
       "cyber_risks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -234,8 +258,12 @@
       "effects": [
         "Incorrect system behavior"
       ],
-      "severity": "low",
-      "detection_control": "unit tests",
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-LDF-007",
+        "REQ-LDF-008"
+      ],
       "cyber_risks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint32(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
@@ -267,8 +295,11 @@
       "effects": [
         "Incorrect system behavior"
       ],
-      "severity": "low",
-      "detection_control": "unit tests"
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-MASTER-007"
+      ]
     },
     {
       "component": "master",
@@ -280,8 +311,11 @@
       "effects": [
         "Incorrect system behavior"
       ],
-      "severity": "low",
-      "detection_control": "unit tests"
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-MASTER-006"
+      ]
     },
     {
       "component": "master",
@@ -298,7 +332,14 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-MASTER-001"
+        "REQ-MASTER-003",
+        "REQ-MASTER-004",
+        "REQ-MASTER-005",
+        "REQ-MASTER-006",
+        "REQ-MASTER-007",
+        "REQ-MASTER-008",
+        "REQ-MASTER-009",
+        "REQ-MASTER-013"
       ]
     },
     {
@@ -330,7 +371,9 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-MASTER-003"
+        "REQ-MASTER-010",
+        "REQ-MASTER-011",
+        "REQ-MASTER-012"
       ]
     },
     {
@@ -362,7 +405,7 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-SAFETY-002"
+        "REQ-SAFETY-003"
       ],
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
@@ -381,7 +424,7 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-SAFETY-004"
+        "REQ-SAFETY-013"
       ],
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
@@ -400,7 +443,14 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-SAFETY-003"
+        "REQ-SAFETY-001",
+        "REQ-SAFETY-002",
+        "REQ-SAFETY-003",
+        "REQ-SAFETY-004",
+        "REQ-SAFETY-005",
+        "REQ-SAFETY-006",
+        "REQ-SAFETY-012",
+        "REQ-SAFETY-014"
       ],
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
@@ -419,8 +469,13 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-SAFETY-004",
-        "REQ-SAFETY-005"
+        "REQ-SAFETY-007",
+        "REQ-SAFETY-008",
+        "REQ-SAFETY-009",
+        "REQ-SAFETY-010",
+        "REQ-SAFETY-011",
+        "REQ-SAFETY-013",
+        "REQ-SAFETY-015"
       ],
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
@@ -452,8 +507,12 @@
       "effects": [
         "Incorrect system behavior"
       ],
-      "severity": "low",
-      "detection_control": "unit tests"
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-SLAVE-005",
+        "REQ-SLAVE-007"
+      ]
     },
     {
       "component": "slave",
@@ -468,7 +527,10 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-SLAVE-002"
+        "REQ-SLAVE-002",
+        "REQ-SLAVE-003",
+        "REQ-SLAVE-004",
+        "REQ-SLAVE-008"
       ]
     },
     {
@@ -484,7 +546,7 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-SLAVE-003"
+        "REQ-SLAVE-006"
       ]
     },
     {
@@ -500,7 +562,8 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-VIRT-005"
+        "REQ-VIRT-015",
+        "REQ-VIRT-016"
       ]
     },
     {
@@ -532,7 +595,11 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-VIRT-002"
+        "REQ-VIRT-002",
+        "REQ-VIRT-003",
+        "REQ-VIRT-004",
+        "REQ-VIRT-005",
+        "REQ-VIRT-019"
       ]
     },
     {
@@ -561,7 +628,13 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-VIRT-003"
+        "REQ-VIRT-006",
+        "REQ-VIRT-007",
+        "REQ-VIRT-008",
+        "REQ-VIRT-009",
+        "REQ-VIRT-010",
+        "REQ-VIRT-017",
+        "REQ-VIRT-018"
       ]
     },
     {
@@ -577,7 +650,10 @@
       "severity": "high",
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
-        "REQ-VIRT-004"
+        "REQ-VIRT-011",
+        "REQ-VIRT-012",
+        "REQ-VIRT-013",
+        "REQ-VIRT-014"
       ]
     }
   ]

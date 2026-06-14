@@ -3,15 +3,15 @@ flowchart TD
     S1{{"**S1** Argued over safety lifecycle\nprocess compliance"}}
     G2["**G2** Coding standard and static analysis checks\n⚠ run 'gofusa check --output check-report.json' to generate"]
     Sn1(["**Sn1** check-report.json"])
-    G3["**G3** Requirements traceability matrix\n✅ 25 requirements"]
+    G3["**G3** Requirements traceability matrix\n✅ 100 requirements"]
     Sn2(["**Sn2** .fusa-reqs.json"])
     G4["**G4** Test evidence bundle\n⚠ run 'gofusa verify' to generate"]
     Sn3(["**Sn3** .fusa-evidence.json"])
     G5["**G5** Tool qualification report\n⚠ run 'gofusa qualify' to generate"]
     Sn4(["**Sn4** qualify-report.json"])
-    G6["**G6** SBOM (SPDX 3.0.1)\n⚠ run 'gofusa release' to generate sbom.json"]
+    G6["**G6** SBOM (SPDX 3.0.1)\n✅ sbom.json"]
     Sn5(["**Sn5** sbom.json"])
-    G7["**G7** Build provenance\n⚠ run 'gofusa release' to generate provenance.json"]
+    G7["**G7** Build provenance\n✅ provenance.json"]
     Sn6(["**Sn6** provenance.json"])
     G1 --> S1
     S1 --> G2
@@ -32,7 +32,3 @@ flowchart TD
     style Sn3 fill:#fee2e2,stroke:#ef4444
     style G5 fill:#fee2e2,stroke:#ef4444
     style Sn4 fill:#fee2e2,stroke:#ef4444
-    style G6 fill:#fee2e2,stroke:#ef4444
-    style Sn5 fill:#fee2e2,stroke:#ef4444
-    style G7 fill:#fee2e2,stroke:#ef4444
-    style Sn6 fill:#fee2e2,stroke:#ef4444
