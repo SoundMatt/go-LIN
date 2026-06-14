@@ -23,6 +23,16 @@
 //fusa:req REQ-MASTER-001
 //fusa:req REQ-MASTER-002
 //fusa:req REQ-MASTER-003
+//fusa:req REQ-MASTER-004
+//fusa:req REQ-MASTER-005
+//fusa:req REQ-MASTER-006
+//fusa:req REQ-MASTER-007
+//fusa:req REQ-MASTER-008
+//fusa:req REQ-MASTER-009
+//fusa:req REQ-MASTER-010
+//fusa:req REQ-MASTER-011
+//fusa:req REQ-MASTER-012
+//fusa:req REQ-MASTER-013
 package master
 
 import (
@@ -51,11 +61,13 @@ func New(bus lin.MasterBus) *Node {
 	return &Node{bus: bus}
 }
 
-// SetSchedule replaces the active schedule table.
-// It is safe to call between Run invocations but must not be called
-// concurrently with Run.
+// SetSchedule replaces the active schedule table. It validates all entries
+// before storing a defensive copy. It is safe to call between Run
+// invocations but must not be called concurrently with Run.
 //
-//fusa:req REQ-MASTER-003
+//fusa:req REQ-MASTER-010
+//fusa:req REQ-MASTER-011
+//fusa:req REQ-MASTER-012
 func (n *Node) SetSchedule(entries []lin.ScheduleEntry) error {
 	if err := validateSchedule(entries); err != nil {
 		return err
@@ -68,12 +80,16 @@ func (n *Node) SetSchedule(entries []lin.ScheduleEntry) error {
 
 // OnFrame registers a callback invoked for every successfully received frame.
 // The callback is called synchronously from Run; it must not block.
+//
+//fusa:req REQ-MASTER-006
 func (n *Node) OnFrame(fn func(lin.Frame)) {
 	n.onFrame = fn
 }
 
 // OnError registers a callback invoked when a slot produces an error
 // (e.g., no slave response). The callback is called synchronously from Run.
+//
+//fusa:req REQ-MASTER-007
 func (n *Node) OnError(fn func(error)) {
 	n.onError = fn
 }
@@ -88,9 +104,17 @@ func (n *Node) SendHeader(ctx context.Context, id uint8) (lin.Frame, error) {
 
 // Run executes the schedule table repeatedly until ctx is cancelled.
 // Each slot transmits a header, waits for a slave response, then sleeps
-// for the slot's configured delay.
+// for the slot's configured delay. Per-slot errors invoke OnError but do
+// not abort the schedule.
 //
-//fusa:req REQ-MASTER-001
+//fusa:req REQ-MASTER-003
+//fusa:req REQ-MASTER-004
+//fusa:req REQ-MASTER-005
+//fusa:req REQ-MASTER-006
+//fusa:req REQ-MASTER-007
+//fusa:req REQ-MASTER-008
+//fusa:req REQ-MASTER-009
+//fusa:req REQ-MASTER-013
 func (n *Node) Run(ctx context.Context) error {
 	if len(n.schedule) == 0 {
 		return errors.New("master: schedule is empty")
@@ -127,7 +151,8 @@ func (n *Node) Run(ctx context.Context) error {
 
 // validateSchedule checks that every schedule entry has a valid frame ID.
 //
-//fusa:req REQ-MASTER-003
+//fusa:req REQ-MASTER-010
+//fusa:req REQ-MASTER-011
 func validateSchedule(entries []lin.ScheduleEntry) error {
 	if len(entries) == 0 {
 		return errors.New("master: schedule must have at least one entry")

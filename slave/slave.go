@@ -19,6 +19,11 @@
 //fusa:req REQ-SLAVE-001
 //fusa:req REQ-SLAVE-002
 //fusa:req REQ-SLAVE-003
+//fusa:req REQ-SLAVE-004
+//fusa:req REQ-SLAVE-005
+//fusa:req REQ-SLAVE-006
+//fusa:req REQ-SLAVE-007
+//fusa:req REQ-SLAVE-008
 package slave
 
 import (
@@ -48,8 +53,12 @@ func New(bus lin.Bus) *Node {
 // SetResponse registers the response payload for the given frame ID.
 // When the master requests this ID, bus.Publish delivers the payload.
 // Passing nil removes the response.
+// Calling with an existing ID replaces the previous registration.
 //
 //fusa:req REQ-SLAVE-002
+//fusa:req REQ-SLAVE-003
+//fusa:req REQ-SLAVE-004
+//fusa:req REQ-SLAVE-008
 func (n *Node) SetResponse(id uint8, data []byte) error {
 	if id > lin.MaxID {
 		return fmt.Errorf("slave: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.MaxID)
@@ -60,7 +69,9 @@ func (n *Node) SetResponse(id uint8, data []byte) error {
 	n.mu.Lock()
 	defer n.mu.Unlock()
 	if data != nil {
-		n.ids = append(n.ids, id)
+		if !containsID(n.ids, id) {
+			n.ids = append(n.ids, id)
+		}
 	} else {
 		n.ids = removeID(n.ids, id)
 	}
@@ -70,18 +81,31 @@ func (n *Node) SetResponse(id uint8, data []byte) error {
 // Subscribe returns a channel delivering frames that match any of the
 // supplied filters.
 //
-//fusa:req REQ-SLAVE-003
+//fusa:req REQ-SLAVE-006
 func (n *Node) Subscribe(filters ...lin.Filter) (<-chan lin.Frame, error) {
 	return n.bus.Subscribe(filters...)
 }
 
 // RegisteredIDs returns the frame IDs for which this slave has a registered response.
+// Returns an empty (non-nil) slice when no responses are registered.
+//
+//fusa:req REQ-SLAVE-005
+//fusa:req REQ-SLAVE-007
 func (n *Node) RegisteredIDs() []uint8 {
 	n.mu.RLock()
 	defer n.mu.RUnlock()
 	out := make([]uint8, len(n.ids))
 	copy(out, n.ids)
 	return out
+}
+
+func containsID(ids []uint8, id uint8) bool {
+	for _, v := range ids {
+		if v == id {
+			return true
+		}
+	}
+	return false
 }
 
 func removeID(ids []uint8, id uint8) []uint8 {

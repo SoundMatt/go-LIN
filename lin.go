@@ -32,11 +32,6 @@ import (
 	"fmt"
 )
 
-//fusa:req REQ-LIN-001
-//fusa:req REQ-LIN-002
-//fusa:req REQ-LIN-003
-//fusa:req REQ-LIN-004
-
 // MaxDataLen is the maximum number of data bytes in a LIN frame payload.
 const MaxDataLen = 8
 
@@ -67,6 +62,8 @@ const (
 // (classic) or PID + payload (enhanced).
 //
 //fusa:req REQ-LIN-001
+//fusa:req REQ-LIN-002
+//fusa:req REQ-LIN-003
 type Frame struct {
 	// ID is the 6-bit frame identifier (0x00–0x3F).
 	ID uint8
@@ -84,7 +81,7 @@ type Frame struct {
 // Filter selects frames by ID.
 //
 // A frame passes when frame.ID == ID (exact match).
-// The zero value matches no frames; use WithAllFrames to subscribe to all.
+// The zero value matches no frames; use Filter{All: true} to receive all frames.
 type Filter struct {
 	// ID is the exact LIN frame identifier to match (0x00–0x3F).
 	ID uint8
@@ -112,29 +109,63 @@ type ScheduleEntry struct {
 
 // Bus is the interface implemented by all LIN bus transports.
 //
-//fusa:req REQ-LIN-002
+//fusa:req REQ-LIN-011
+//fusa:req REQ-LIN-012
 type Bus interface {
 	// Publish registers a response payload for the given frame ID.
 	// When the master requests that ID, the supplied data is sent.
 	// Passing nil data removes a previously registered response.
+	//
+	//fusa:req REQ-LIN-011
+	//fusa:req REQ-LIN-019
 	Publish(id uint8, data []byte) error
 
 	// Subscribe returns a channel that delivers frames matching any of the
 	// supplied filters. With no filters, all frames are delivered.
+	//
+	//fusa:req REQ-LIN-012
+	//fusa:req REQ-LIN-020
 	Subscribe(filters ...Filter) (<-chan Frame, error)
 
 	// Close releases all resources and closes all subscriber channels.
 	Close() error
 }
 
+// MasterBus extends Bus with the ability to drive frame exchanges.
+// It is implemented by transports that support master-node operation.
+//
+//fusa:req REQ-LIN-013
+//fusa:req REQ-LIN-014
+type MasterBus interface {
+	Bus
+
+	// SendHeader drives a frame exchange: transmit break+sync+PID for id,
+	// collect the slave response (if any), verify checksum, and broadcast
+	// the resulting Frame to all subscribers.
+	// Returns ErrNoResponse when no slave response was registered.
+	//
+	//fusa:req REQ-LIN-013
+	//fusa:req REQ-LIN-014
+	SendHeader(ctx context.Context, id uint8) (Frame, error)
+}
+
+// ErrNoResponse is returned by MasterBus.SendHeader when no slave has
+// registered a response for the requested frame ID.
+//
+//fusa:req REQ-LIN-014
+//fusa:req REQ-LIN-021
+var ErrNoResponse = errors.New("lin: no slave response registered for frame ID")
+
 // ProtectID computes the Protected Identifier for a 6-bit LIN frame ID.
 //
 // The two parity bits are appended in bits 6 and 7 of the returned byte:
 //
-//	P0 = ID0 ^ ID1 ^ ID2 ^ ID4
-//	P1 = !(ID1 ^ ID3 ^ ID4 ^ ID5)
+//	P0 = ID0 ^ ID1 ^ ID2 ^ ID4  (bit 6)
+//	P1 = !(ID1 ^ ID3 ^ ID4 ^ ID5) (bit 7)
 //
-//fusa:req REQ-LIN-003
+//fusa:req REQ-LIN-004
+//fusa:req REQ-LIN-005
+//fusa:req REQ-LIN-018
 func ProtectID(id uint8) uint8 {
 	if id > MaxID {
 		id &= MaxID
@@ -146,6 +177,9 @@ func ProtectID(id uint8) uint8 {
 
 // VerifyPID checks that the parity bits in a Protected Identifier are correct.
 // It returns the raw 6-bit ID and nil on success, or an error on parity failure.
+//
+//fusa:req REQ-LIN-006
+//fusa:req REQ-LIN-007
 func VerifyPID(pid uint8) (uint8, error) {
 	id := pid & MaxID
 	if ProtectID(id) != pid {
@@ -156,10 +190,13 @@ func VerifyPID(pid uint8) (uint8, error) {
 
 // CalcChecksum computes the LIN checksum for the given PID and data.
 //
-// Classic checksum (LIN 1.x) sums data bytes only.
-// Enhanced checksum (LIN 2.x) includes the PID byte.
+// Classic checksum (LIN 1.x) sums data bytes only (pid ignored).
+// Enhanced checksum (LIN 2.x) includes the PID byte in the sum.
+// Both use inverted carry-around 8-bit addition.
 //
-//fusa:req REQ-LIN-004
+//fusa:req REQ-LIN-008
+//fusa:req REQ-LIN-009
+//fusa:req REQ-LIN-010
 func CalcChecksum(pid uint8, data []byte, ct ChecksumType) uint8 {
 	var sum uint16
 	if ct == EnhancedChecksum {
@@ -168,33 +205,20 @@ func CalcChecksum(pid uint8, data []byte, ct ChecksumType) uint8 {
 	for _, b := range data {
 		sum += uint16(b)
 		if sum > 0xFF {
-			sum -= 0xFF
+			sum -= 0xFF // carry-around (not 0x100)
 		}
 	}
 	return uint8(0xFF - uint8(sum))
 }
 
-// MasterBus extends Bus with the ability to drive frame exchanges.
-// It is implemented by transports that support master-node operation.
-//
-//fusa:req REQ-LIN-002
-type MasterBus interface {
-	Bus
-
-	// SendHeader drives a frame exchange: transmit break+sync+PID for id,
-	// collect the slave response (if any), verify checksum, and broadcast
-	// the resulting Frame to all subscribers.
-	// Returns ErrNoResponse when no slave response was registered.
-	SendHeader(ctx context.Context, id uint8) (Frame, error)
-}
-
-// ErrNoResponse is returned by MasterBus.SendHeader when no slave has
-// registered a response for the requested frame ID.
-var ErrNoResponse = errors.New("lin: no slave response registered for frame ID")
-
 // ValidateFrame checks that f is a well-formed LIN frame.
 //
 //fusa:req REQ-LIN-001
+//fusa:req REQ-LIN-002
+//fusa:req REQ-LIN-003
+//fusa:req REQ-LIN-015
+//fusa:req REQ-LIN-016
+//fusa:req REQ-LIN-017
 func ValidateFrame(f Frame) error {
 	if f.ID > MaxID {
 		return fmt.Errorf("lin: frame ID 0x%02X exceeds maximum 0x%02X", f.ID, MaxID)

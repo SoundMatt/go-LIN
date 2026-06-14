@@ -14,9 +14,9 @@ import (
 	"github.com/SoundMatt/go-LIN/virtual"
 )
 
+// ── REQ-SLAVE-001: New returns non-nil Node ───────────────────────────────────
+
 //fusa:test REQ-SLAVE-001
-//fusa:test REQ-SLAVE-002
-//fusa:test REQ-SLAVE-003
 
 func TestNew(t *testing.T) {
 	bus, _ := virtual.New()
@@ -27,7 +27,11 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestSetResponse(t *testing.T) {
+// ── REQ-SLAVE-002: SetResponse registers response via Publish ─────────────────
+
+//fusa:test REQ-SLAVE-002
+
+func TestSetResponse_registers(t *testing.T) {
 	bus, _ := virtual.New()
 	defer bus.Close()
 
@@ -42,15 +46,9 @@ func TestSetResponse(t *testing.T) {
 	}
 }
 
-func TestSetResponse_invalidID(t *testing.T) {
-	bus, _ := virtual.New()
-	defer bus.Close()
+// ── REQ-SLAVE-003: SetResponse(nil) removes registration ─────────────────────
 
-	s := slave.New(bus)
-	if err := s.SetResponse(0x40, []byte{1}); err == nil {
-		t.Error("expected error for ID > MaxID")
-	}
-}
+//fusa:test REQ-SLAVE-003
 
 func TestSetResponse_remove(t *testing.T) {
 	bus, _ := virtual.New()
@@ -65,6 +63,43 @@ func TestSetResponse_remove(t *testing.T) {
 		t.Errorf("RegisteredIDs after remove = %v, want []", ids)
 	}
 }
+
+// ── REQ-SLAVE-004: SetResponse rejects ID > MaxID ────────────────────────────
+
+//fusa:test REQ-SLAVE-004
+
+func TestSetResponse_invalidID(t *testing.T) {
+	bus, _ := virtual.New()
+	defer bus.Close()
+
+	s := slave.New(bus)
+	if err := s.SetResponse(0x40, []byte{1}); err == nil {
+		t.Error("expected error for ID > MaxID")
+	}
+}
+
+// ── REQ-SLAVE-005: RegisteredIDs reflects current state ──────────────────────
+
+//fusa:test REQ-SLAVE-005
+
+func TestRegisterredIDs_multiple(t *testing.T) {
+	bus, _ := virtual.New()
+	defer bus.Close()
+
+	s := slave.New(bus)
+	_ = s.SetResponse(0x01, []byte{1})
+	_ = s.SetResponse(0x02, []byte{2})
+	_ = s.SetResponse(0x03, []byte{3})
+
+	ids := s.RegisteredIDs()
+	if len(ids) != 3 {
+		t.Errorf("RegisteredIDs count = %d, want 3", len(ids))
+	}
+}
+
+// ── REQ-SLAVE-006: Subscribe delivers frames ──────────────────────────────────
+
+//fusa:test REQ-SLAVE-006
 
 func TestSubscribe_receivesFrame(t *testing.T) {
 	bus, _ := virtual.New()
@@ -117,17 +152,48 @@ func TestSubscribe_allFrames(t *testing.T) {
 	}
 }
 
-func TestRegisterredIDs_multiple(t *testing.T) {
+// ── REQ-SLAVE-007: RegisteredIDs returns empty slice when none registered ─────
+
+//fusa:test REQ-SLAVE-007
+
+func TestRegisteredIDs_emptyWhenNone(t *testing.T) {
 	bus, _ := virtual.New()
 	defer bus.Close()
 
 	s := slave.New(bus)
-	_ = s.SetResponse(0x01, []byte{1})
-	_ = s.SetResponse(0x02, []byte{2})
-	_ = s.SetResponse(0x03, []byte{3})
-
 	ids := s.RegisteredIDs()
-	if len(ids) != 3 {
-		t.Errorf("RegisteredIDs count = %d, want 3", len(ids))
+	if ids == nil {
+		t.Error("RegisteredIDs must return non-nil slice when empty")
+	}
+	if len(ids) != 0 {
+		t.Errorf("RegisteredIDs = %v, want empty", ids)
+	}
+}
+
+// ── REQ-SLAVE-008: SetResponse overwrites previous registration ───────────────
+
+//fusa:test REQ-SLAVE-008
+
+func TestSetResponse_overwrites(t *testing.T) {
+	bus, _ := virtual.New()
+	defer bus.Close()
+
+	s := slave.New(bus)
+	_ = s.SetResponse(0x10, []byte{0x01})
+	_ = s.SetResponse(0x10, []byte{0x02}) // overwrite
+
+	// Should still be registered only once
+	ids := s.RegisteredIDs()
+	if len(ids) != 1 {
+		t.Errorf("RegisteredIDs count = %d, want 1 after overwrite", len(ids))
+	}
+
+	// The new data should be returned by SendHeader
+	f, err := bus.SendHeader(context.Background(), 0x10)
+	if err != nil {
+		t.Fatalf("SendHeader: %v", err)
+	}
+	if f.Data[0] != 0x02 {
+		t.Errorf("data[0] = 0x%02X, want 0x02 (overwritten value)", f.Data[0])
 	}
 }

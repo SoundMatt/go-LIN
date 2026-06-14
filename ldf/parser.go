@@ -18,6 +18,17 @@
 //fusa:req REQ-LDF-002
 //fusa:req REQ-LDF-003
 //fusa:req REQ-LDF-004
+//fusa:req REQ-LDF-005
+//fusa:req REQ-LDF-006
+//fusa:req REQ-LDF-007
+//fusa:req REQ-LDF-008
+//fusa:req REQ-LDF-009
+//fusa:req REQ-LDF-010
+//fusa:req REQ-LDF-011
+//fusa:req REQ-LDF-012
+//fusa:req REQ-LDF-013
+//fusa:req REQ-LDF-014
+//fusa:req REQ-LDF-015
 package ldf
 
 import (
@@ -33,6 +44,9 @@ import (
 // DB holds the parsed contents of an LDF file.
 //
 //fusa:req REQ-LDF-001
+//fusa:req REQ-LDF-002
+//fusa:req REQ-LDF-003
+//fusa:req REQ-LDF-004
 type DB struct {
 	ProtocolVersion string
 	LanguageVersion string
@@ -46,7 +60,8 @@ type DB struct {
 
 // Frame describes a LIN frame as declared in the LDF Frames section.
 //
-//fusa:req REQ-LDF-002
+//fusa:req REQ-LDF-005
+//fusa:req REQ-LDF-006
 type Frame struct {
 	Name      string
 	ID        uint8
@@ -56,6 +71,8 @@ type Frame struct {
 }
 
 // SignalRef is a signal embedded within a frame at a given bit offset.
+//
+//fusa:req REQ-LDF-006
 type SignalRef struct {
 	Name      string
 	BitOffset int
@@ -63,23 +80,30 @@ type SignalRef struct {
 
 // Signal describes a signal as declared in the LDF Signals section.
 //
-//fusa:req REQ-LDF-003
+//fusa:req REQ-LDF-007
+//fusa:req REQ-LDF-008
 type Signal struct {
-	Name         string
-	BitWidth     int
-	InitValue    uint64
-	Publisher    string
-	Subscribers  []string
-	Scale        float64
-	Offset       float64
-	Unit         string
-	Min          float64
-	Max          float64
+	Name        string
+	BitWidth    int
+	InitValue   uint64
+	Publisher   string
+	Subscribers []string
+	Scale       float64
+	Offset      float64
+	Unit        string
+	Min         float64
+	Max         float64
 }
 
 // Parse reads and parses an LDF file from r.
+// It never panics; malformed input results in an empty or partial DB with a
+// non-nil error.
 //
 //fusa:req REQ-LDF-001
+//fusa:req REQ-LDF-002
+//fusa:req REQ-LDF-003
+//fusa:req REQ-LDF-004
+//fusa:req REQ-LDF-014
 func Parse(r io.Reader) (*DB, error) {
 	db := &DB{
 		frames:    make(map[uint8]*Frame),
@@ -93,8 +117,10 @@ func Parse(r io.Reader) (*DB, error) {
 }
 
 // Frames returns all frames declared in the LDF, keyed by frame ID.
+// The returned map is a defensive copy; mutations do not affect the DB.
 //
-//fusa:req REQ-LDF-002
+//fusa:req REQ-LDF-005
+//fusa:req REQ-LDF-015
 func (db *DB) Frames() map[uint8]*Frame {
 	out := make(map[uint8]*Frame, len(db.frames))
 	for k, v := range db.frames {
@@ -105,6 +131,9 @@ func (db *DB) Frames() map[uint8]*Frame {
 }
 
 // Frame returns the frame with the given ID, or nil if not found.
+//
+//fusa:req REQ-LDF-005
+//fusa:req REQ-LDF-012
 func (db *DB) Frame(id uint8) *Frame {
 	f, ok := db.frames[id]
 	if !ok {
@@ -116,7 +145,8 @@ func (db *DB) Frame(id uint8) *Frame {
 
 // Signal returns the signal with the given name, or nil if not found.
 //
-//fusa:req REQ-LDF-003
+//fusa:req REQ-LDF-007
+//fusa:req REQ-LDF-013
 func (db *DB) Signal(name string) *Signal {
 	s, ok := db.signals[name]
 	if !ok {
@@ -127,6 +157,9 @@ func (db *DB) Signal(name string) *Signal {
 }
 
 // Signals returns all signals declared in the LDF, keyed by name.
+//
+//fusa:req REQ-LDF-007
+//fusa:req REQ-LDF-008
 func (db *DB) Signals() map[string]*Signal {
 	out := make(map[string]*Signal, len(db.signals))
 	for k, v := range db.signals {
@@ -138,7 +171,7 @@ func (db *DB) Signals() map[string]*Signal {
 
 // Schedule returns the schedule table with the given name, or nil.
 //
-//fusa:req REQ-LDF-004
+//fusa:req REQ-LDF-011
 func (db *DB) Schedule(name string) []lin.ScheduleEntry {
 	s, ok := db.schedules[name]
 	if !ok {
@@ -151,8 +184,10 @@ func (db *DB) Schedule(name string) []lin.ScheduleEntry {
 
 // Decode extracts signal values from a raw frame payload.
 // Returns a map of signal name → raw uint64 value (unscaled).
+// Returns nil when the frame ID is not present in the LDF.
 //
-//fusa:req REQ-LDF-003
+//fusa:req REQ-LDF-009
+//fusa:req REQ-LDF-010
 func (db *DB) Decode(id uint8, data []byte) map[string]uint64 {
 	f, ok := db.frames[id]
 	if !ok {
@@ -170,6 +205,8 @@ func (db *DB) Decode(id uint8, data []byte) map[string]uint64 {
 }
 
 // extractBits extracts bitWidth bits starting at bitOffset (LSB first, Intel byte order).
+//
+//fusa:req REQ-LDF-009
 func extractBits(data []byte, bitOffset, bitWidth int) uint64 {
 	var val uint64
 	for i := 0; i < bitWidth; i++ {

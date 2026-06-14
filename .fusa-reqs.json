@@ -3,203 +3,803 @@
   "requirements": [
     {
       "id": "REQ-LIN-001",
-      "title": "Frame validation — ID and data length",
-      "description": "ValidateFrame shall reject any frame whose ID exceeds 0x3F or whose data length is zero or greater than 8 bytes.",
+      "title": "ValidateFrame rejects ID > 0x3F",
+      "description": "ValidateFrame shall return an error when Frame.ID exceeds MaxID (0x3F).",
       "asil": "ASIL-B",
-      "rationale": "SG-05: prevent invalid frame IDs or oversized payloads from reaching application code.",
+      "rationale": "SG-05: prevents an invalid identifier from being transmitted or processed.",
       "tags": ["core", "validation"]
     },
     {
       "id": "REQ-LIN-002",
-      "title": "Bus and MasterBus interfaces",
-      "description": "The Bus interface (Publish, Subscribe, Close) and MasterBus extension (SendHeader) shall be the sole interaction point between application code and all LIN transport implementations.",
+      "title": "ValidateFrame rejects empty data",
+      "description": "ValidateFrame shall return an error when Frame.Data has zero length.",
       "asil": "ASIL-B",
-      "rationale": "Interface-first design ensures transports are swappable without changing application code.",
-      "tags": ["core", "interface"]
+      "rationale": "SG-05: a zero-length LIN frame is malformed and has no defined wire format.",
+      "tags": ["core", "validation"]
     },
     {
       "id": "REQ-LIN-003",
-      "title": "Protected Identifier (PID) computation",
-      "description": "ProtectID shall compute P0 = ID0^ID1^ID2^ID4 and P1 = !(ID1^ID3^ID4^ID5) and return the 8-bit PID. VerifyPID shall return an error when parity is incorrect.",
+      "title": "ValidateFrame rejects oversized data",
+      "description": "ValidateFrame shall return an error when len(Frame.Data) exceeds MaxDataLen (8).",
       "asil": "ASIL-B",
-      "rationale": "SG-01: incorrect PID allows wrong frame ID to be accepted by a slave, potentially commanding the wrong actuator.",
-      "tags": ["core", "pid", "checksum"]
+      "rationale": "SG-05: LIN 2.x limits payloads to 8 bytes; exceeding this is a protocol violation.",
+      "tags": ["core", "validation"]
     },
     {
       "id": "REQ-LIN-004",
-      "title": "Checksum computation",
-      "description": "CalcChecksum shall compute the LIN 1.x classic checksum (data bytes only) and LIN 2.x enhanced checksum (PID + data bytes) using inverted carry-around 8-bit addition.",
+      "title": "ProtectID parity bit P0",
+      "description": "ProtectID shall compute P0 = ID0 XOR ID1 XOR ID2 XOR ID4 and place it in bit 6 of the returned PID byte.",
       "asil": "ASIL-B",
-      "rationale": "SG-02: undetected checksum error allows corrupted data to reach the application.",
+      "rationale": "SG-01: P0 is mandated by LIN 2.x §2.3.1 for frame identifier error detection.",
+      "tags": ["core", "pid"]
+    },
+    {
+      "id": "REQ-LIN-005",
+      "title": "ProtectID parity bit P1",
+      "description": "ProtectID shall compute P1 = NOT(ID1 XOR ID3 XOR ID4 XOR ID5) and place it in bit 7 of the returned PID byte.",
+      "asil": "ASIL-B",
+      "rationale": "SG-01: P1 is mandated by LIN 2.x §2.3.1 for frame identifier error detection.",
+      "tags": ["core", "pid"]
+    },
+    {
+      "id": "REQ-LIN-006",
+      "title": "VerifyPID accepts correct parity",
+      "description": "VerifyPID shall return the raw 6-bit ID and nil error when the parity bits in the PID are correct.",
+      "asil": "ASIL-B",
+      "rationale": "SG-01: correct PID passes without false rejection.",
+      "tags": ["core", "pid"]
+    },
+    {
+      "id": "REQ-LIN-007",
+      "title": "VerifyPID rejects incorrect parity",
+      "description": "VerifyPID shall return an error when the parity bits in the supplied PID do not match those computed by ProtectID for the embedded 6-bit ID.",
+      "asil": "ASIL-B",
+      "rationale": "SG-01: a corrupted PID must be detected and rejected.",
+      "tags": ["core", "pid"]
+    },
+    {
+      "id": "REQ-LIN-008",
+      "title": "Classic checksum covers data bytes only",
+      "description": "CalcChecksum with ClassicChecksum shall sum the data bytes only (excluding PID) using inverted carry-around 8-bit addition.",
+      "asil": "ASIL-B",
+      "rationale": "SG-02: LIN 1.x classic checksum algorithm per LIN spec §2.3.2.",
       "tags": ["core", "checksum"]
     },
     {
-      "id": "REQ-VIRT-001",
-      "title": "Virtual bus creation",
-      "description": "virtual.New shall return a ready-to-use in-process Bus with an empty response table and no subscribers.",
+      "id": "REQ-LIN-009",
+      "title": "Enhanced checksum includes PID",
+      "description": "CalcChecksum with EnhancedChecksum shall include the PID byte in the sum alongside the data bytes, using inverted carry-around 8-bit addition.",
       "asil": "ASIL-B",
-      "rationale": "Provides the reference implementation for development and testing.",
+      "rationale": "SG-02: LIN 2.x enhanced checksum algorithm per LIN spec §2.3.2.",
+      "tags": ["core", "checksum"]
+    },
+    {
+      "id": "REQ-LIN-010",
+      "title": "Checksum carry-around inversion",
+      "description": "CalcChecksum shall apply carry-around addition (sum > 0xFF wraps by subtracting 0xFF, not 0x100) and invert the final sum (0xFF - sum).",
+      "asil": "ASIL-B",
+      "rationale": "SG-02: correct carry-around is required for interoperability with LIN hardware.",
+      "tags": ["core", "checksum"]
+    },
+    {
+      "id": "REQ-LIN-011",
+      "title": "Bus.Publish registers slave response",
+      "description": "Bus.Publish shall register a response payload for the given frame ID so that the next SendHeader for that ID returns the registered data.",
+      "asil": "ASIL-B",
+      "rationale": "Core interface contract: slave response registration.",
+      "tags": ["core", "interface"]
+    },
+    {
+      "id": "REQ-LIN-012",
+      "title": "Bus.Subscribe delivers matching frames",
+      "description": "Bus.Subscribe shall return a channel that receives every Frame whose ID matches any supplied Filter, or all Frames when no filters are supplied.",
+      "asil": "ASIL-B",
+      "rationale": "Core interface contract: frame observation.",
+      "tags": ["core", "interface"]
+    },
+    {
+      "id": "REQ-LIN-013",
+      "title": "MasterBus.SendHeader returns synthesised Frame",
+      "description": "MasterBus.SendHeader shall trigger a frame exchange for the given ID and return the resulting Frame including correct PID and checksum.",
+      "asil": "ASIL-B",
+      "rationale": "Core interface contract: master-driven frame exchange.",
+      "tags": ["core", "interface"]
+    },
+    {
+      "id": "REQ-LIN-014",
+      "title": "MasterBus.SendHeader returns ErrNoResponse",
+      "description": "MasterBus.SendHeader shall return ErrNoResponse when no slave has registered a response for the requested frame ID.",
+      "asil": "ASIL-B",
+      "rationale": "Absence of a slave response is a distinct, detectable condition.",
+      "tags": ["core", "interface"]
+    },
+    {
+      "id": "REQ-LIN-015",
+      "title": "ValidateFrame accepts ID = 0x3F",
+      "description": "ValidateFrame shall return nil error when Frame.ID equals MaxID (0x3F), the boundary maximum.",
+      "asil": "ASIL-B",
+      "rationale": "SG-05: boundary condition — ID 0x3F is a valid LIN identifier and must not be falsely rejected.",
+      "tags": ["core", "validation", "boundary"]
+    },
+    {
+      "id": "REQ-LIN-016",
+      "title": "ValidateFrame accepts data length 1",
+      "description": "ValidateFrame shall return nil error when len(Frame.Data) equals 1, the boundary minimum.",
+      "asil": "ASIL-B",
+      "rationale": "SG-05: boundary condition — a 1-byte payload is the smallest valid LIN frame.",
+      "tags": ["core", "validation", "boundary"]
+    },
+    {
+      "id": "REQ-LIN-017",
+      "title": "ValidateFrame accepts data length 8",
+      "description": "ValidateFrame shall return nil error when len(Frame.Data) equals MaxDataLen (8), the boundary maximum.",
+      "asil": "ASIL-B",
+      "rationale": "SG-05: boundary condition — an 8-byte payload is the largest valid LIN frame.",
+      "tags": ["core", "validation", "boundary"]
+    },
+    {
+      "id": "REQ-LIN-018",
+      "title": "ProtectID preserves lower 6 bits",
+      "description": "For any id in 0x00–0x3F, (ProtectID(id) & 0x3F) shall equal id.",
+      "asil": "ASIL-B",
+      "rationale": "SG-01: the PID must carry the original ID in bits 0–5 so receivers can extract it.",
+      "tags": ["core", "pid", "boundary"]
+    },
+    {
+      "id": "REQ-LIN-019",
+      "title": "Bus.Publish with nil removes registration",
+      "description": "Bus.Publish(id, nil) shall remove any previously registered response for id; subsequent SendHeader for that id shall return ErrNoResponse.",
+      "asil": "ASIL-B",
+      "rationale": "Slaves must be able to withdraw a response (e.g., entering sleep mode) without restarting the bus.",
+      "tags": ["core", "interface"]
+    },
+    {
+      "id": "REQ-LIN-020",
+      "title": "Bus.Subscribe with All=true delivers every frame",
+      "description": "A Filter with All=true shall match every Frame regardless of ID; Bus.Subscribe with such a filter delivers all frames on the bus.",
+      "asil": "ASIL-B",
+      "rationale": "Bus monitoring and logging require all-frame visibility.",
+      "tags": ["core", "interface", "filter"]
+    },
+    {
+      "id": "REQ-LIN-021",
+      "title": "ErrNoResponse is a non-nil sentinel error",
+      "description": "ErrNoResponse shall be a non-nil error value that callers can test with errors.Is(err, lin.ErrNoResponse).",
+      "asil": "ASIL-B",
+      "rationale": "Callers must distinguish absent-slave from other error conditions; a sentinel enables precise error handling.",
+      "tags": ["core", "error"]
+    },
+    {
+      "id": "REQ-VIRT-001",
+      "title": "New returns initialised bus",
+      "description": "virtual.New shall return a Bus with an empty response table, no subscribers, and nil error.",
+      "asil": "ASIL-B",
+      "rationale": "Deterministic initial state required for predictable test behaviour.",
       "tags": ["virtual"]
     },
     {
       "id": "REQ-VIRT-002",
-      "title": "Virtual bus Publish",
-      "description": "Publish shall atomically register a response payload for the given frame ID, replacing any prior entry. Publish(nil) shall remove the registration. Publish after Close shall return an error.",
+      "title": "Publish stores response",
+      "description": "Publish(id, data) shall atomically store a copy of data as the response for id, replacing any prior entry.",
       "asil": "ASIL-B",
-      "rationale": "Slave-side response registration must be atomic to prevent data races.",
-      "tags": ["virtual", "slave"]
+      "rationale": "A stale or partial response must never be served; atomic replacement ensures consistency.",
+      "tags": ["virtual", "publish"]
     },
     {
       "id": "REQ-VIRT-003",
-      "title": "Virtual bus SendHeader",
-      "description": "SendHeader shall look up the registered response for id, compute the PID and checksum, synthesise a Frame, broadcast it to all matching subscribers, and return the Frame. When no response is registered, it shall return ErrNoResponse.",
+      "title": "Publish(nil) removes response",
+      "description": "Publish(id, nil) shall remove the registered response for id so that subsequent SendHeader returns ErrNoResponse.",
       "asil": "ASIL-B",
-      "rationale": "Simulates the complete LIN master-slave frame exchange in-process.",
-      "tags": ["virtual", "master"]
+      "rationale": "Slaves must be able to withdraw a response (e.g., during sleep mode).",
+      "tags": ["virtual", "publish"]
     },
     {
       "id": "REQ-VIRT-004",
-      "title": "Virtual bus subscriber isolation",
-      "description": "A subscriber with filter ID=X shall not receive frames for any ID other than X. A subscriber with All=true shall receive all frames. When a subscriber channel is full, the frame shall be dropped without blocking Send.",
+      "title": "Publish rejects ID > MaxID",
+      "description": "Publish shall return an error when id > 0x3F.",
       "asil": "ASIL-B",
-      "rationale": "Prevents cross-frame-ID leakage; drop-on-full mirrors real LIN hardware behaviour.",
-      "tags": ["virtual", "isolation"]
+      "rationale": "REQ-LIN-001 boundary enforced at the transport layer.",
+      "tags": ["virtual", "validation"]
     },
     {
       "id": "REQ-VIRT-005",
-      "title": "Virtual bus Close",
-      "description": "Close shall close all subscriber channels, make the bus unusable, and be safe to call more than once.",
+      "title": "Publish after Close returns error",
+      "description": "Publish shall return an error when called after Close.",
       "asil": "ASIL-B",
-      "rationale": "Resource cleanup must be idempotent to avoid double-close panics.",
+      "rationale": "Operations on a closed bus must fail deterministically, not silently succeed.",
       "tags": ["virtual", "lifecycle"]
     },
     {
+      "id": "REQ-VIRT-006",
+      "title": "SendHeader computes correct PID",
+      "description": "SendHeader shall set Frame.ID to the requested id and compute the PID using ProtectID before broadcasting.",
+      "asil": "ASIL-B",
+      "rationale": "SG-01: the PID in the synthesised frame must reflect ProtectID output.",
+      "tags": ["virtual", "pid"]
+    },
+    {
+      "id": "REQ-VIRT-007",
+      "title": "SendHeader computes correct checksum",
+      "description": "SendHeader shall set Frame.Checksum using CalcChecksum with the response's ChecksumType.",
+      "asil": "ASIL-B",
+      "rationale": "SG-02: checksum in the synthesised frame must be verifiable by subscribers.",
+      "tags": ["virtual", "checksum"]
+    },
+    {
+      "id": "REQ-VIRT-008",
+      "title": "SendHeader broadcasts to subscribers",
+      "description": "SendHeader shall deliver the synthesised Frame to every subscriber whose filter matches the frame ID.",
+      "asil": "ASIL-B",
+      "rationale": "All observers must receive the same frame data.",
+      "tags": ["virtual", "broadcast"]
+    },
+    {
+      "id": "REQ-VIRT-009",
+      "title": "SendHeader returns ErrNoResponse",
+      "description": "SendHeader shall return ErrNoResponse when no response is registered for the requested id.",
+      "asil": "ASIL-B",
+      "rationale": "REQ-LIN-014 enforced at the virtual transport layer.",
+      "tags": ["virtual", "error"]
+    },
+    {
+      "id": "REQ-VIRT-010",
+      "title": "SendHeader rejects ID > MaxID",
+      "description": "SendHeader shall return an error when id > 0x3F.",
+      "asil": "ASIL-B",
+      "rationale": "REQ-LIN-001 boundary enforced at the transport layer.",
+      "tags": ["virtual", "validation"]
+    },
+    {
+      "id": "REQ-VIRT-011",
+      "title": "Subscribe exact filter isolates by ID",
+      "description": "A subscriber with Filter{ID: x} shall not receive frames whose ID differs from x.",
+      "asil": "ASIL-B",
+      "rationale": "SG-05: cross-frame-ID leakage would cause application code to act on the wrong data.",
+      "tags": ["virtual", "filter", "isolation"]
+    },
+    {
+      "id": "REQ-VIRT-012",
+      "title": "Subscribe All filter receives every frame",
+      "description": "A subscriber with Filter{All: true} shall receive every frame regardless of ID.",
+      "asil": "ASIL-B",
+      "rationale": "Bus monitoring requires all-frames subscription.",
+      "tags": ["virtual", "filter"]
+    },
+    {
+      "id": "REQ-VIRT-013",
+      "title": "Full subscriber channel drops frames without blocking",
+      "description": "When a subscriber channel is full, SendHeader shall drop the frame for that subscriber rather than blocking.",
+      "asil": "ASIL-B",
+      "rationale": "A slow subscriber must not stall the master schedule; mirrors real LIN hardware behaviour.",
+      "tags": ["virtual", "backpressure"]
+    },
+    {
+      "id": "REQ-VIRT-014",
+      "title": "Multiple subscribers each receive independently",
+      "description": "When multiple subscribers match a frame, each shall receive a copy independently.",
+      "asil": "ASIL-B",
+      "rationale": "Independent observers must not interfere with each other.",
+      "tags": ["virtual", "isolation"]
+    },
+    {
+      "id": "REQ-VIRT-015",
+      "title": "Close closes all subscriber channels",
+      "description": "Close shall close every subscriber channel so that range-loops over those channels terminate.",
+      "asil": "ASIL-B",
+      "rationale": "Resource cleanup; prevents goroutine leaks in consumers.",
+      "tags": ["virtual", "lifecycle"]
+    },
+    {
+      "id": "REQ-VIRT-016",
+      "title": "Close is idempotent",
+      "description": "Close shall return nil and have no observable effect when called a second time.",
+      "asil": "ASIL-B",
+      "rationale": "Idempotent Close prevents double-close panics in defer chains.",
+      "tags": ["virtual", "lifecycle"]
+    },
+    {
+      "id": "REQ-VIRT-017",
+      "title": "SendHeader after Close returns error",
+      "description": "SendHeader shall return an error when called after Close.",
+      "asil": "ASIL-B",
+      "rationale": "Operations on a closed bus must fail deterministically.",
+      "tags": ["virtual", "lifecycle"]
+    },
+    {
+      "id": "REQ-VIRT-018",
+      "title": "Concurrent access is data-race free",
+      "description": "Publish, SendHeader, Subscribe, and Close may be called concurrently from multiple goroutines without data races.",
+      "asil": "ASIL-B",
+      "rationale": "Real-time LIN systems often drive the bus from one goroutine while subscribing from another; a data race would be undefined behaviour.",
+      "tags": ["virtual", "concurrency"]
+    },
+    {
+      "id": "REQ-VIRT-019",
+      "title": "Publish stores a defensive copy",
+      "description": "Publish shall copy the supplied data slice; subsequent mutation of the caller's slice shall not affect the stored response.",
+      "asil": "ASIL-B",
+      "rationale": "Shared mutable state between caller and bus would corrupt responses under concurrent use.",
+      "tags": ["virtual", "safety", "copy"]
+    },
+    {
       "id": "REQ-LDF-001",
-      "title": "LDF file parsing",
-      "description": "Parse shall read an LDF file and populate protocol version, language version, baud rate, master node name, and slave node list. Parse shall return an error for files it cannot read.",
+      "title": "Parse extracts protocol version",
+      "description": "Parse shall populate DB.ProtocolVersion from the LIN_protocol_version field.",
       "asil": "ASIL-A",
-      "rationale": "LDF is the authoritative source of LIN cluster configuration.",
+      "rationale": "Protocol version determines which checksum algorithm and features apply.",
       "tags": ["ldf"]
     },
     {
       "id": "REQ-LDF-002",
-      "title": "LDF frame descriptor extraction",
-      "description": "Parse shall populate frame descriptors (name, ID, publisher, length, signal-to-bit-offset mappings) from the LDF Frames section. Frame() shall return a copy, not a shared reference.",
+      "title": "Parse extracts baud rate",
+      "description": "Parse shall populate DB.Speed (kbps) from the LIN_speed field.",
+      "asil": "ASIL-A",
+      "rationale": "Incorrect baud rate causes all frame exchanges to fail.",
+      "tags": ["ldf"]
+    },
+    {
+      "id": "REQ-LDF-003",
+      "title": "Parse extracts master node name",
+      "description": "Parse shall populate DB.MasterNode from the Nodes Master declaration.",
+      "asil": "ASIL-A",
+      "rationale": "Master node identity is required for publisher validation.",
+      "tags": ["ldf", "nodes"]
+    },
+    {
+      "id": "REQ-LDF-004",
+      "title": "Parse extracts slave node list",
+      "description": "Parse shall populate DB.SlaveNodes from the Nodes Slaves declaration.",
+      "asil": "ASIL-A",
+      "rationale": "Slave list is used to validate frame publisher declarations.",
+      "tags": ["ldf", "nodes"]
+    },
+    {
+      "id": "REQ-LDF-005",
+      "title": "Parse populates frame descriptors",
+      "description": "Parse shall populate frame descriptors (name, ID, publisher, length) from the LDF Frames section.",
       "asil": "ASIL-A",
       "rationale": "SG-03: incorrect frame descriptor leads to wrong signal decoding.",
       "tags": ["ldf", "frame"]
     },
     {
-      "id": "REQ-LDF-003",
-      "title": "LDF signal definition and decoding",
-      "description": "Parse shall populate signal definitions (name, bit width, init value, publisher, subscribers). Decode(id, data) shall extract each signal from the raw payload using LSB-first Intel byte order.",
+      "id": "REQ-LDF-006",
+      "title": "Parse populates signal-to-bit-offset mappings",
+      "description": "Parse shall populate SignalRef entries (signal name and bit offset) for each frame.",
       "asil": "ASIL-A",
-      "rationale": "SG-03: bit-offset errors produce out-of-range actuator commands.",
-      "tags": ["ldf", "signal", "decode"]
+      "rationale": "SG-03: a wrong bit offset produces a shifted signal value.",
+      "tags": ["ldf", "frame", "signal"]
     },
     {
-      "id": "REQ-LDF-004",
-      "title": "LDF schedule table parsing",
-      "description": "Parse shall populate schedule tables (entry name mapped to frame ID and slot delay in milliseconds). Schedule() shall return a copy.",
+      "id": "REQ-LDF-007",
+      "title": "Parse populates signal bit width",
+      "description": "Parse shall populate Signal.BitWidth from the signal definition in the LDF Signals section.",
       "asil": "ASIL-A",
-      "rationale": "Schedule tables drive master timing; incorrect delays affect bus load.",
+      "rationale": "SG-03: wrong bit width truncates or extends the extracted value.",
+      "tags": ["ldf", "signal"]
+    },
+    {
+      "id": "REQ-LDF-008",
+      "title": "Parse populates signal publisher",
+      "description": "Parse shall populate Signal.Publisher from the signal definition.",
+      "asil": "ASIL-A",
+      "rationale": "Publisher field identifies which node is responsible for the signal value.",
+      "tags": ["ldf", "signal"]
+    },
+    {
+      "id": "REQ-LDF-009",
+      "title": "Decode uses LSB-first Intel byte order",
+      "description": "Decode shall extract signal values using LSB-first (Intel) bit ordering: bit 0 of the signal maps to bitOffset in the payload.",
+      "asil": "ASIL-A",
+      "rationale": "SG-03: wrong byte order inverts every multi-bit signal value.",
+      "tags": ["ldf", "decode"]
+    },
+    {
+      "id": "REQ-LDF-010",
+      "title": "Decode returns nil for unknown frame ID",
+      "description": "Decode shall return nil when the frame ID is not present in the parsed LDF.",
+      "asil": "ASIL-A",
+      "rationale": "Caller must be able to distinguish missing-frame from empty-signal-set.",
+      "tags": ["ldf", "decode"]
+    },
+    {
+      "id": "REQ-LDF-011",
+      "title": "Parse populates schedule table entries",
+      "description": "Parse shall populate schedule tables with ScheduleEntry{ID, DelayMs} from the LDF Schedule_tables section.",
+      "asil": "ASIL-A",
+      "rationale": "Schedule tables drive master timing; incorrect delay affects bus load.",
       "tags": ["ldf", "schedule"]
     },
     {
+      "id": "REQ-LDF-012",
+      "title": "Frame() returns nil for unknown ID",
+      "description": "DB.Frame() shall return nil when no frame with the given ID was declared in the LDF.",
+      "asil": "ASIL-A",
+      "rationale": "Callers must be able to detect missing frame descriptors without panicking.",
+      "tags": ["ldf", "frame"]
+    },
+    {
+      "id": "REQ-LDF-013",
+      "title": "Signal() returns nil for unknown name",
+      "description": "DB.Signal() shall return nil when no signal with the given name was declared in the LDF.",
+      "asil": "ASIL-A",
+      "rationale": "Callers must be able to detect missing signal definitions without panicking.",
+      "tags": ["ldf", "signal"]
+    },
+    {
+      "id": "REQ-LDF-014",
+      "title": "Parse does not panic on arbitrary input",
+      "description": "Parse shall return a non-nil DB (possibly empty) and a non-nil error (or nil) for any input; it shall never panic.",
+      "asil": "ASIL-A",
+      "rationale": "SG-05: a panic on malformed LDF would crash the application; robust parsing is required.",
+      "tags": ["ldf", "robustness"]
+    },
+    {
+      "id": "REQ-LDF-015",
+      "title": "Frames() returns a defensive copy",
+      "description": "DB.Frames() shall return a new map; mutations to the returned map shall not affect DB's internal frame table.",
+      "asil": "ASIL-A",
+      "rationale": "Shared internal state could be corrupted by callers; defensive copy ensures immutability.",
+      "tags": ["ldf", "copy"]
+    },
+    {
       "id": "REQ-MASTER-001",
-      "title": "Master node schedule execution",
-      "description": "Node.Run shall iterate through the schedule table, call SendHeader for each slot, invoke OnFrame or OnError callbacks, sleep for the slot delay, and return when ctx is cancelled.",
+      "title": "New returns non-nil Node",
+      "description": "master.New shall return a non-nil *Node backed by the supplied MasterBus.",
       "asil": "ASIL-B",
-      "rationale": "SG-01: master must transmit headers in the correct sequence and timing.",
-      "tags": ["master", "schedule"]
+      "rationale": "Callers must not need to nil-check the returned Node.",
+      "tags": ["master"]
     },
     {
       "id": "REQ-MASTER-002",
-      "title": "Master SendHeader",
-      "description": "Node.SendHeader shall delegate to MasterBus.SendHeader and return the resulting Frame or error.",
+      "title": "Node.SendHeader delegates to bus",
+      "description": "Node.SendHeader shall call bus.SendHeader and return the Frame and error unchanged.",
       "asil": "ASIL-B",
-      "rationale": "Single header transmission must propagate errors to the caller.",
+      "rationale": "The master node must not alter or suppress the frame returned by the bus.",
       "tags": ["master"]
     },
     {
       "id": "REQ-MASTER-003",
-      "title": "Master schedule validation",
-      "description": "SetSchedule shall reject schedules that are empty or contain frame IDs exceeding 0x3F.",
+      "title": "Run iterates schedule in order",
+      "description": "Node.Run shall process schedule entries in the order they appear in the schedule table, restarting from the first entry after the last.",
       "asil": "ASIL-B",
-      "rationale": "Invalid schedule entries would cause SendHeader to transmit garbage PIDs.",
+      "rationale": "SG-01: out-of-order header transmission violates the LIN schedule contract.",
+      "tags": ["master", "schedule"]
+    },
+    {
+      "id": "REQ-MASTER-004",
+      "title": "Run calls SendHeader for each slot",
+      "description": "For each schedule slot, Run shall call MasterBus.SendHeader with the slot's frame ID.",
+      "asil": "ASIL-B",
+      "rationale": "SG-01: every slot must trigger a frame exchange.",
+      "tags": ["master", "schedule"]
+    },
+    {
+      "id": "REQ-MASTER-005",
+      "title": "Run waits slot delay between exchanges",
+      "description": "Run shall wait slot.DelayMs milliseconds after each frame exchange before processing the next slot.",
+      "asil": "ASIL-B",
+      "rationale": "Slot timing enforces bus load constraints.",
+      "tags": ["master", "timing"]
+    },
+    {
+      "id": "REQ-MASTER-006",
+      "title": "Run invokes OnFrame on success",
+      "description": "Run shall call the OnFrame callback with the received Frame when SendHeader succeeds.",
+      "asil": "ASIL-B",
+      "rationale": "Application code receives data via OnFrame; omitting the call silently drops data.",
+      "tags": ["master", "callback"]
+    },
+    {
+      "id": "REQ-MASTER-007",
+      "title": "Run invokes OnError on failure",
+      "description": "Run shall call the OnError callback when SendHeader returns a non-nil error.",
+      "asil": "ASIL-B",
+      "rationale": "Application code must be notified of absent slave responses.",
+      "tags": ["master", "callback"]
+    },
+    {
+      "id": "REQ-MASTER-008",
+      "title": "Run returns on context cancellation",
+      "description": "Run shall return ctx.Err() when ctx is cancelled or expires.",
+      "asil": "ASIL-B",
+      "rationale": "Graceful shutdown requires context propagation.",
+      "tags": ["master", "lifecycle"]
+    },
+    {
+      "id": "REQ-MASTER-009",
+      "title": "Run returns error for empty schedule",
+      "description": "Run shall return an error immediately when the schedule table is empty.",
+      "asil": "ASIL-B",
+      "rationale": "An empty schedule is a programming error; running it would loop forever.",
       "tags": ["master", "validation"]
     },
     {
-      "id": "REQ-SLAVE-001",
-      "title": "Slave node creation",
-      "description": "slave.New shall return a Node that is ready to register responses and subscribe to frames.",
+      "id": "REQ-MASTER-010",
+      "title": "SetSchedule rejects empty schedule",
+      "description": "SetSchedule shall return an error when called with nil or a zero-length slice.",
       "asil": "ASIL-B",
-      "rationale": "Provides the high-level slave API on top of lin.Bus.",
+      "rationale": "REQ-MASTER-009 precondition enforced at configuration time.",
+      "tags": ["master", "validation"]
+    },
+    {
+      "id": "REQ-MASTER-011",
+      "title": "SetSchedule rejects invalid frame ID",
+      "description": "SetSchedule shall return an error when any entry has ID > MaxID (0x3F).",
+      "asil": "ASIL-B",
+      "rationale": "REQ-LIN-001 boundary enforced at schedule configuration time.",
+      "tags": ["master", "validation"]
+    },
+    {
+      "id": "REQ-MASTER-012",
+      "title": "SetSchedule stores a defensive copy",
+      "description": "SetSchedule shall copy the supplied slice; subsequent mutation of the caller's slice shall not affect the active schedule.",
+      "asil": "ASIL-B",
+      "rationale": "Shared mutable schedule data could cause non-deterministic slot ordering.",
+      "tags": ["master", "copy"]
+    },
+    {
+      "id": "REQ-MASTER-013",
+      "title": "Run continues after per-slot errors",
+      "description": "Run shall continue to the next schedule slot when SendHeader returns an error (e.g., ErrNoResponse); it shall not abort the schedule.",
+      "asil": "ASIL-B",
+      "rationale": "A temporarily absent slave must not halt the entire LIN schedule.",
+      "tags": ["master", "resilience"]
+    },
+    {
+      "id": "REQ-SLAVE-001",
+      "title": "New returns ready slave node",
+      "description": "slave.New shall return a non-nil Node with no registered responses.",
+      "asil": "ASIL-B",
+      "rationale": "Deterministic initial state required.",
       "tags": ["slave"]
     },
     {
       "id": "REQ-SLAVE-002",
-      "title": "Slave response registration",
-      "description": "SetResponse shall call bus.Publish for the given ID and data, and track registered IDs. SetResponse(nil) shall remove the registration. SetResponse with ID > 0x3F shall return an error.",
+      "title": "SetResponse registers response via Publish",
+      "description": "SetResponse shall call bus.Publish(id, data) and track id in its registered ID set.",
       "asil": "ASIL-B",
-      "rationale": "Slave must only respond to valid frame IDs.",
-      "tags": ["slave"]
+      "rationale": "Slave response registration must delegate to the underlying bus.",
+      "tags": ["slave", "publish"]
     },
     {
       "id": "REQ-SLAVE-003",
-      "title": "Slave subscription",
-      "description": "Subscribe shall delegate to bus.Subscribe and return the frame channel.",
+      "title": "SetResponse(nil) removes registration",
+      "description": "SetResponse(id, nil) shall call bus.Publish(id, nil) and remove id from the registered ID set.",
       "asil": "ASIL-B",
-      "rationale": "Slaves observe the bus to monitor master requests and peer responses.",
+      "rationale": "Slave must be able to withdraw a response.",
+      "tags": ["slave", "publish"]
+    },
+    {
+      "id": "REQ-SLAVE-004",
+      "title": "SetResponse rejects ID > MaxID",
+      "description": "SetResponse shall return an error when id > 0x3F without calling bus.Publish.",
+      "asil": "ASIL-B",
+      "rationale": "REQ-LIN-001 boundary enforced at the slave API.",
+      "tags": ["slave", "validation"]
+    },
+    {
+      "id": "REQ-SLAVE-005",
+      "title": "RegisteredIDs reflects current state",
+      "description": "RegisteredIDs shall return exactly the set of IDs for which a non-nil response is currently registered.",
+      "asil": "ASIL-B",
+      "rationale": "Application code uses RegisteredIDs for diagnostics and health checks.",
       "tags": ["slave"]
     },
     {
-      "id": "REQ-SAFETY-001",
-      "title": "E2E Config",
-      "description": "Config.DataID and Config.SourceID shall be embedded in every protected payload to uniquely identify the data element and sender.",
+      "id": "REQ-SLAVE-006",
+      "title": "Subscribe delegates to bus",
+      "description": "Subscribe shall delegate to bus.Subscribe and return the resulting channel and error unchanged.",
       "asil": "ASIL-B",
-      "rationale": "Allows receiver to distinguish payloads from different senders and data elements.",
-      "tags": ["safety", "e2e"]
+      "rationale": "Slave observes the bus to monitor master requests and peer responses.",
+      "tags": ["slave"]
+    },
+    {
+      "id": "REQ-SLAVE-007",
+      "title": "RegisteredIDs returns empty slice when none registered",
+      "description": "RegisteredIDs shall return an empty (not nil) slice when no responses are currently registered.",
+      "asil": "ASIL-B",
+      "rationale": "Callers must be able to use len() on the result without nil checks.",
+      "tags": ["slave", "boundary"]
+    },
+    {
+      "id": "REQ-SLAVE-008",
+      "title": "SetResponse overwrites previous registration for same ID",
+      "description": "When SetResponse is called for an ID that already has a registration, the new data shall replace the previous registration.",
+      "asil": "ASIL-B",
+      "rationale": "Slaves must be able to update responses (e.g., refreshed sensor values) without removing and re-registering.",
+      "tags": ["slave", "update"]
+    },
+    {
+      "id": "REQ-SAFETY-001",
+      "title": "DataID embedded in header bytes 0-1",
+      "description": "Protect shall write Config.DataID as a little-endian uint16 into bytes 0-1 of the protected payload.",
+      "asil": "ASIL-B",
+      "rationale": "DataID is included in the CRC computation and identifies the logical data element.",
+      "tags": ["safety", "header"]
     },
     {
       "id": "REQ-SAFETY-002",
-      "title": "E2E Protector",
-      "description": "NewProtector shall return a Protector with a monotonically increasing sequence counter starting at 0.",
+      "title": "SourceID embedded in header bytes 2-3",
+      "description": "Protect shall write Config.SourceID as a little-endian uint16 into bytes 2-3 of the protected payload.",
       "asil": "ASIL-B",
-      "rationale": "Sequence counter must start deterministically to allow gap detection.",
-      "tags": ["safety", "e2e"]
+      "rationale": "SourceID is included in the CRC computation and identifies the sender node.",
+      "tags": ["safety", "header"]
     },
     {
       "id": "REQ-SAFETY-003",
-      "title": "E2E protection",
-      "description": "Protect shall prepend a 10-byte header containing DataID, SourceID, SequenceCounter, and CRC-16/CCITT-FALSE over header+payload (CRC slot treated as zero during computation).",
+      "title": "SequenceCounter starts at 0 and increments",
+      "description": "The Protector's SequenceCounter shall start at 0 and increment by 1 with each Protect call.",
       "asil": "ASIL-B",
-      "rationale": "SG-04: E2E header enables CRC and freshness checking on receive.",
-      "tags": ["safety", "e2e", "crc"]
+      "rationale": "Monotonically increasing counter enables detection of missed or replayed frames.",
+      "tags": ["safety", "counter"]
     },
     {
       "id": "REQ-SAFETY-004",
-      "title": "E2E Receiver validation",
-      "description": "Unwrap shall verify the CRC, detect sequence gaps, and return the original payload. It shall return E2EError with ErrHeaderTooShort when the input is shorter than 10 bytes.",
+      "title": "SequenceCounter embedded in header bytes 4-7",
+      "description": "Protect shall write the current SequenceCounter as a little-endian uint32 into bytes 4-7.",
       "asil": "ASIL-B",
-      "rationale": "SG-04: receiver must reject corrupted or out-of-sequence payloads.",
-      "tags": ["safety", "e2e", "receiver"]
+      "rationale": "SG-04: counter must be present in the wire format for gap detection.",
+      "tags": ["safety", "header", "counter"]
     },
     {
       "id": "REQ-SAFETY-005",
-      "title": "E2E CRC mismatch detection",
-      "description": "Unwrap shall return E2EError with Kind=ErrCRCMismatch when any byte in the header or payload has been corrupted.",
+      "title": "CRC computed over header and payload",
+      "description": "Protect shall compute CRC-16/CCITT-FALSE (poly=0x1021, init=0xFFFF) over the header with CRC slot zeroed, concatenated with the payload.",
       "asil": "ASIL-B",
-      "rationale": "SG-04: single-bit corruption in safety-relevant data must be detected.",
-      "tags": ["safety", "e2e", "crc"]
+      "rationale": "SG-04: CRC must cover all bytes including DataID and SourceID.",
+      "tags": ["safety", "crc"]
+    },
+    {
+      "id": "REQ-SAFETY-006",
+      "title": "CRC embedded in header bytes 8-9",
+      "description": "Protect shall write the computed CRC as a little-endian uint16 into bytes 8-9.",
+      "asil": "ASIL-B",
+      "rationale": "SG-04: CRC must be transmitted so the receiver can verify it.",
+      "tags": ["safety", "header", "crc"]
+    },
+    {
+      "id": "REQ-SAFETY-007",
+      "title": "Unwrap returns ErrHeaderTooShort for payload < 10 bytes",
+      "description": "Unwrap shall return E2EError{Kind: ErrHeaderTooShort} when the input is shorter than 10 bytes.",
+      "asil": "ASIL-B",
+      "rationale": "SG-04: truncated header cannot be validated; must be rejected.",
+      "tags": ["safety", "receiver", "error"]
+    },
+    {
+      "id": "REQ-SAFETY-008",
+      "title": "Unwrap detects byte corruption via CRC",
+      "description": "Unwrap shall return E2EError{Kind: ErrCRCMismatch} when the recomputed CRC does not match bytes 8-9.",
+      "asil": "ASIL-B",
+      "rationale": "SG-04: any single-byte corruption in header or payload must be detected.",
+      "tags": ["safety", "receiver", "crc"]
+    },
+    {
+      "id": "REQ-SAFETY-009",
+      "title": "Unwrap detects sequence gap",
+      "description": "Unwrap shall return E2EError{Kind: ErrSequenceGap} when the received counter is not exactly lastSeq+1 (after the first received message).",
+      "asil": "ASIL-B",
+      "rationale": "SG-04: a gap indicates a missed or replayed frame.",
+      "tags": ["safety", "receiver", "counter"]
+    },
+    {
+      "id": "REQ-SAFETY-010",
+      "title": "Unwrap returns original payload on success",
+      "description": "Unwrap shall strip the 10-byte header and return a copy of the original payload when all checks pass.",
+      "asil": "ASIL-B",
+      "rationale": "Application code must receive the original payload unchanged.",
+      "tags": ["safety", "receiver"]
+    },
+    {
+      "id": "REQ-SAFETY-011",
+      "title": "Protect/Unwrap round-trip preserves payload",
+      "description": "For any payload p, Unwrap(Protect(p)) shall return a byte-for-byte copy of p with nil error when Protector and Receiver share the same Config.",
+      "asil": "ASIL-B",
+      "rationale": "End-to-end correctness: protection must be lossless.",
+      "tags": ["safety", "roundtrip"]
+    },
+    {
+      "id": "REQ-SAFETY-012",
+      "title": "Protect output length equals 10 + len(payload)",
+      "description": "The byte slice returned by Protect shall have length exactly headerSize (10) + len(payload).",
+      "asil": "ASIL-B",
+      "rationale": "SG-04: receivers must be able to compute the expected output length to detect truncation.",
+      "tags": ["safety", "length"]
+    },
+    {
+      "id": "REQ-SAFETY-013",
+      "title": "Unwrap accepts first message with any counter value",
+      "description": "A newly created Receiver shall accept the first Unwrap call regardless of the counter value in the header.",
+      "asil": "ASIL-B",
+      "rationale": "On cold start the receiver does not know the protector's initial counter; the first message seeds the sequence.",
+      "tags": ["safety", "receiver", "counter"]
+    },
+    {
+      "id": "REQ-SAFETY-014",
+      "title": "Protect is safe for concurrent calls",
+      "description": "Protect may be called concurrently from multiple goroutines; each call shall receive a unique, monotonically increasing counter value.",
+      "asil": "ASIL-B",
+      "rationale": "SG-04: a data race on the counter could produce duplicate counters, defeating gap detection.",
+      "tags": ["safety", "concurrency"]
+    },
+    {
+      "id": "REQ-SAFETY-015",
+      "title": "Unwrap returns an independent payload copy",
+      "description": "The payload returned by Unwrap shall be a fresh copy; mutations to it shall not affect future Unwrap calls or internal state.",
+      "asil": "ASIL-B",
+      "rationale": "Shared payload memory between receiver and caller could corrupt subsequent receives.",
+      "tags": ["safety", "copy"]
     },
     {
       "id": "REQ-SEOOC-001",
-      "title": "SEOOC integration assumptions",
-      "description": "The integrating system shall provide a correct LIN physical layer, validate frame IDs before acting on data, and use ValidateFrame on all externally received frames. See SEOOC.md for full assumption list.",
+      "title": "Integrating system provides physical LIN layer",
+      "description": "The system integrating go-LIN shall provide a correct LIN physical layer (transceiver, break detection, bit timing). go-LIN operates above the physical layer.",
       "asil": "ASIL-B",
-      "rationale": "go-LIN is a SEOOC; certain safety measures are the integrating system's responsibility.",
+      "rationale": "Physical-layer faults are outside go-LIN scope; must be addressed by the integrating system.",
+      "tags": ["seooc", "assumption"]
+    },
+    {
+      "id": "REQ-SEOOC-002",
+      "title": "Integrating system calls ValidateFrame on external data",
+      "description": "The integrating system shall call ValidateFrame on any frame received from external hardware before passing it to go-LIN APIs.",
+      "asil": "ASIL-B",
+      "rationale": "go-LIN validates at API boundaries; raw hardware data must be validated by the caller first.",
+      "tags": ["seooc", "assumption"]
+    },
+    {
+      "id": "REQ-SEOOC-003",
+      "title": "Integrating system validates frame ID semantics",
+      "description": "The integrating system shall verify that a received frame ID corresponds to the intended actuator or sensor before acting on the payload.",
+      "asil": "ASIL-B",
+      "rationale": "go-LIN delivers frames as received; semantic validation is the application's responsibility.",
+      "tags": ["seooc", "assumption"]
+    },
+    {
+      "id": "REQ-SEOOC-004",
+      "title": "Integration: virtual bus delivers E2E payload intact",
+      "description": "When Protect(payload) is published on the virtual bus and retrieved via SendHeader + Unwrap, the result shall equal payload with nil error.",
+      "asil": "ASIL-B",
+      "rationale": "End-to-end integration test of virtual transport + safety layer together.",
       "tags": ["seooc", "integration"]
+    },
+    {
+      "id": "REQ-SEOOC-005",
+      "title": "Integration: master-slave round-trip via virtual bus",
+      "description": "A slave registered via slave.SetResponse shall have its payload returned by master.Node.SendHeader via the virtual bus.",
+      "asil": "ASIL-B",
+      "rationale": "Verifies the master-slave integration contract using the virtual transport.",
+      "tags": ["seooc", "integration"]
+    },
+    {
+      "id": "REQ-SEOOC-006",
+      "title": "Integration: LDF schedule IDs are valid",
+      "description": "LDF schedule table entries shall reference only frame IDs that appear in the Frames section and are within 0x00–0x3F.",
+      "asil": "ASIL-A",
+      "rationale": "A schedule entry referencing an undeclared ID would cause ErrNoResponse on every cycle.",
+      "tags": ["seooc", "integration", "ldf"]
+    },
+    {
+      "id": "REQ-SEOOC-007",
+      "title": "Integrating system handles ErrNoResponse safely",
+      "description": "The integrating system shall handle lin.ErrNoResponse without propagating the absence of a slave as a safety-critical output change.",
+      "asil": "ASIL-B",
+      "rationale": "A missing slave response is an operational condition; the application must decide the safe-state action.",
+      "tags": ["seooc", "assumption"]
+    },
+    {
+      "id": "REQ-SEOOC-008",
+      "title": "Integrating system routes safety-critical frames through safety package",
+      "description": "The integrating system shall apply safety.Protect/Unwrap to all frame payloads classified as safety-critical (ASIL >= ASIL-B).",
+      "asil": "ASIL-B",
+      "rationale": "go-LIN provides E2E protection but does not enforce which frames use it; the application must apply it to safety-relevant data.",
+      "tags": ["seooc", "assumption"]
+    },
+    {
+      "id": "REQ-SEOOC-009",
+      "title": "Integrating system provides monotonic clock for timing",
+      "description": "The integrating system shall provide a monotonic clock with at least 1 ms resolution for LIN schedule slot timing.",
+      "asil": "ASIL-B",
+      "rationale": "go-LIN uses time.After for slot delays; clock accuracy below 1 ms will cause schedule timing jitter.",
+      "tags": ["seooc", "assumption", "timing"]
     }
   ]
 }

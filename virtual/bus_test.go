@@ -14,7 +14,12 @@ import (
 	"github.com/SoundMatt/go-LIN/virtual"
 )
 
-//fusa:test REQ-LIN-002
+// ── New ───────────────────────────────────────────────────────────────────────
+
+//fusa:test REQ-LIN-011
+//fusa:test REQ-LIN-012
+//fusa:test REQ-LIN-013
+//fusa:test REQ-LIN-014
 //fusa:test REQ-VIRT-001
 
 func TestNew(t *testing.T) {
@@ -27,10 +32,20 @@ func TestNew(t *testing.T) {
 	}
 }
 
-//fusa:test REQ-VIRT-002
+// ── Publish ───────────────────────────────────────────────────────────────────
 
-func TestPublish_andSendHeader(t *testing.T) {
-	b, _ := virtual.New()
+//fusa:test REQ-LIN-019
+//fusa:test REQ-VIRT-002
+//fusa:test REQ-VIRT-003
+//fusa:test REQ-VIRT-004
+//fusa:test REQ-VIRT-005
+//fusa:test REQ-VIRT-019
+
+func TestPublish_storesResponse(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
 
 	want := []byte{0x01, 0x02, 0x03, 0x04}
@@ -43,69 +58,112 @@ func TestPublish_andSendHeader(t *testing.T) {
 	if err != nil {
 		t.Fatalf("SendHeader: %v", err)
 	}
-	if f.ID != 0x10 {
-		t.Errorf("frame ID = 0x%02X, want 0x10", f.ID)
-	}
-	for i, b := range want {
-		if f.Data[i] != b {
-			t.Errorf("data[%d] = 0x%02X, want 0x%02X", i, f.Data[i], b)
+	for i, v := range want {
+		if f.Data[i] != v {
+			t.Errorf("data[%d] = 0x%02X, want 0x%02X", i, f.Data[i], v)
 		}
 	}
 }
 
-func TestPublish_removeResponse(t *testing.T) {
-	b, _ := virtual.New()
+func TestPublish_removesResponse(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
 
 	_ = b.Publish(0x10, []byte{0x01})
-	_ = b.Publish(0x10, nil) // remove
-	_, err := b.SendHeader(context.Background(), 0x10)
+	_ = b.Publish(0x10, nil)
+	_, err = b.SendHeader(context.Background(), 0x10)
 	if !errors.Is(err, lin.ErrNoResponse) {
-		t.Errorf("expected ErrNoResponse, got %v", err)
+		t.Errorf("expected ErrNoResponse after nil publish, got %v", err)
 	}
 }
 
-func TestPublish_invalidID(t *testing.T) {
-	b, _ := virtual.New()
+func TestPublish_rejectsHighID(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
 	if err := b.Publish(0x40, []byte{1}); err == nil {
 		t.Error("expected error for ID > MaxID")
 	}
 }
 
-//fusa:test REQ-VIRT-003
+func TestPublish_afterClose(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	b.Close()
+	if err := b.Publish(0x10, []byte{1}); err == nil {
+		t.Error("expected error from Publish after Close")
+	}
+}
+
+// ── SendHeader ────────────────────────────────────────────────────────────────
+
+//fusa:test REQ-VIRT-006
+//fusa:test REQ-VIRT-007
+//fusa:test REQ-VIRT-008
+//fusa:test REQ-VIRT-009
+//fusa:test REQ-VIRT-010
 
 func TestSendHeader_noResponse(t *testing.T) {
-	b, _ := virtual.New()
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
 
-	_, err := b.SendHeader(context.Background(), 0x20)
+	_, err = b.SendHeader(context.Background(), 0x20)
 	if !errors.Is(err, lin.ErrNoResponse) {
 		t.Errorf("expected ErrNoResponse, got %v", err)
 	}
 }
 
-func TestSendHeader_invalidID(t *testing.T) {
-	b, _ := virtual.New()
+func TestSendHeader_rejectsHighID(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
-	_, err := b.SendHeader(context.Background(), 0xFF)
-	if err == nil {
+	if _, err := b.SendHeader(context.Background(), 0xFF); err == nil {
 		t.Error("expected error for ID > MaxID")
 	}
 }
 
-func TestSendHeader_checksumEnhanced(t *testing.T) {
-	b, _ := virtual.New()
+func TestSendHeader_setsCorrectPID(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
 
-	data := []byte{0xAA, 0x55}
-	_ = b.Publish(0x12, data)
-
+	_ = b.Publish(0x12, []byte{0x01})
 	f, err := b.SendHeader(context.Background(), 0x12)
 	if err != nil {
 		t.Fatalf("SendHeader: %v", err)
 	}
+	if f.ID != 0x12 {
+		t.Errorf("frame ID = 0x%02X, want 0x12", f.ID)
+	}
+}
 
+func TestSendHeader_enhancedChecksum(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer b.Close()
+
+	data := []byte{0xAA, 0x55}
+	_ = b.Publish(0x12, data)
+	f, err := b.SendHeader(context.Background(), 0x12)
+	if err != nil {
+		t.Fatalf("SendHeader: %v", err)
+	}
 	pid := lin.ProtectID(0x12)
 	wantCS := lin.CalcChecksum(pid, data, lin.EnhancedChecksum)
 	if f.Checksum != wantCS {
@@ -116,13 +174,14 @@ func TestSendHeader_checksumEnhanced(t *testing.T) {
 	}
 }
 
-func TestSendHeader_checksumClassic(t *testing.T) {
-	b, _ := virtual.New()
+func TestSendHeader_classicChecksum(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
 
-	data := []byte{0x11, 0x22}
-	_ = b.PublishClassic(0x05, data)
-
+	_ = b.PublishClassic(0x05, []byte{0x11, 0x22})
 	f, err := b.SendHeader(context.Background(), 0x05)
 	if err != nil {
 		t.Fatalf("SendHeader: %v", err)
@@ -132,10 +191,11 @@ func TestSendHeader_checksumClassic(t *testing.T) {
 	}
 }
 
-//fusa:test REQ-VIRT-004
-
-func TestSubscribe_receivesFrame(t *testing.T) {
-	b, _ := virtual.New()
+func TestSendHeader_broadcastsToSubscriber(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
 
 	ch, err := b.Subscribe(lin.Filter{ID: 0x10})
@@ -152,32 +212,44 @@ func TestSubscribe_receivesFrame(t *testing.T) {
 			t.Errorf("received frame ID 0x%02X, want 0x10", f.ID)
 		}
 	default:
-		t.Error("expected frame on subscriber channel, got nothing")
+		t.Error("expected frame on subscriber channel")
 	}
 }
 
-func TestSubscribe_filteredOut(t *testing.T) {
-	b, _ := virtual.New()
+// ── Subscribe ─────────────────────────────────────────────────────────────────
+
+//fusa:test REQ-LIN-020
+//fusa:test REQ-VIRT-011
+//fusa:test REQ-VIRT-012
+//fusa:test REQ-VIRT-013
+//fusa:test REQ-VIRT-014
+
+func TestSubscribe_exactFilterIsolation(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
 
-	ch, _ := b.Subscribe(lin.Filter{ID: 0x20}) // not 0x10
-
+	ch, _ := b.Subscribe(lin.Filter{ID: 0x20})
 	_ = b.Publish(0x10, []byte{0xFF})
 	_, _ = b.SendHeader(context.Background(), 0x10)
 
 	select {
 	case <-ch:
-		t.Error("subscriber for 0x20 received frame for 0x10")
+		t.Error("subscriber for 0x20 must not receive frame for 0x10")
 	default:
 	}
 }
 
 func TestSubscribe_allFilter(t *testing.T) {
-	b, _ := virtual.New()
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
 
 	ch, _ := b.Subscribe(lin.Filter{All: true})
-
 	_ = b.Publish(0x01, []byte{0x01})
 	_ = b.Publish(0x02, []byte{0x02})
 	_, _ = b.SendHeader(context.Background(), 0x01)
@@ -192,12 +264,15 @@ func TestSubscribe_allFilter(t *testing.T) {
 		}
 	}
 	if count != 2 {
-		t.Errorf("all-filter subscriber received %d frames, want 2", count)
+		t.Errorf("all-filter received %d frames, want 2", count)
 	}
 }
 
-func TestSubscribe_multipleSubscribers(t *testing.T) {
-	b, _ := virtual.New()
+func TestSubscribe_multipleSubscribersIndependent(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
 
 	ch1, _ := b.Subscribe(lin.Filter{ID: 0x10})
@@ -206,22 +281,42 @@ func TestSubscribe_multipleSubscribers(t *testing.T) {
 	_ = b.Publish(0x10, []byte{0xAB})
 	_, _ = b.SendHeader(context.Background(), 0x10)
 
-	for _, ch := range []<-chan lin.Frame{ch1, ch2} {
+	for i, ch := range []<-chan lin.Frame{ch1, ch2} {
 		select {
 		case f := <-ch:
 			if f.ID != 0x10 {
-				t.Errorf("got frame ID 0x%02X, want 0x10", f.ID)
+				t.Errorf("subscriber %d: got frame ID 0x%02X, want 0x10", i, f.ID)
 			}
 		default:
-			t.Error("subscriber did not receive frame")
+			t.Errorf("subscriber %d: did not receive frame", i)
 		}
 	}
 }
 
-//fusa:test REQ-VIRT-005
+// ── Close ─────────────────────────────────────────────────────────────────────
+
+//fusa:test REQ-VIRT-015
+//fusa:test REQ-VIRT-016
+//fusa:test REQ-VIRT-017
+
+func TestClose_closesSubscriberChannels(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	ch, _ := b.Subscribe(lin.Filter{All: true})
+	b.Close()
+	_, open := <-ch
+	if open {
+		t.Error("subscriber channel must be closed after bus.Close()")
+	}
+}
 
 func TestClose_idempotent(t *testing.T) {
-	b, _ := virtual.New()
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	if err := b.Close(); err != nil {
 		t.Fatalf("first Close: %v", err)
 	}
@@ -230,41 +325,30 @@ func TestClose_idempotent(t *testing.T) {
 	}
 }
 
-func TestClose_closesSubscriberChannels(t *testing.T) {
-	b, _ := virtual.New()
-	ch, _ := b.Subscribe(lin.Filter{All: true})
-	b.Close()
-
-	_, open := <-ch
-	if open {
-		t.Error("subscriber channel should be closed after bus.Close()")
-	}
-}
-
-func TestClose_publishAfterClose(t *testing.T) {
-	b, _ := virtual.New()
-	b.Close()
-	if err := b.Publish(0x10, []byte{1}); err == nil {
-		t.Error("expected error from Publish after Close")
-	}
-}
-
 func TestClose_sendHeaderAfterClose(t *testing.T) {
-	b, _ := virtual.New()
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	b.Close()
 	if _, err := b.SendHeader(context.Background(), 0x10); err == nil {
 		t.Error("expected error from SendHeader after Close")
 	}
 }
 
+//fusa:test REQ-VIRT-018
+
 func TestConcurrent(t *testing.T) {
-	b, _ := virtual.New()
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer b.Close()
 
 	const workers = 8
 	_ = b.Publish(0x01, []byte{0x01, 0x02})
 
-	done := make(chan struct{})
+	done := make(chan struct{}, workers)
 	for i := 0; i < workers; i++ {
 		go func() {
 			ctx := context.Background()
@@ -279,13 +363,36 @@ func TestConcurrent(t *testing.T) {
 	}
 }
 
+func TestPublish_defensiveCopy(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer b.Close()
+
+	data := []byte{0x01, 0x02, 0x03}
+	_ = b.Publish(0x10, data)
+	data[0] = 0xFF // mutate caller's slice
+
+	f, err := b.SendHeader(context.Background(), 0x10)
+	if err != nil {
+		t.Fatalf("SendHeader: %v", err)
+	}
+	if f.Data[0] == 0xFF {
+		t.Error("stored response was mutated by caller: defensive copy not taken")
+	}
+}
+
 func FuzzSendHeader(f *testing.F) {
 	f.Add(uint8(0x10), []byte{0x01, 0x02, 0x03, 0x04})
 	f.Add(uint8(0x00), []byte{0xFF})
 	f.Add(uint8(0x3F), []byte{0xAA, 0x55, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66})
 
 	f.Fuzz(func(t *testing.T, id uint8, data []byte) {
-		b, _ := virtual.New()
+		b, err := virtual.New()
+		if err != nil {
+			t.Fatal(err)
+		}
 		defer b.Close()
 		if id > lin.MaxID || len(data) == 0 || len(data) > lin.MaxDataLen {
 			return
