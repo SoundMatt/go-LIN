@@ -80,7 +80,7 @@ func TestRun_executesSchedule(t *testing.T) {
 	})
 
 	// Use subscriber channel (drop-on-full) to avoid callback deadlock
-	ch, _ := bus.Subscribe(lin.Filter{All: true})
+	ch, _ := bus.Subscribe([]lin.Filter{{All: true}})
 
 	ctx, cancel := context.WithCancel(context.Background())
 	done := make(chan error, 1)
@@ -270,7 +270,7 @@ func TestSetSchedule_defensiveCopy(t *testing.T) {
 
 	// Run should still use the original ID (0x10), not 0x3F
 	_ = bus.Publish(0x10, []byte{0xAA})
-	ch, _ := bus.Subscribe(lin.Filter{ID: 0x10})
+	ch, _ := bus.Subscribe([]lin.Filter{{ID: 0x10}})
 
 	ctx, cancel := context.WithCancel(context.Background())
 	done := make(chan error, 1)
@@ -306,7 +306,7 @@ func TestRun_continuesAfterError(t *testing.T) {
 		{ID: 0x20, DelayMs: 0}, // has response
 	})
 
-	ch, _ := bus.Subscribe(lin.Filter{ID: 0x20})
+	ch, _ := bus.Subscribe([]lin.Filter{{ID: 0x20}})
 
 	ctx, cancel := context.WithCancel(context.Background())
 	done := make(chan error, 1)

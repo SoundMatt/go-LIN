@@ -171,13 +171,14 @@ func (b *Bus) SendHeader(ctx context.Context, id uint8) (lin.Frame, error) {
 }
 
 // Subscribe returns a channel that delivers frames matching any of the
-// supplied filters. With no filters, all frames are delivered.
+// supplied filters. Pass nil to receive all frames.
+// opts configures channel delivery (depth, back-pressure).
 //
 //fusa:req REQ-VIRT-011
 //fusa:req REQ-VIRT-012
 //fusa:req REQ-VIRT-013
 //fusa:req REQ-VIRT-014
-func (b *Bus) Subscribe(filters ...lin.Filter) (<-chan lin.Frame, error) {
+func (b *Bus) Subscribe(filters []lin.Filter, opts ...lin.SubscriberOption) (<-chan lin.Frame, error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if b.closed {

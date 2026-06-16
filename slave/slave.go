@@ -14,7 +14,7 @@
 //	bus, _ := virtual.New()
 //	s := slave.New(bus)
 //	s.SetResponse(0x10, []byte{0x01, 0x02, 0x03, 0x04})
-//	ch, _ := s.Subscribe(lin.Filter{ID: 0x10})
+//	ch, _ := s.Subscribe([]lin.Filter{{ID: 0x10}})
 //
 //fusa:req REQ-SLAVE-001
 //fusa:req REQ-SLAVE-002
@@ -79,11 +79,11 @@ func (n *Node) SetResponse(id uint8, data []byte) error {
 }
 
 // Subscribe returns a channel delivering frames that match any of the
-// supplied filters.
+// supplied filters. Pass nil to receive all frames.
 //
 //fusa:req REQ-SLAVE-006
-func (n *Node) Subscribe(filters ...lin.Filter) (<-chan lin.Frame, error) {
-	return n.bus.Subscribe(filters...)
+func (n *Node) Subscribe(filters []lin.Filter, opts ...lin.SubscriberOption) (<-chan lin.Frame, error) {
+	return n.bus.Subscribe(filters, opts...)
 }
 
 // RegisteredIDs returns the frame IDs for which this slave has a registered response.

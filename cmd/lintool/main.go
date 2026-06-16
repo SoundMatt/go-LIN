@@ -91,7 +91,7 @@ func cmdDump() {
 	}
 	defer bus.Close()
 
-	ch, err := bus.Subscribe(lin.Filter{All: true})
+	ch, err := bus.Subscribe([]lin.Filter{{All: true}})
 	if err != nil {
 		fatal("Subscribe: %v", err)
 	}

@@ -21,7 +21,7 @@
 //	bus, _ := virtual.New()
 //	defer bus.Close()
 //
-//	ch, _ := bus.Subscribe(lin.Filter{ID: 0x10})
+//	ch, _ := bus.Subscribe([]lin.Filter{{ID: 0x10}})
 //	bus.Publish(0x10, []byte{0x01, 0x02, 0x03, 0x04})
 //	frame := <-ch
 package lin
@@ -30,19 +30,33 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
+	relay "github.com/SoundMatt/RELAY"
 )
 
-// MaxDataLen is the maximum number of data bytes in a LIN frame payload.
-const MaxDataLen = 8
+// LINMaxDataLen is the maximum number of data bytes in a LIN frame payload.
+const LINMaxDataLen = 8
 
-// MaxID is the maximum raw LIN frame identifier (6 bits).
-const MaxID = 0x3F
+// LINMaxID is the maximum raw LIN frame identifier (6 bits).
+const LINMaxID = 0x3F
 
-// DiagRequestID is the master request diagnostic frame ID (0x3C).
-const DiagRequestID = 0x3C
+// LINDiagRequestID is the master request diagnostic frame ID (0x3C).
+const LINDiagRequestID = 0x3C
 
-// DiagResponseID is the slave response diagnostic frame ID (0x3D).
-const DiagResponseID = 0x3D
+// LINDiagResponseID is the slave response diagnostic frame ID (0x3D).
+const LINDiagResponseID = 0x3D
+
+// Deprecated: use LINMaxDataLen.
+const MaxDataLen = LINMaxDataLen
+
+// Deprecated: use LINMaxID.
+const MaxID = LINMaxID
+
+// Deprecated: use LINDiagRequestID.
+const DiagRequestID = LINDiagRequestID
+
+// Deprecated: use LINDiagResponseID.
+const DiagResponseID = LINDiagResponseID
 
 // ChecksumType selects the checksum algorithm applied to a frame.
 type ChecksumType uint8
@@ -53,6 +67,10 @@ const (
 	// EnhancedChecksum (LIN 2.x) covers PID + data bytes.
 	EnhancedChecksum
 )
+
+// SubscriberOption configures a subscription channel.
+// Re-exported from relay for convenience; callers may use relay.SubscriberOption directly.
+type SubscriberOption = relay.SubscriberOption
 
 // Frame is a LIN bus frame.
 //
@@ -121,11 +139,12 @@ type Bus interface {
 	Publish(id uint8, data []byte) error
 
 	// Subscribe returns a channel that delivers frames matching any of the
-	// supplied filters. With no filters, all frames are delivered.
+	// supplied filters. Pass nil to receive all frames.
+	// opts configures channel delivery (depth, back-pressure per relay §14).
 	//
 	//fusa:req REQ-LIN-012
 	//fusa:req REQ-LIN-020
-	Subscribe(filters ...Filter) (<-chan Frame, error)
+	Subscribe(filters []Filter, opts ...SubscriberOption) (<-chan Frame, error)
 
 	// Close releases all resources and closes all subscriber channels.
 	Close() error
@@ -167,8 +186,8 @@ var ErrNoResponse = errors.New("lin: no slave response registered for frame ID")
 //fusa:req REQ-LIN-005
 //fusa:req REQ-LIN-018
 func ProtectID(id uint8) uint8 {
-	if id > MaxID {
-		id &= MaxID
+	if id > LINMaxID {
+		id &= LINMaxID
 	}
 	p0 := ((id >> 0) ^ (id >> 1) ^ (id >> 2) ^ (id >> 4)) & 0x01
 	p1 := (^((id >> 1) ^ (id >> 3) ^ (id >> 4) ^ (id >> 5))) & 0x01
@@ -181,7 +200,7 @@ func ProtectID(id uint8) uint8 {
 //fusa:req REQ-LIN-006
 //fusa:req REQ-LIN-007
 func VerifyPID(pid uint8) (uint8, error) {
-	id := pid & MaxID
+	id := pid & LINMaxID
 	if ProtectID(id) != pid {
 		return 0, fmt.Errorf("lin: PID 0x%02X parity mismatch", pid)
 	}
@@ -220,14 +239,14 @@ func CalcChecksum(pid uint8, data []byte, ct ChecksumType) uint8 {
 //fusa:req REQ-LIN-016
 //fusa:req REQ-LIN-017
 func ValidateFrame(f Frame) error {
-	if f.ID > MaxID {
-		return fmt.Errorf("lin: frame ID 0x%02X exceeds maximum 0x%02X", f.ID, MaxID)
+	if f.ID > LINMaxID {
+		return fmt.Errorf("lin: frame ID 0x%02X exceeds maximum 0x%02X", f.ID, LINMaxID)
 	}
 	if len(f.Data) == 0 {
 		return errors.New("lin: frame data must not be empty")
 	}
-	if len(f.Data) > MaxDataLen {
-		return fmt.Errorf("lin: frame data length %d exceeds maximum %d", len(f.Data), MaxDataLen)
+	if len(f.Data) > LINMaxDataLen {
+		return fmt.Errorf("lin: frame data length %d exceeds maximum %d", len(f.Data), LINMaxDataLen)
 	}
 	return nil
 }
