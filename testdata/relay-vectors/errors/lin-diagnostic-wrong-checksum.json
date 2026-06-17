@@ -1,0 +1,13 @@
+{
+    "name": "lin-diagnostic-wrong-checksum",
+    "description": "Diagnostic frames (0x3C master request, 0x3D slave response) must use the Classic checksum (0); Enhanced (1) is invalid",
+    "type": "lin.Frame",
+    "kind": "error",
+    "value": {
+        "id": 60,
+        "data": "AQIDBAUGBwg=",
+        "checksum": 0,
+        "checksum_type": 1
+    },
+    "error": "ErrInvalidFrame"
+}

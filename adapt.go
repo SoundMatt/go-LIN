@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	relay "github.com/SoundMatt/RELAY"
 )
@@ -50,6 +51,7 @@ func (n *linNode) Subscribe(opts ...relay.SubscriberOption) (<-chan relay.Messag
 		var seq uint64
 		for f := range frames {
 			msg := f.ToMessage()
+			msg.Timestamp = time.Now().UTC()
 			msg.Seq = seq
 			seq++
 			switch cfg.BackPressure {
