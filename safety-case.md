@@ -1,6 +1,6 @@
 # Safety Case: github.com/SoundMatt/go-LIN
 
-Generated: 2026-06-17T13:21:32Z  
+Generated: 2026-06-17T14:31:08Z  
 Standard: generic
 
 ## Top Claim
