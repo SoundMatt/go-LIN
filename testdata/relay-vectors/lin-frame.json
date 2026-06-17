@@ -1,0 +1,26 @@
+{
+    "name": "lin-frame",
+    "description": "LIN frame, enhanced checksum",
+    "type": "lin.Frame",
+    "value": {
+        "id": 16,
+        "data": "qrs=",
+        "checksum": 73,
+        "checksum_type": 1
+    },
+    "message": {
+        "protocol": 3,
+        "version": {
+            "major": 0,
+            "minor": 0,
+            "patch": 0
+        },
+        "id": "16",
+        "payload": "qrs=",
+        "timestamp": "0001-01-01T00:00:00Z",
+        "meta": {
+            "lin.checksum": "73",
+            "lin.checksum_type": "enhanced"
+        }
+    }
+}

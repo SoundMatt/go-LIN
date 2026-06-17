@@ -31,13 +31,12 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"time"
 
 	relay "github.com/SoundMatt/RELAY"
 )
 
 // SpecVersion is the RELAY specification version this package implements.
-const SpecVersion = "0.2"
+const SpecVersion = "0.3"
 
 // LINMaxDataLen is the maximum number of data bytes in a LIN frame payload.
 const LINMaxDataLen = 8
@@ -146,6 +145,12 @@ var (
 
 	// ErrPayloadTooLarge is returned when a payload exceeds LINMaxDataLen.
 	ErrPayloadTooLarge = fmt.Errorf("lin: payload too large: %w", relay.ErrPayloadTooLarge)
+
+	// ErrInvalidFrame is returned by ValidateFrame for any structural violation
+	// (out-of-range ID, empty or oversize data, diagnostic frame with a
+	// non-classic checksum). It is a protocol-specific sentinel and does not
+	// wrap a RELAY sentinel (RELAY spec §5.3, §5.4).
+	ErrInvalidFrame = errors.New("lin: invalid frame")
 
 	// ErrNoResponse is returned by MasterBus.SendHeader when no slave has
 	// registered a response for the requested frame ID.
@@ -267,31 +272,35 @@ func CalcChecksum(pid uint8, data []byte, ct LINChecksumType) uint8 {
 //fusa:req REQ-LIN-017
 func ValidateFrame(f Frame) error {
 	if f.ID > LINMaxID {
-		return fmt.Errorf("lin: frame ID 0x%02X exceeds maximum 0x%02X", f.ID, LINMaxID)
+		return fmt.Errorf("lin: frame ID 0x%02X exceeds maximum 0x%02X: %w", f.ID, LINMaxID, ErrInvalidFrame)
 	}
 	if len(f.Data) == 0 {
-		return errors.New("lin: frame data must not be empty")
+		return fmt.Errorf("lin: frame data must not be empty: %w", ErrInvalidFrame)
 	}
 	if len(f.Data) > LINMaxDataLen {
-		return fmt.Errorf("lin: frame data length %d exceeds maximum %d", len(f.Data), LINMaxDataLen)
+		return fmt.Errorf("lin: frame data length %d exceeds maximum %d: %w", len(f.Data), LINMaxDataLen, ErrInvalidFrame)
 	}
 	if (f.ID == LINDiagRequestID || f.ID == LINDiagResponseID) && f.ChecksumType != ClassicChecksum {
-		return errors.New("lin: diagnostic frames must use classic checksum")
+		return fmt.Errorf("lin: diagnostic frame 0x%02X must use classic checksum: %w", f.ID, ErrInvalidFrame)
 	}
 	return nil
 }
 
 // ToMessage converts f to a relay.Message envelope per RELAY spec §15.3.
+//
+// The conversion is deterministic: Timestamp is left as the zero value so the
+// output matches the published golden reference vectors. Callers that need a
+// wall-clock timestamp (e.g. the live Adapt subscription path) set it after
+// conversion.
 func (f Frame) ToMessage() relay.Message {
 	ct := "classic"
 	if f.ChecksumType == EnhancedChecksum {
 		ct = "enhanced"
 	}
 	return relay.Message{
-		Protocol:  relay.LIN,
-		ID:        strconv.Itoa(int(f.ID)),
-		Payload:   append([]byte(nil), f.Data...),
-		Timestamp: time.Now().UTC(),
+		Protocol: relay.LIN,
+		ID:       strconv.Itoa(int(f.ID)),
+		Payload:  append([]byte(nil), f.Data...),
 		Meta: map[string]string{
 			"lin.checksum_type": ct,
 			"lin.checksum":      strconv.Itoa(int(f.Checksum)),

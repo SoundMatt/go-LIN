@@ -1,0 +1,13 @@
+{
+    "name": "lin-id-overflow",
+    "description": "LIN frame ID exceeds the 6-bit maximum 0x3F",
+    "type": "lin.Frame",
+    "kind": "error",
+    "value": {
+        "id": 64,
+        "data": "AQ==",
+        "checksum": 0,
+        "checksum_type": 0
+    },
+    "error": "ErrInvalidFrame"
+}
