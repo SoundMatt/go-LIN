@@ -1,8 +1,24 @@
 {
   "format": "go-FuSa dFMEA v1",
-  "generated_at": "2026-06-14T00:15:39.295362141Z",
+  "generated_at": "2026-06-17T00:07:57.524447891Z",
   "module": "github.com/SoundMatt/go-LIN",
   "entries": [
+    {
+      "component": "go-LIN (lin)",
+      "function": "Adapt",
+      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "low",
+      "detection_control": "unit tests",
+      "cyber_risks": [
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
     {
       "component": "go-LIN (lin)",
       "function": "CalcChecksum",
@@ -24,6 +40,45 @@
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
+    {
+      "component": "go-LIN (lin)",
+      "function": "Close",
+      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "medium",
+      "detection_control": "unit tests",
+      "cyber_risks": [
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
+    {
+      "component": "go-LIN (lin)",
+      "function": "FromMessage",
+      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "medium",
+      "detection_control": "unit tests",
+      "cyber_risks": [
+        "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
@@ -42,6 +97,8 @@
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
@@ -66,6 +123,79 @@
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
+    {
+      "component": "go-LIN (lin)",
+      "function": "Protocol",
+      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "low",
+      "detection_control": "unit tests",
+      "cyber_risks": [
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
+    {
+      "component": "go-LIN (lin)",
+      "function": "Send",
+      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "medium",
+      "detection_control": "unit tests",
+      "cyber_risks": [
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
+    {
+      "component": "go-LIN (lin)",
+      "function": "Subscribe",
+      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
+      "failure_modes": [
+        "Returns unexpected error",
+        "Goroutine not terminated"
+      ],
+      "effects": [
+        "Silent failure propagated to caller",
+        "Memory leak or deadlock"
+      ],
+      "severity": "medium",
+      "detection_control": "unit tests",
+      "cyber_risks": [
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
+    {
+      "component": "go-LIN (lin)",
+      "function": "ToMessage",
+      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "low",
+      "detection_control": "unit tests",
+      "cyber_risks": [
+        "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
@@ -94,6 +224,8 @@
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
@@ -116,6 +248,8 @@
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
@@ -377,6 +511,19 @@
       ]
     },
     {
+      "component": "mock",
+      "function": "New",
+      "file": "/home/runner/work/go-LIN/go-LIN/mock/mock.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "medium",
+      "detection_control": "code review"
+    },
+    {
       "component": "safety",
       "function": "Error",
       "file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
@@ -568,6 +715,45 @@
     },
     {
       "component": "virtual",
+      "function": "CloseWithDrain",
+      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "medium",
+      "detection_control": "unit tests"
+    },
+    {
+      "component": "virtual",
+      "function": "Health",
+      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "low",
+      "detection_control": "unit tests"
+    },
+    {
+      "component": "virtual",
+      "function": "Metrics",
+      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "low",
+      "detection_control": "unit tests"
+    },
+    {
+      "component": "virtual",
       "function": "New",
       "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
       "failure_modes": [
@@ -636,6 +822,19 @@
         "REQ-VIRT-017",
         "REQ-VIRT-018"
       ]
+    },
+    {
+      "component": "virtual",
+      "function": "SetSchedule",
+      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "medium",
+      "detection_control": "unit tests"
     },
     {
       "component": "virtual",
