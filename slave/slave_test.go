@@ -108,7 +108,7 @@ func TestSubscribe_receivesFrame(t *testing.T) {
 	s := slave.New(bus)
 	_ = s.SetResponse(0x10, []byte{0xAB})
 
-	ch, err := s.Subscribe(lin.Filter{ID: 0x10})
+	ch, err := s.Subscribe([]lin.Filter{{ID: 0x10}})
 	if err != nil {
 		t.Fatalf("Subscribe: %v", err)
 	}
@@ -134,7 +134,7 @@ func TestSubscribe_allFrames(t *testing.T) {
 	_ = s.SetResponse(0x01, []byte{0x01})
 	_ = s.SetResponse(0x02, []byte{0x02})
 
-	ch, _ := s.Subscribe(lin.Filter{All: true})
+	ch, _ := s.Subscribe([]lin.Filter{{All: true}})
 
 	_, _ = bus.SendHeader(context.Background(), 0x01)
 	_, _ = bus.SendHeader(context.Background(), 0x02)

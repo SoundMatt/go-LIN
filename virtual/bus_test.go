@@ -198,7 +198,7 @@ func TestSendHeader_broadcastsToSubscriber(t *testing.T) {
 	}
 	defer b.Close()
 
-	ch, err := b.Subscribe(lin.Filter{ID: 0x10})
+	ch, err := b.Subscribe([]lin.Filter{{ID: 0x10}})
 	if err != nil {
 		t.Fatalf("Subscribe: %v", err)
 	}
@@ -231,7 +231,7 @@ func TestSubscribe_exactFilterIsolation(t *testing.T) {
 	}
 	defer b.Close()
 
-	ch, _ := b.Subscribe(lin.Filter{ID: 0x20})
+	ch, _ := b.Subscribe([]lin.Filter{{ID: 0x20}})
 	_ = b.Publish(0x10, []byte{0xFF})
 	_, _ = b.SendHeader(context.Background(), 0x10)
 
@@ -249,7 +249,7 @@ func TestSubscribe_allFilter(t *testing.T) {
 	}
 	defer b.Close()
 
-	ch, _ := b.Subscribe(lin.Filter{All: true})
+	ch, _ := b.Subscribe([]lin.Filter{{All: true}})
 	_ = b.Publish(0x01, []byte{0x01})
 	_ = b.Publish(0x02, []byte{0x02})
 	_, _ = b.SendHeader(context.Background(), 0x01)
@@ -275,8 +275,8 @@ func TestSubscribe_multipleSubscribersIndependent(t *testing.T) {
 	}
 	defer b.Close()
 
-	ch1, _ := b.Subscribe(lin.Filter{ID: 0x10})
-	ch2, _ := b.Subscribe(lin.Filter{All: true})
+	ch1, _ := b.Subscribe([]lin.Filter{{ID: 0x10}})
+	ch2, _ := b.Subscribe([]lin.Filter{{All: true}})
 
 	_ = b.Publish(0x10, []byte{0xAB})
 	_, _ = b.SendHeader(context.Background(), 0x10)
@@ -304,7 +304,7 @@ func TestClose_closesSubscriberChannels(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	ch, _ := b.Subscribe(lin.Filter{All: true})
+	ch, _ := b.Subscribe([]lin.Filter{{All: true}})
 	b.Close()
 	_, open := <-ch
 	if open {
