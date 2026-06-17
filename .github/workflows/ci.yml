@@ -62,6 +62,10 @@ jobs:
           ./virtual/...
 
   # ── Short fuzz runs ───────────────────────────────────────────────────────
+  # Iteration-based (-fuzztime=Nx), not duration-based. A wall-clock fuzztime
+  # races Go's worker deadline and spuriously reports "context deadline
+  # exceeded" when a worker is mid-execution at the cutoff. An explicit
+  # iteration count stops cleanly and keeps this smoke run deterministic.
   fuzz-short:
     name: Fuzz (short, ubuntu-latest)
     runs-on: ubuntu-latest
@@ -76,13 +80,13 @@ jobs:
         run: go clean -fuzzcache
 
       - name: FuzzSendHeader (virtual)
-        run: go test -fuzz=^FuzzSendHeader$ -fuzztime=10s ./virtual/...
+        run: go test -fuzz=^FuzzSendHeader$ -fuzztime=200000x ./virtual/...
 
       - name: FuzzParse (ldf)
-        run: go test -fuzz=^FuzzParse$ -fuzztime=10s ./ldf/...
+        run: go test -fuzz=^FuzzParse$ -fuzztime=200000x ./ldf/...
 
       - name: FuzzProtectUnwrap (safety)
-        run: go test -fuzz=^FuzzProtectUnwrap$ -fuzztime=10s ./safety/...
+        run: go test -fuzz=^FuzzProtectUnwrap$ -fuzztime=200000x ./safety/...
 
   # ── go-FuSa safety checks ─────────────────────────────────────────────────
   # Pinned to v0.30.0; exits 1 on any ERROR-level finding.
