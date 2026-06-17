@@ -193,6 +193,21 @@ func TestValidateFrame_acceptsMinData(t *testing.T) {
 	}
 }
 
+// ── ValidateFrame diagnostic checksum check ───────────────────────────────────
+
+func TestValidateFrame_diagMustUseClassicChecksum(t *testing.T) {
+	for _, id := range []uint8{lin.LINDiagRequestID, lin.LINDiagResponseID} {
+		err := lin.ValidateFrame(lin.Frame{ID: id, Data: []byte{0x00}, ChecksumType: lin.EnhancedChecksum})
+		if err == nil {
+			t.Errorf("ValidateFrame: diagnostic frame 0x%02X with enhanced checksum must be rejected", id)
+		}
+		err = lin.ValidateFrame(lin.Frame{ID: id, Data: []byte{0x00}, ChecksumType: lin.ClassicChecksum})
+		if err != nil {
+			t.Errorf("ValidateFrame: diagnostic frame 0x%02X with classic checksum must be accepted: %v", id, err)
+		}
+	}
+}
+
 // ── ErrNoResponse sentinel ───────────────────────────────────────────────────
 
 //fusa:test REQ-LIN-021
@@ -203,6 +218,76 @@ func TestErrNoResponse_isSentinel(t *testing.T) {
 	}
 	if !errors.Is(lin.ErrNoResponse, lin.ErrNoResponse) {
 		t.Error("errors.Is(ErrNoResponse, ErrNoResponse) must return true")
+	}
+}
+
+// ── RELAY error sentinels ─────────────────────────────────────────────────────
+
+func TestErrClosed_notNil(t *testing.T) {
+	if lin.ErrClosed == nil {
+		t.Fatal("ErrClosed must not be nil")
+	}
+}
+
+func TestErrNotConnected_notNil(t *testing.T) {
+	if lin.ErrNotConnected == nil {
+		t.Fatal("ErrNotConnected must not be nil")
+	}
+}
+
+func TestErrTimeout_notNil(t *testing.T) {
+	if lin.ErrTimeout == nil {
+		t.Fatal("ErrTimeout must not be nil")
+	}
+}
+
+func TestErrPayloadTooLarge_notNil(t *testing.T) {
+	if lin.ErrPayloadTooLarge == nil {
+		t.Fatal("ErrPayloadTooLarge must not be nil")
+	}
+}
+
+// ── ToMessage / FromMessage ───────────────────────────────────────────────────
+
+func TestFrame_ToMessage_roundtrip(t *testing.T) {
+	f := lin.Frame{
+		ID:           0x10,
+		Data:         []byte{0xAA, 0x55},
+		Checksum:     0xBE,
+		ChecksumType: lin.EnhancedChecksum,
+	}
+	msg := f.ToMessage()
+	if msg.ID != "16" {
+		t.Errorf("ToMessage ID = %q, want %q", msg.ID, "16")
+	}
+	if msg.Meta["lin.checksum_type"] != "enhanced" {
+		t.Errorf("ToMessage checksum_type = %q", msg.Meta["lin.checksum_type"])
+	}
+	got, err := lin.FromMessage(msg)
+	if err != nil {
+		t.Fatalf("FromMessage: %v", err)
+	}
+	if got.ID != f.ID {
+		t.Errorf("FromMessage ID = 0x%02X, want 0x%02X", got.ID, f.ID)
+	}
+	if got.ChecksumType != f.ChecksumType {
+		t.Errorf("FromMessage ChecksumType = %v, want %v", got.ChecksumType, f.ChecksumType)
+	}
+}
+
+func TestFromMessage_invalidID(t *testing.T) {
+	relay := lin.Frame{}.ToMessage()
+	relay.ID = "not-a-number"
+	if _, err := lin.FromMessage(relay); err == nil {
+		t.Error("FromMessage: expected error for non-numeric ID")
+	}
+}
+
+// ── SpecVersion ───────────────────────────────────────────────────────────────
+
+func TestSpecVersion(t *testing.T) {
+	if lin.SpecVersion == "" {
+		t.Error("SpecVersion must not be empty")
 	}
 }
 

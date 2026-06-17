@@ -50,6 +50,7 @@ const defaultChanSize = 64
 type Bus struct {
 	mu        sync.RWMutex
 	responses map[uint8]responseEntry
+	schedule  []lin.ScheduleEntry
 	subs      []*subscription
 	closed    bool
 }
@@ -64,7 +65,7 @@ type subscription struct {
 	ch      chan lin.Frame
 }
 
-var errClosed = fmt.Errorf("lin/virtual: bus is closed")
+var errClosed = fmt.Errorf("lin/virtual: bus is closed: %w", lin.ErrClosed)
 
 // New creates an in-process virtual LIN bus.
 //
@@ -190,6 +191,20 @@ func (b *Bus) Subscribe(filters []lin.Filter, opts ...lin.SubscriberOption) (<-c
 	}
 	b.subs = append(b.subs, s)
 	return s.ch, nil
+}
+
+// SetSchedule installs a new LIN schedule table. An empty slice disables
+// scheduled transmission. Safe to call concurrently with SendHeader.
+func (b *Bus) SetSchedule(entries []lin.ScheduleEntry) error {
+	cp := make([]lin.ScheduleEntry, len(entries))
+	copy(cp, entries)
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	if b.closed {
+		return errClosed
+	}
+	b.schedule = cp
+	return nil
 }
 
 // Close releases all resources and closes all subscriber channels.

@@ -30,9 +30,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+	"time"
 
 	relay "github.com/SoundMatt/RELAY"
 )
+
+// SpecVersion is the RELAY specification version this package implements.
+const SpecVersion = "0.2"
 
 // LINMaxDataLen is the maximum number of data bytes in a LIN frame payload.
 const LINMaxDataLen = 8
@@ -58,15 +63,18 @@ const DiagRequestID = LINDiagRequestID
 // Deprecated: use LINDiagResponseID.
 const DiagResponseID = LINDiagResponseID
 
-// ChecksumType selects the checksum algorithm applied to a frame.
-type ChecksumType uint8
+// LINChecksumType selects the checksum algorithm applied to a LIN frame.
+type LINChecksumType int
 
 const (
 	// ClassicChecksum (LIN 1.x) covers the data bytes only.
-	ClassicChecksum ChecksumType = iota
+	ClassicChecksum LINChecksumType = 0
 	// EnhancedChecksum (LIN 2.x) covers PID + data bytes.
-	EnhancedChecksum
+	EnhancedChecksum LINChecksumType = 1
 )
+
+// ChecksumType is a deprecated alias for LINChecksumType.
+type ChecksumType = LINChecksumType
 
 // SubscriberOption configures a subscription channel.
 // Re-exported from relay for convenience; callers may use relay.SubscriberOption directly.
@@ -84,16 +92,16 @@ type SubscriberOption = relay.SubscriberOption
 //fusa:req REQ-LIN-003
 type Frame struct {
 	// ID is the 6-bit frame identifier (0x00–0x3F).
-	ID uint8
+	ID uint8 `json:"id"`
 
 	// Data is the frame payload (1–8 bytes).
-	Data []byte
+	Data []byte `json:"data"`
 
 	// Checksum is the wire checksum byte appended after the data bytes.
-	Checksum uint8
+	Checksum uint8 `json:"checksum"`
 
 	// ChecksumType indicates whether the checksum is classic or enhanced.
-	ChecksumType ChecksumType
+	ChecksumType LINChecksumType `json:"checksum_type"`
 }
 
 // Filter selects frames by ID.
@@ -102,10 +110,10 @@ type Frame struct {
 // The zero value matches no frames; use Filter{All: true} to receive all frames.
 type Filter struct {
 	// ID is the exact LIN frame identifier to match (0x00–0x3F).
-	ID uint8
+	ID uint8 `json:"id"`
 
 	// All overrides ID and matches every frame when true.
-	All bool
+	All bool `json:"all"`
 }
 
 // Matches reports whether f passes the filter.
@@ -119,11 +127,33 @@ func (flt Filter) Matches(f Frame) bool {
 // ScheduleEntry is one slot in a LIN schedule table.
 type ScheduleEntry struct {
 	// ID is the frame identifier transmitted by the master in this slot.
-	ID uint8
+	ID uint8 `json:"id"`
 
 	// DelayMs is the slot duration in milliseconds.
-	DelayMs uint32
+	DelayMs uint32 `json:"delay_ms"`
 }
+
+// Error sentinels. Wrap relay sentinels so errors.Is reaches the RELAY level.
+var (
+	// ErrClosed is returned when an operation is attempted on a closed bus.
+	ErrClosed = fmt.Errorf("lin: closed: %w", relay.ErrClosed)
+
+	// ErrNotConnected is returned before a connection is established.
+	ErrNotConnected = fmt.Errorf("lin: not connected: %w", relay.ErrNotConnected)
+
+	// ErrTimeout is returned when an operation exceeds its deadline.
+	ErrTimeout = fmt.Errorf("lin: timeout: %w", relay.ErrTimeout)
+
+	// ErrPayloadTooLarge is returned when a payload exceeds LINMaxDataLen.
+	ErrPayloadTooLarge = fmt.Errorf("lin: payload too large: %w", relay.ErrPayloadTooLarge)
+
+	// ErrNoResponse is returned by MasterBus.SendHeader when no slave has
+	// registered a response for the requested frame ID.
+	//
+	//fusa:req REQ-LIN-014
+	//fusa:req REQ-LIN-021
+	ErrNoResponse = fmt.Errorf("lin: no slave response: %w", relay.ErrTimeout)
+)
 
 // Bus is the interface implemented by all LIN bus transports.
 //
@@ -166,14 +196,11 @@ type MasterBus interface {
 	//fusa:req REQ-LIN-013
 	//fusa:req REQ-LIN-014
 	SendHeader(ctx context.Context, id uint8) (Frame, error)
-}
 
-// ErrNoResponse is returned by MasterBus.SendHeader when no slave has
-// registered a response for the requested frame ID.
-//
-//fusa:req REQ-LIN-014
-//fusa:req REQ-LIN-021
-var ErrNoResponse = errors.New("lin: no slave response registered for frame ID")
+	// SetSchedule installs a new LIN schedule table. An empty slice is valid
+	// and disables scheduled transmission. Safe to call while running.
+	SetSchedule(entries []ScheduleEntry) error
+}
 
 // ProtectID computes the Protected Identifier for a 6-bit LIN frame ID.
 //
@@ -216,7 +243,7 @@ func VerifyPID(pid uint8) (uint8, error) {
 //fusa:req REQ-LIN-008
 //fusa:req REQ-LIN-009
 //fusa:req REQ-LIN-010
-func CalcChecksum(pid uint8, data []byte, ct ChecksumType) uint8 {
+func CalcChecksum(pid uint8, data []byte, ct LINChecksumType) uint8 {
 	var sum uint16
 	if ct == EnhancedChecksum {
 		sum = uint16(pid)
@@ -248,5 +275,48 @@ func ValidateFrame(f Frame) error {
 	if len(f.Data) > LINMaxDataLen {
 		return fmt.Errorf("lin: frame data length %d exceeds maximum %d", len(f.Data), LINMaxDataLen)
 	}
+	if (f.ID == LINDiagRequestID || f.ID == LINDiagResponseID) && f.ChecksumType != ClassicChecksum {
+		return errors.New("lin: diagnostic frames must use classic checksum")
+	}
 	return nil
+}
+
+// ToMessage converts f to a relay.Message envelope per RELAY spec §15.3.
+func (f Frame) ToMessage() relay.Message {
+	ct := "classic"
+	if f.ChecksumType == EnhancedChecksum {
+		ct = "enhanced"
+	}
+	return relay.Message{
+		Protocol:  relay.LIN,
+		ID:        strconv.Itoa(int(f.ID)),
+		Payload:   append([]byte(nil), f.Data...),
+		Timestamp: time.Now().UTC(),
+		Meta: map[string]string{
+			"lin.checksum_type": ct,
+			"lin.checksum":      strconv.Itoa(int(f.Checksum)),
+		},
+	}
+}
+
+// FromMessage converts a relay.Message envelope back to a Frame per RELAY spec §15.3.
+func FromMessage(m relay.Message) (Frame, error) {
+	id, err := strconv.ParseUint(m.ID, 10, 8)
+	if err != nil || id > LINMaxID {
+		return Frame{}, fmt.Errorf("lin: invalid frame ID %q", m.ID)
+	}
+	ct := ClassicChecksum
+	if m.Meta["lin.checksum_type"] == "enhanced" {
+		ct = EnhancedChecksum
+	}
+	cs := uint64(0)
+	if v := m.Meta["lin.checksum"]; v != "" {
+		cs, _ = strconv.ParseUint(v, 10, 8)
+	}
+	return Frame{
+		ID:           uint8(id),
+		Data:         append([]byte(nil), m.Payload...),
+		Checksum:     uint8(cs),
+		ChecksumType: ct,
+	}, nil
 }
