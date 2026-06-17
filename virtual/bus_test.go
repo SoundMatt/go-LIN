@@ -9,6 +9,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	lin "github.com/SoundMatt/go-LIN"
 	"github.com/SoundMatt/go-LIN/virtual"
@@ -400,4 +401,72 @@ func FuzzSendHeader(f *testing.F) {
 		_ = b.Publish(id, data)
 		_, _ = b.SendHeader(context.Background(), id)
 	})
+}
+
+// ── Health (optional interface) ───────────────────────────────────────────────
+
+func TestHealth_openBus(t *testing.T) {
+	b, _ := virtual.New()
+	defer b.Close()
+	h := b.Health()
+	if h.Status != lin.HealthOK {
+		t.Errorf("Health: expected HealthOK, got %v", h.Status)
+	}
+}
+
+func TestHealth_closedBus(t *testing.T) {
+	b, _ := virtual.New()
+	b.Close()
+	h := b.Health()
+	if h.Status != lin.HealthDown {
+		t.Errorf("Health after Close: expected HealthDown, got %v", h.Status)
+	}
+}
+
+// ── Metrics (optional interface) ──────────────────────────────────────────────
+
+func TestMetrics_countsFrames(t *testing.T) {
+	b, _ := virtual.New()
+	defer b.Close()
+
+	_ = b.Publish(0x10, []byte{0xAA, 0xBB})
+	ch, _ := b.Subscribe([]lin.Filter{{ID: 0x10}})
+	_, _ = b.SendHeader(context.Background(), 0x10)
+
+	// Drain the subscriber channel so deliver count is updated.
+	<-ch
+
+	m := b.Metrics()
+	if m.WriteCount != 1 {
+		t.Errorf("WriteCount = %d, want 1", m.WriteCount)
+	}
+	if m.DeliverCount != 1 {
+		t.Errorf("DeliverCount = %d, want 1", m.DeliverCount)
+	}
+	if m.BytesWritten != 2 {
+		t.Errorf("BytesWritten = %d, want 2", m.BytesWritten)
+	}
+}
+
+// ── CloseWithDrain (optional interface) ───────────────────────────────────────
+
+func TestCloseWithDrain_drainsThenCloses(t *testing.T) {
+	b, _ := virtual.New()
+
+	_ = b.Publish(0x01, []byte{0x01})
+	ch, _ := b.Subscribe([]lin.Filter{{All: true}})
+	_, _ = b.SendHeader(context.Background(), 0x01)
+
+	// Drain the channel, then close.
+	<-ch
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	if err := b.CloseWithDrain(ctx); err != nil {
+		t.Fatalf("CloseWithDrain: %v", err)
+	}
+	_, open := <-ch
+	if open {
+		t.Error("subscriber channel must be closed after CloseWithDrain")
+	}
 }

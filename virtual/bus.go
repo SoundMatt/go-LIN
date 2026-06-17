@@ -36,6 +36,8 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"sync/atomic"
+	"time"
 
 	lin "github.com/SoundMatt/go-LIN"
 )
@@ -46,18 +48,27 @@ const defaultChanSize = 64
 // SendHeader, and Subscribe concurrently. The zero value is not usable;
 // call New.
 //
-// Bus implements lin.MasterBus.
+// Bus implements lin.MasterBus, lin.HealthProvider, lin.MetricsProvider,
+// and lin.Drainer.
 type Bus struct {
 	mu        sync.RWMutex
 	responses map[uint8]responseEntry
 	schedule  []lin.ScheduleEntry
 	subs      []*subscription
 	closed    bool
+
+	// metric counters — updated atomically, read under any lock state
+	writeCount     atomic.Uint64
+	deliverCount   atomic.Uint64
+	dropCount      atomic.Uint64
+	bytesWritten   atomic.Uint64
+	bytesDelivered atomic.Uint64
+	errorCount     atomic.Uint64
 }
 
 type responseEntry struct {
 	data         []byte
-	checksumType lin.ChecksumType
+	checksumType lin.LINChecksumType
 }
 
 type subscription struct {
@@ -86,12 +97,13 @@ func New() (*Bus, error) {
 //fusa:req REQ-VIRT-005
 //fusa:req REQ-VIRT-019
 func (b *Bus) Publish(id uint8, data []byte) error {
-	if id > lin.MaxID {
-		return fmt.Errorf("lin/virtual: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.MaxID)
+	if id > lin.LINMaxID {
+		return fmt.Errorf("lin/virtual: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.LINMaxID)
 	}
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if b.closed {
+		b.errorCount.Add(1)
 		return errClosed
 	}
 	if data == nil {
@@ -106,12 +118,13 @@ func (b *Bus) Publish(id uint8, data []byte) error {
 
 // PublishClassic is like Publish but applies the classic (LIN 1.x) checksum.
 func (b *Bus) PublishClassic(id uint8, data []byte) error {
-	if id > lin.MaxID {
-		return fmt.Errorf("lin/virtual: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.MaxID)
+	if id > lin.LINMaxID {
+		return fmt.Errorf("lin/virtual: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.LINMaxID)
 	}
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if b.closed {
+		b.errorCount.Add(1)
 		return errClosed
 	}
 	if data == nil {
@@ -139,19 +152,21 @@ func (b *Bus) PublishClassic(id uint8, data []byte) error {
 //fusa:req REQ-VIRT-017
 //fusa:req REQ-VIRT-018
 func (b *Bus) SendHeader(ctx context.Context, id uint8) (lin.Frame, error) {
-	if id > lin.MaxID {
-		return lin.Frame{}, fmt.Errorf("lin/virtual: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.MaxID)
+	if id > lin.LINMaxID {
+		return lin.Frame{}, fmt.Errorf("lin/virtual: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.LINMaxID)
 	}
 
 	b.mu.RLock()
 	if b.closed {
 		b.mu.RUnlock()
+		b.errorCount.Add(1)
 		return lin.Frame{}, errClosed
 	}
 	entry, ok := b.responses[id]
 	b.mu.RUnlock()
 
 	if !ok {
+		b.errorCount.Add(1)
 		return lin.Frame{}, lin.ErrNoResponse
 	}
 
@@ -167,6 +182,8 @@ func (b *Bus) SendHeader(ctx context.Context, id uint8) (lin.Frame, error) {
 		ChecksumType: entry.checksumType,
 	}
 
+	b.writeCount.Add(1)
+	b.bytesWritten.Add(uint64(len(data)))
 	b.broadcast(f)
 	return f, nil
 }
@@ -183,6 +200,7 @@ func (b *Bus) Subscribe(filters []lin.Filter, opts ...lin.SubscriberOption) (<-c
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if b.closed {
+		b.errorCount.Add(1)
 		return nil, errClosed
 	}
 	s := &subscription{
@@ -225,6 +243,55 @@ func (b *Bus) Close() error {
 	return nil
 }
 
+// CloseWithDrain closes the bus after waiting for all subscriber channels to be
+// drained or until ctx expires. Implements lin.Drainer (RELAY §9).
+func (b *Bus) CloseWithDrain(ctx context.Context) error {
+	// Poll until all subscriber channels are empty or ctx is done.
+	ticker := time.NewTicker(time.Millisecond)
+	defer ticker.Stop()
+	for {
+		b.mu.RLock()
+		allEmpty := true
+		for _, s := range b.subs {
+			if len(s.ch) > 0 {
+				allEmpty = false
+				break
+			}
+		}
+		b.mu.RUnlock()
+		if allEmpty {
+			return b.Close()
+		}
+		select {
+		case <-ctx.Done():
+			return b.Close()
+		case <-ticker.C:
+		}
+	}
+}
+
+// Health returns the operational health of the bus. Implements lin.HealthProvider.
+func (b *Bus) Health() lin.Health {
+	b.mu.RLock()
+	defer b.mu.RUnlock()
+	if b.closed {
+		return lin.Health{Status: lin.HealthDown, Details: "bus closed"}
+	}
+	return lin.Health{Status: lin.HealthOK}
+}
+
+// Metrics returns current runtime counters. Implements lin.MetricsProvider.
+func (b *Bus) Metrics() lin.Metrics {
+	return lin.Metrics{
+		WriteCount:     b.writeCount.Load(),
+		DeliverCount:   b.deliverCount.Load(),
+		DropCount:      b.dropCount.Load(),
+		BytesWritten:   b.bytesWritten.Load(),
+		BytesDelivered: b.bytesDelivered.Load(),
+		ErrorCount:     b.errorCount.Load(),
+	}
+}
+
 func (b *Bus) broadcast(f lin.Frame) {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -232,7 +299,10 @@ func (b *Bus) broadcast(f lin.Frame) {
 		if matchesAny(s.filters, f) {
 			select {
 			case s.ch <- f:
+				b.deliverCount.Add(1)
+				b.bytesDelivered.Add(uint64(len(f.Data)))
 			default:
+				b.dropCount.Add(1)
 				// drop on full channel — REQ-VIRT-013
 			}
 		}
