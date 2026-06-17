@@ -46,6 +46,15 @@ func loadVector(t *testing.T, path string) vector {
 	return v
 }
 
+// ── SpecVersion tracks the linked RELAY module ────────────────────────────────
+
+func TestSpecVersion_tracksRelay(t *testing.T) {
+	if lin.SpecVersion != relay.SpecVersion {
+		t.Errorf("lin.SpecVersion = %q; must track relay.SpecVersion = %q",
+			lin.SpecVersion, relay.SpecVersion)
+	}
+}
+
 // ── Golden frame vector: canonical JSON, ToMessage, FromMessage round-trip ────
 
 func TestVector_linFrame_canonicalJSON(t *testing.T) {
