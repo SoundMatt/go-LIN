@@ -127,7 +127,7 @@ func cmdCapabilities() {
 		"transports":          []string{"virtual"},
 		"features":            []string{},
 		"interfaces":          []string{"Bus", "MasterBus"},
-		"optional_interfaces": []string{},
+		"optional_interfaces": []string{"HealthProvider", "MetricsProvider", "Drainer"},
 		"adapt":               true,
 	}
 	enc := json.NewEncoder(os.Stdout)
