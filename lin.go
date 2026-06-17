@@ -36,7 +36,8 @@ import (
 )
 
 // SpecVersion is the RELAY specification version this package implements.
-const SpecVersion = "0.3"
+// It tracks the linked RELAY module so the two cannot drift.
+const SpecVersion = relay.SpecVersion
 
 // LINMaxDataLen is the maximum number of data bytes in a LIN frame payload.
 const LINMaxDataLen = 8
