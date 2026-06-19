@@ -3,6 +3,7 @@
   "requirements": [
     {
       "id": "REQ-LIN-001",
+      "level": "LLR",
       "title": "ValidateFrame rejects ID > 0x3F",
       "description": "ValidateFrame shall return an error when Frame.ID exceeds MaxID (0x3F).",
       "asil": "ASIL-B",
@@ -11,6 +12,7 @@
     },
     {
       "id": "REQ-LIN-002",
+      "level": "LLR",
       "title": "ValidateFrame rejects empty data",
       "description": "ValidateFrame shall return an error when Frame.Data has zero length.",
       "asil": "ASIL-B",
@@ -19,6 +21,7 @@
     },
     {
       "id": "REQ-LIN-003",
+      "level": "LLR",
       "title": "ValidateFrame rejects oversized data",
       "description": "ValidateFrame shall return an error when len(Frame.Data) exceeds MaxDataLen (8).",
       "asil": "ASIL-B",
@@ -27,6 +30,7 @@
     },
     {
       "id": "REQ-LIN-004",
+      "level": "LLR",
       "title": "ProtectID parity bit P0",
       "description": "ProtectID shall compute P0 = ID0 XOR ID1 XOR ID2 XOR ID4 and place it in bit 6 of the returned PID byte.",
       "asil": "ASIL-B",
@@ -35,6 +39,7 @@
     },
     {
       "id": "REQ-LIN-005",
+      "level": "LLR",
       "title": "ProtectID parity bit P1",
       "description": "ProtectID shall compute P1 = NOT(ID1 XOR ID3 XOR ID4 XOR ID5) and place it in bit 7 of the returned PID byte.",
       "asil": "ASIL-B",
@@ -43,6 +48,7 @@
     },
     {
       "id": "REQ-LIN-006",
+      "level": "LLR",
       "title": "VerifyPID accepts correct parity",
       "description": "VerifyPID shall return the raw 6-bit ID and nil error when the parity bits in the PID are correct.",
       "asil": "ASIL-B",
@@ -51,6 +57,7 @@
     },
     {
       "id": "REQ-LIN-007",
+      "level": "LLR",
       "title": "VerifyPID rejects incorrect parity",
       "description": "VerifyPID shall return an error when the parity bits in the supplied PID do not match those computed by ProtectID for the embedded 6-bit ID.",
       "asil": "ASIL-B",
@@ -59,6 +66,7 @@
     },
     {
       "id": "REQ-LIN-008",
+      "level": "LLR",
       "title": "Classic checksum covers data bytes only",
       "description": "CalcChecksum with ClassicChecksum shall sum the data bytes only (excluding PID) using inverted carry-around 8-bit addition.",
       "asil": "ASIL-B",
@@ -67,6 +75,7 @@
     },
     {
       "id": "REQ-LIN-009",
+      "level": "LLR",
       "title": "Enhanced checksum includes PID",
       "description": "CalcChecksum with EnhancedChecksum shall include the PID byte in the sum alongside the data bytes, using inverted carry-around 8-bit addition.",
       "asil": "ASIL-B",
@@ -75,6 +84,7 @@
     },
     {
       "id": "REQ-LIN-010",
+      "level": "LLR",
       "title": "Checksum carry-around inversion",
       "description": "CalcChecksum shall apply carry-around addition (sum > 0xFF wraps by subtracting 0xFF, not 0x100) and invert the final sum (0xFF - sum).",
       "asil": "ASIL-B",
@@ -83,6 +93,7 @@
     },
     {
       "id": "REQ-LIN-011",
+      "level": "LLR",
       "title": "Bus.Publish registers slave response",
       "description": "Bus.Publish shall register a response payload for the given frame ID so that the next SendHeader for that ID returns the registered data.",
       "asil": "ASIL-B",
@@ -91,6 +102,7 @@
     },
     {
       "id": "REQ-LIN-012",
+      "level": "LLR",
       "title": "Bus.Subscribe delivers matching frames",
       "description": "Bus.Subscribe shall return a channel that receives every Frame whose ID matches any supplied Filter, or all Frames when no filters are supplied.",
       "asil": "ASIL-B",
@@ -99,6 +111,7 @@
     },
     {
       "id": "REQ-LIN-013",
+      "level": "LLR",
       "title": "MasterBus.SendHeader returns synthesised Frame",
       "description": "MasterBus.SendHeader shall trigger a frame exchange for the given ID and return the resulting Frame including correct PID and checksum.",
       "asil": "ASIL-B",
@@ -107,6 +120,7 @@
     },
     {
       "id": "REQ-LIN-014",
+      "level": "LLR",
       "title": "MasterBus.SendHeader returns ErrNoResponse",
       "description": "MasterBus.SendHeader shall return ErrNoResponse when no slave has registered a response for the requested frame ID.",
       "asil": "ASIL-B",
@@ -115,6 +129,7 @@
     },
     {
       "id": "REQ-LIN-015",
+      "level": "LLR",
       "title": "ValidateFrame accepts ID = 0x3F",
       "description": "ValidateFrame shall return nil error when Frame.ID equals MaxID (0x3F), the boundary maximum.",
       "asil": "ASIL-B",
@@ -123,6 +138,7 @@
     },
     {
       "id": "REQ-LIN-016",
+      "level": "LLR",
       "title": "ValidateFrame accepts data length 1",
       "description": "ValidateFrame shall return nil error when len(Frame.Data) equals 1, the boundary minimum.",
       "asil": "ASIL-B",
@@ -131,6 +147,7 @@
     },
     {
       "id": "REQ-LIN-017",
+      "level": "LLR",
       "title": "ValidateFrame accepts data length 8",
       "description": "ValidateFrame shall return nil error when len(Frame.Data) equals MaxDataLen (8), the boundary maximum.",
       "asil": "ASIL-B",
@@ -139,6 +156,7 @@
     },
     {
       "id": "REQ-LIN-018",
+      "level": "LLR",
       "title": "ProtectID preserves lower 6 bits",
       "description": "For any id in 0x00–0x3F, (ProtectID(id) & 0x3F) shall equal id.",
       "asil": "ASIL-B",
@@ -147,6 +165,7 @@
     },
     {
       "id": "REQ-LIN-019",
+      "level": "LLR",
       "title": "Bus.Publish with nil removes registration",
       "description": "Bus.Publish(id, nil) shall remove any previously registered response for id; subsequent SendHeader for that id shall return ErrNoResponse.",
       "asil": "ASIL-B",
@@ -155,6 +174,7 @@
     },
     {
       "id": "REQ-LIN-020",
+      "level": "LLR",
       "title": "Bus.Subscribe with All=true delivers every frame",
       "description": "A Filter with All=true shall match every Frame regardless of ID; Bus.Subscribe with such a filter delivers all frames on the bus.",
       "asil": "ASIL-B",
@@ -163,6 +183,7 @@
     },
     {
       "id": "REQ-LIN-021",
+      "level": "LLR",
       "title": "ErrNoResponse is a non-nil sentinel error",
       "description": "ErrNoResponse shall be a non-nil error value that callers can test with errors.Is(err, lin.ErrNoResponse).",
       "asil": "ASIL-B",
@@ -171,6 +192,7 @@
     },
     {
       "id": "REQ-VIRT-001",
+      "level": "LLR",
       "title": "New returns initialised bus",
       "description": "virtual.New shall return a Bus with an empty response table, no subscribers, and nil error.",
       "asil": "ASIL-B",
@@ -179,6 +201,7 @@
     },
     {
       "id": "REQ-VIRT-002",
+      "level": "LLR",
       "title": "Publish stores response",
       "description": "Publish(id, data) shall atomically store a copy of data as the response for id, replacing any prior entry.",
       "asil": "ASIL-B",
@@ -187,6 +210,7 @@
     },
     {
       "id": "REQ-VIRT-003",
+      "level": "LLR",
       "title": "Publish(nil) removes response",
       "description": "Publish(id, nil) shall remove the registered response for id so that subsequent SendHeader returns ErrNoResponse.",
       "asil": "ASIL-B",
@@ -195,6 +219,7 @@
     },
     {
       "id": "REQ-VIRT-004",
+      "level": "LLR",
       "title": "Publish rejects ID > MaxID",
       "description": "Publish shall return an error when id > 0x3F.",
       "asil": "ASIL-B",
@@ -203,6 +228,7 @@
     },
     {
       "id": "REQ-VIRT-005",
+      "level": "LLR",
       "title": "Publish after Close returns error",
       "description": "Publish shall return an error when called after Close.",
       "asil": "ASIL-B",
@@ -211,6 +237,7 @@
     },
     {
       "id": "REQ-VIRT-006",
+      "level": "LLR",
       "title": "SendHeader computes correct PID",
       "description": "SendHeader shall set Frame.ID to the requested id and compute the PID using ProtectID before broadcasting.",
       "asil": "ASIL-B",
@@ -219,6 +246,7 @@
     },
     {
       "id": "REQ-VIRT-007",
+      "level": "LLR",
       "title": "SendHeader computes correct checksum",
       "description": "SendHeader shall set Frame.Checksum using CalcChecksum with the response's ChecksumType.",
       "asil": "ASIL-B",
@@ -227,6 +255,7 @@
     },
     {
       "id": "REQ-VIRT-008",
+      "level": "LLR",
       "title": "SendHeader broadcasts to subscribers",
       "description": "SendHeader shall deliver the synthesised Frame to every subscriber whose filter matches the frame ID.",
       "asil": "ASIL-B",
@@ -235,6 +264,7 @@
     },
     {
       "id": "REQ-VIRT-009",
+      "level": "LLR",
       "title": "SendHeader returns ErrNoResponse",
       "description": "SendHeader shall return ErrNoResponse when no response is registered for the requested id.",
       "asil": "ASIL-B",
@@ -243,6 +273,7 @@
     },
     {
       "id": "REQ-VIRT-010",
+      "level": "LLR",
       "title": "SendHeader rejects ID > MaxID",
       "description": "SendHeader shall return an error when id > 0x3F.",
       "asil": "ASIL-B",
@@ -251,6 +282,7 @@
     },
     {
       "id": "REQ-VIRT-011",
+      "level": "LLR",
       "title": "Subscribe exact filter isolates by ID",
       "description": "A subscriber with Filter{ID: x} shall not receive frames whose ID differs from x.",
       "asil": "ASIL-B",
@@ -259,6 +291,7 @@
     },
     {
       "id": "REQ-VIRT-012",
+      "level": "LLR",
       "title": "Subscribe All filter receives every frame",
       "description": "A subscriber with Filter{All: true} shall receive every frame regardless of ID.",
       "asil": "ASIL-B",
@@ -267,6 +300,7 @@
     },
     {
       "id": "REQ-VIRT-013",
+      "level": "LLR",
       "title": "Full subscriber channel drops frames without blocking",
       "description": "When a subscriber channel is full, SendHeader shall drop the frame for that subscriber rather than blocking.",
       "asil": "ASIL-B",
@@ -275,6 +309,7 @@
     },
     {
       "id": "REQ-VIRT-014",
+      "level": "LLR",
       "title": "Multiple subscribers each receive independently",
       "description": "When multiple subscribers match a frame, each shall receive a copy independently.",
       "asil": "ASIL-B",
@@ -283,6 +318,7 @@
     },
     {
       "id": "REQ-VIRT-015",
+      "level": "LLR",
       "title": "Close closes all subscriber channels",
       "description": "Close shall close every subscriber channel so that range-loops over those channels terminate.",
       "asil": "ASIL-B",
@@ -291,6 +327,7 @@
     },
     {
       "id": "REQ-VIRT-016",
+      "level": "LLR",
       "title": "Close is idempotent",
       "description": "Close shall return nil and have no observable effect when called a second time.",
       "asil": "ASIL-B",
@@ -299,6 +336,7 @@
     },
     {
       "id": "REQ-VIRT-017",
+      "level": "LLR",
       "title": "SendHeader after Close returns error",
       "description": "SendHeader shall return an error when called after Close.",
       "asil": "ASIL-B",
@@ -307,6 +345,7 @@
     },
     {
       "id": "REQ-VIRT-018",
+      "level": "LLR",
       "title": "Concurrent access is data-race free",
       "description": "Publish, SendHeader, Subscribe, and Close may be called concurrently from multiple goroutines without data races.",
       "asil": "ASIL-B",
@@ -315,6 +354,7 @@
     },
     {
       "id": "REQ-VIRT-019",
+      "level": "LLR",
       "title": "Publish stores a defensive copy",
       "description": "Publish shall copy the supplied data slice; subsequent mutation of the caller's slice shall not affect the stored response.",
       "asil": "ASIL-B",
@@ -323,6 +363,7 @@
     },
     {
       "id": "REQ-LDF-001",
+      "level": "LLR",
       "title": "Parse extracts protocol version",
       "description": "Parse shall populate DB.ProtocolVersion from the LIN_protocol_version field.",
       "asil": "ASIL-A",
@@ -331,6 +372,7 @@
     },
     {
       "id": "REQ-LDF-002",
+      "level": "LLR",
       "title": "Parse extracts baud rate",
       "description": "Parse shall populate DB.Speed (kbps) from the LIN_speed field.",
       "asil": "ASIL-A",
@@ -339,6 +381,7 @@
     },
     {
       "id": "REQ-LDF-003",
+      "level": "LLR",
       "title": "Parse extracts master node name",
       "description": "Parse shall populate DB.MasterNode from the Nodes Master declaration.",
       "asil": "ASIL-A",
@@ -347,6 +390,7 @@
     },
     {
       "id": "REQ-LDF-004",
+      "level": "LLR",
       "title": "Parse extracts slave node list",
       "description": "Parse shall populate DB.SlaveNodes from the Nodes Slaves declaration.",
       "asil": "ASIL-A",
@@ -355,6 +399,7 @@
     },
     {
       "id": "REQ-LDF-005",
+      "level": "LLR",
       "title": "Parse populates frame descriptors",
       "description": "Parse shall populate frame descriptors (name, ID, publisher, length) from the LDF Frames section.",
       "asil": "ASIL-A",
@@ -363,6 +408,7 @@
     },
     {
       "id": "REQ-LDF-006",
+      "level": "LLR",
       "title": "Parse populates signal-to-bit-offset mappings",
       "description": "Parse shall populate SignalRef entries (signal name and bit offset) for each frame.",
       "asil": "ASIL-A",
@@ -371,6 +417,7 @@
     },
     {
       "id": "REQ-LDF-007",
+      "level": "LLR",
       "title": "Parse populates signal bit width",
       "description": "Parse shall populate Signal.BitWidth from the signal definition in the LDF Signals section.",
       "asil": "ASIL-A",
@@ -379,6 +426,7 @@
     },
     {
       "id": "REQ-LDF-008",
+      "level": "LLR",
       "title": "Parse populates signal publisher",
       "description": "Parse shall populate Signal.Publisher from the signal definition.",
       "asil": "ASIL-A",
@@ -387,6 +435,7 @@
     },
     {
       "id": "REQ-LDF-009",
+      "level": "LLR",
       "title": "Decode uses LSB-first Intel byte order",
       "description": "Decode shall extract signal values using LSB-first (Intel) bit ordering: bit 0 of the signal maps to bitOffset in the payload.",
       "asil": "ASIL-A",
@@ -395,6 +444,7 @@
     },
     {
       "id": "REQ-LDF-010",
+      "level": "LLR",
       "title": "Decode returns nil for unknown frame ID",
       "description": "Decode shall return nil when the frame ID is not present in the parsed LDF.",
       "asil": "ASIL-A",
@@ -403,6 +453,7 @@
     },
     {
       "id": "REQ-LDF-011",
+      "level": "LLR",
       "title": "Parse populates schedule table entries",
       "description": "Parse shall populate schedule tables with ScheduleEntry{ID, DelayMs} from the LDF Schedule_tables section.",
       "asil": "ASIL-A",
@@ -411,6 +462,7 @@
     },
     {
       "id": "REQ-LDF-012",
+      "level": "LLR",
       "title": "Frame() returns nil for unknown ID",
       "description": "DB.Frame() shall return nil when no frame with the given ID was declared in the LDF.",
       "asil": "ASIL-A",
@@ -419,6 +471,7 @@
     },
     {
       "id": "REQ-LDF-013",
+      "level": "LLR",
       "title": "Signal() returns nil for unknown name",
       "description": "DB.Signal() shall return nil when no signal with the given name was declared in the LDF.",
       "asil": "ASIL-A",
@@ -427,6 +480,7 @@
     },
     {
       "id": "REQ-LDF-014",
+      "level": "LLR",
       "title": "Parse does not panic on arbitrary input",
       "description": "Parse shall return a non-nil DB (possibly empty) and a non-nil error (or nil) for any input; it shall never panic.",
       "asil": "ASIL-A",
@@ -435,6 +489,7 @@
     },
     {
       "id": "REQ-LDF-015",
+      "level": "LLR",
       "title": "Frames() returns a defensive copy",
       "description": "DB.Frames() shall return a new map; mutations to the returned map shall not affect DB's internal frame table.",
       "asil": "ASIL-A",
@@ -443,6 +498,7 @@
     },
     {
       "id": "REQ-MASTER-001",
+      "level": "LLR",
       "title": "New returns non-nil Node",
       "description": "master.New shall return a non-nil *Node backed by the supplied MasterBus.",
       "asil": "ASIL-B",
@@ -451,6 +507,7 @@
     },
     {
       "id": "REQ-MASTER-002",
+      "level": "LLR",
       "title": "Node.SendHeader delegates to bus",
       "description": "Node.SendHeader shall call bus.SendHeader and return the Frame and error unchanged.",
       "asil": "ASIL-B",
@@ -459,6 +516,7 @@
     },
     {
       "id": "REQ-MASTER-003",
+      "level": "LLR",
       "title": "Run iterates schedule in order",
       "description": "Node.Run shall process schedule entries in the order they appear in the schedule table, restarting from the first entry after the last.",
       "asil": "ASIL-B",
@@ -467,6 +525,7 @@
     },
     {
       "id": "REQ-MASTER-004",
+      "level": "LLR",
       "title": "Run calls SendHeader for each slot",
       "description": "For each schedule slot, Run shall call MasterBus.SendHeader with the slot's frame ID.",
       "asil": "ASIL-B",
@@ -475,6 +534,7 @@
     },
     {
       "id": "REQ-MASTER-005",
+      "level": "LLR",
       "title": "Run waits slot delay between exchanges",
       "description": "Run shall wait slot.DelayMs milliseconds after each frame exchange before processing the next slot.",
       "asil": "ASIL-B",
@@ -483,6 +543,7 @@
     },
     {
       "id": "REQ-MASTER-006",
+      "level": "LLR",
       "title": "Run invokes OnFrame on success",
       "description": "Run shall call the OnFrame callback with the received Frame when SendHeader succeeds.",
       "asil": "ASIL-B",
@@ -491,6 +552,7 @@
     },
     {
       "id": "REQ-MASTER-007",
+      "level": "LLR",
       "title": "Run invokes OnError on failure",
       "description": "Run shall call the OnError callback when SendHeader returns a non-nil error.",
       "asil": "ASIL-B",
@@ -499,6 +561,7 @@
     },
     {
       "id": "REQ-MASTER-008",
+      "level": "LLR",
       "title": "Run returns on context cancellation",
       "description": "Run shall return ctx.Err() when ctx is cancelled or expires.",
       "asil": "ASIL-B",
@@ -507,6 +570,7 @@
     },
     {
       "id": "REQ-MASTER-009",
+      "level": "LLR",
       "title": "Run returns error for empty schedule",
       "description": "Run shall return an error immediately when the schedule table is empty.",
       "asil": "ASIL-B",
@@ -515,6 +579,7 @@
     },
     {
       "id": "REQ-MASTER-010",
+      "level": "LLR",
       "title": "SetSchedule rejects empty schedule",
       "description": "SetSchedule shall return an error when called with nil or a zero-length slice.",
       "asil": "ASIL-B",
@@ -523,6 +588,7 @@
     },
     {
       "id": "REQ-MASTER-011",
+      "level": "LLR",
       "title": "SetSchedule rejects invalid frame ID",
       "description": "SetSchedule shall return an error when any entry has ID > MaxID (0x3F).",
       "asil": "ASIL-B",
@@ -531,6 +597,7 @@
     },
     {
       "id": "REQ-MASTER-012",
+      "level": "LLR",
       "title": "SetSchedule stores a defensive copy",
       "description": "SetSchedule shall copy the supplied slice; subsequent mutation of the caller's slice shall not affect the active schedule.",
       "asil": "ASIL-B",
@@ -539,6 +606,7 @@
     },
     {
       "id": "REQ-MASTER-013",
+      "level": "LLR",
       "title": "Run continues after per-slot errors",
       "description": "Run shall continue to the next schedule slot when SendHeader returns an error (e.g., ErrNoResponse); it shall not abort the schedule.",
       "asil": "ASIL-B",
@@ -547,6 +615,7 @@
     },
     {
       "id": "REQ-SLAVE-001",
+      "level": "LLR",
       "title": "New returns ready slave node",
       "description": "slave.New shall return a non-nil Node with no registered responses.",
       "asil": "ASIL-B",
@@ -555,6 +624,7 @@
     },
     {
       "id": "REQ-SLAVE-002",
+      "level": "LLR",
       "title": "SetResponse registers response via Publish",
       "description": "SetResponse shall call bus.Publish(id, data) and track id in its registered ID set.",
       "asil": "ASIL-B",
@@ -563,6 +633,7 @@
     },
     {
       "id": "REQ-SLAVE-003",
+      "level": "LLR",
       "title": "SetResponse(nil) removes registration",
       "description": "SetResponse(id, nil) shall call bus.Publish(id, nil) and remove id from the registered ID set.",
       "asil": "ASIL-B",
@@ -571,6 +642,7 @@
     },
     {
       "id": "REQ-SLAVE-004",
+      "level": "LLR",
       "title": "SetResponse rejects ID > MaxID",
       "description": "SetResponse shall return an error when id > 0x3F without calling bus.Publish.",
       "asil": "ASIL-B",
@@ -579,6 +651,7 @@
     },
     {
       "id": "REQ-SLAVE-005",
+      "level": "LLR",
       "title": "RegisteredIDs reflects current state",
       "description": "RegisteredIDs shall return exactly the set of IDs for which a non-nil response is currently registered.",
       "asil": "ASIL-B",
@@ -587,6 +660,7 @@
     },
     {
       "id": "REQ-SLAVE-006",
+      "level": "LLR",
       "title": "Subscribe delegates to bus",
       "description": "Subscribe shall delegate to bus.Subscribe and return the resulting channel and error unchanged.",
       "asil": "ASIL-B",
@@ -595,6 +669,7 @@
     },
     {
       "id": "REQ-SLAVE-007",
+      "level": "LLR",
       "title": "RegisteredIDs returns empty slice when none registered",
       "description": "RegisteredIDs shall return an empty (not nil) slice when no responses are currently registered.",
       "asil": "ASIL-B",
@@ -603,6 +678,7 @@
     },
     {
       "id": "REQ-SLAVE-008",
+      "level": "LLR",
       "title": "SetResponse overwrites previous registration for same ID",
       "description": "When SetResponse is called for an ID that already has a registration, the new data shall replace the previous registration.",
       "asil": "ASIL-B",
@@ -611,6 +687,7 @@
     },
     {
       "id": "REQ-SAFETY-001",
+      "level": "LLR",
       "title": "DataID embedded in header bytes 0-1",
       "description": "Protect shall write Config.DataID as a little-endian uint16 into bytes 0-1 of the protected payload.",
       "asil": "ASIL-B",
@@ -619,6 +696,7 @@
     },
     {
       "id": "REQ-SAFETY-002",
+      "level": "LLR",
       "title": "SourceID embedded in header bytes 2-3",
       "description": "Protect shall write Config.SourceID as a little-endian uint16 into bytes 2-3 of the protected payload.",
       "asil": "ASIL-B",
@@ -627,6 +705,7 @@
     },
     {
       "id": "REQ-SAFETY-003",
+      "level": "LLR",
       "title": "SequenceCounter starts at 0 and increments",
       "description": "The Protector's SequenceCounter shall start at 0 and increment by 1 with each Protect call.",
       "asil": "ASIL-B",
@@ -635,6 +714,7 @@
     },
     {
       "id": "REQ-SAFETY-004",
+      "level": "LLR",
       "title": "SequenceCounter embedded in header bytes 4-7",
       "description": "Protect shall write the current SequenceCounter as a little-endian uint32 into bytes 4-7.",
       "asil": "ASIL-B",
@@ -643,6 +723,7 @@
     },
     {
       "id": "REQ-SAFETY-005",
+      "level": "LLR",
       "title": "CRC computed over header and payload",
       "description": "Protect shall compute CRC-16/CCITT-FALSE (poly=0x1021, init=0xFFFF) over the header with CRC slot zeroed, concatenated with the payload.",
       "asil": "ASIL-B",
@@ -651,6 +732,7 @@
     },
     {
       "id": "REQ-SAFETY-006",
+      "level": "LLR",
       "title": "CRC embedded in header bytes 8-9",
       "description": "Protect shall write the computed CRC as a little-endian uint16 into bytes 8-9.",
       "asil": "ASIL-B",
@@ -659,6 +741,7 @@
     },
     {
       "id": "REQ-SAFETY-007",
+      "level": "LLR",
       "title": "Unwrap returns ErrHeaderTooShort for payload < 10 bytes",
       "description": "Unwrap shall return E2EError{Kind: ErrHeaderTooShort} when the input is shorter than 10 bytes.",
       "asil": "ASIL-B",
@@ -667,6 +750,7 @@
     },
     {
       "id": "REQ-SAFETY-008",
+      "level": "LLR",
       "title": "Unwrap detects byte corruption via CRC",
       "description": "Unwrap shall return E2EError{Kind: ErrCRCMismatch} when the recomputed CRC does not match bytes 8-9.",
       "asil": "ASIL-B",
@@ -675,6 +759,7 @@
     },
     {
       "id": "REQ-SAFETY-009",
+      "level": "LLR",
       "title": "Unwrap detects sequence gap",
       "description": "Unwrap shall return E2EError{Kind: ErrSequenceGap} when the received counter is not exactly lastSeq+1 (after the first received message).",
       "asil": "ASIL-B",
@@ -683,6 +768,7 @@
     },
     {
       "id": "REQ-SAFETY-010",
+      "level": "LLR",
       "title": "Unwrap returns original payload on success",
       "description": "Unwrap shall strip the 10-byte header and return a copy of the original payload when all checks pass.",
       "asil": "ASIL-B",
@@ -691,6 +777,7 @@
     },
     {
       "id": "REQ-SAFETY-011",
+      "level": "LLR",
       "title": "Protect/Unwrap round-trip preserves payload",
       "description": "For any payload p, Unwrap(Protect(p)) shall return a byte-for-byte copy of p with nil error when Protector and Receiver share the same Config.",
       "asil": "ASIL-B",
@@ -699,6 +786,7 @@
     },
     {
       "id": "REQ-SAFETY-012",
+      "level": "LLR",
       "title": "Protect output length equals 10 + len(payload)",
       "description": "The byte slice returned by Protect shall have length exactly headerSize (10) + len(payload).",
       "asil": "ASIL-B",
@@ -707,6 +795,7 @@
     },
     {
       "id": "REQ-SAFETY-013",
+      "level": "LLR",
       "title": "Unwrap accepts first message with any counter value",
       "description": "A newly created Receiver shall accept the first Unwrap call regardless of the counter value in the header.",
       "asil": "ASIL-B",
@@ -715,6 +804,7 @@
     },
     {
       "id": "REQ-SAFETY-014",
+      "level": "LLR",
       "title": "Protect is safe for concurrent calls",
       "description": "Protect may be called concurrently from multiple goroutines; each call shall receive a unique, monotonically increasing counter value.",
       "asil": "ASIL-B",
@@ -723,6 +813,7 @@
     },
     {
       "id": "REQ-SAFETY-015",
+      "level": "LLR",
       "title": "Unwrap returns an independent payload copy",
       "description": "The payload returned by Unwrap shall be a fresh copy; mutations to it shall not affect future Unwrap calls or internal state.",
       "asil": "ASIL-B",
@@ -731,6 +822,7 @@
     },
     {
       "id": "REQ-SEOOC-001",
+      "level": "HLR",
       "title": "Integrating system provides physical LIN layer",
       "description": "The system integrating go-LIN shall provide a correct LIN physical layer (transceiver, break detection, bit timing). go-LIN operates above the physical layer.",
       "asil": "ASIL-B",
@@ -739,6 +831,7 @@
     },
     {
       "id": "REQ-SEOOC-002",
+      "level": "HLR",
       "title": "Integrating system calls ValidateFrame on external data",
       "description": "The integrating system shall call ValidateFrame on any frame received from external hardware before passing it to go-LIN APIs.",
       "asil": "ASIL-B",
@@ -747,6 +840,7 @@
     },
     {
       "id": "REQ-SEOOC-003",
+      "level": "HLR",
       "title": "Integrating system validates frame ID semantics",
       "description": "The integrating system shall verify that a received frame ID corresponds to the intended actuator or sensor before acting on the payload.",
       "asil": "ASIL-B",
@@ -755,6 +849,7 @@
     },
     {
       "id": "REQ-SEOOC-004",
+      "level": "HLR",
       "title": "Integration: virtual bus delivers E2E payload intact",
       "description": "When Protect(payload) is published on the virtual bus and retrieved via SendHeader + Unwrap, the result shall equal payload with nil error.",
       "asil": "ASIL-B",
@@ -763,6 +858,7 @@
     },
     {
       "id": "REQ-SEOOC-005",
+      "level": "HLR",
       "title": "Integration: master-slave round-trip via virtual bus",
       "description": "A slave registered via slave.SetResponse shall have its payload returned by master.Node.SendHeader via the virtual bus.",
       "asil": "ASIL-B",
@@ -771,6 +867,7 @@
     },
     {
       "id": "REQ-SEOOC-006",
+      "level": "HLR",
       "title": "Integration: LDF schedule IDs are valid",
       "description": "LDF schedule table entries shall reference only frame IDs that appear in the Frames section and are within 0x00–0x3F.",
       "asil": "ASIL-A",
@@ -779,6 +876,7 @@
     },
     {
       "id": "REQ-SEOOC-007",
+      "level": "HLR",
       "title": "Integrating system handles ErrNoResponse safely",
       "description": "The integrating system shall handle lin.ErrNoResponse without propagating the absence of a slave as a safety-critical output change.",
       "asil": "ASIL-B",
@@ -787,6 +885,7 @@
     },
     {
       "id": "REQ-SEOOC-008",
+      "level": "HLR",
       "title": "Integrating system routes safety-critical frames through safety package",
       "description": "The integrating system shall apply safety.Protect/Unwrap to all frame payloads classified as safety-critical (ASIL >= ASIL-B).",
       "asil": "ASIL-B",
@@ -795,6 +894,7 @@
     },
     {
       "id": "REQ-SEOOC-009",
+      "level": "HLR",
       "title": "Integrating system provides monotonic clock for timing",
       "description": "The integrating system shall provide a monotonic clock with at least 1 ms resolution for LIN schedule slot timing.",
       "asil": "ASIL-B",
@@ -803,6 +903,7 @@
     },
     {
       "id": "REQ-ADAPT-001",
+      "level": "LLR",
       "title": "Adapt returns a LIN relay.Node",
       "description": "Adapt shall return a non-nil relay.Node whose Protocol method reports relay.LIN.",
       "asil": "ASIL-B",
@@ -811,6 +912,7 @@
     },
     {
       "id": "REQ-ADAPT-002",
+      "level": "LLR",
       "title": "linNode.Send publishes payload for a valid frame ID",
       "description": "linNode.Send shall publish msg.Payload as the slave response for the frame ID parsed from msg.ID when the ID is in range 0-63.",
       "asil": "ASIL-B",
@@ -819,6 +921,7 @@
     },
     {
       "id": "REQ-ADAPT-003",
+      "level": "LLR",
       "title": "linNode.Send rejects an out-of-range frame ID",
       "description": "linNode.Send shall return a non-nil error and shall not publish when msg.ID is not a decimal string in range 0-63.",
       "asil": "ASIL-B",
@@ -827,6 +930,7 @@
     },
     {
       "id": "REQ-ADAPT-004",
+      "level": "LLR",
       "title": "linNode.Subscribe converts frames to relay.Message",
       "description": "linNode.Subscribe shall return a channel that yields one relay.Message per received frame, each carrying the frame's canonical ToMessage() conversion.",
       "asil": "ASIL-B",
@@ -835,6 +939,7 @@
     },
     {
       "id": "REQ-ADAPT-005",
+      "level": "LLR",
       "title": "linNode.Close closes the underlying bus",
       "description": "linNode.Close shall close the wrapped Bus and return its error unchanged.",
       "asil": "ASIL-B",
@@ -843,11 +948,66 @@
     },
     {
       "id": "REQ-MOCK-001",
+      "level": "LLR",
       "title": "mock.New returns a MasterBus-satisfying bus",
       "description": "mock.New shall return a non-nil bus that satisfies lin.MasterBus (Publish, Subscribe, SendHeader, SetSchedule, Close).",
       "asil": "ASIL-B",
       "rationale": "RELAY §7 rule 4 / §13.7: a mandatory mock transport must implement the full bus contract so applications can be tested without hardware.",
       "tags": ["mock", "relay"]
+    },
+    {
+      "id": "REQ-SEC-001",
+      "level": "LLR",
+      "title": "LDF parser is robust against malformed input",
+      "description": "ldf.Parse shall return an error and shall not panic when given malformed, truncated, or hostile LDF input.",
+      "asil": "ASIL-A",
+      "rationale": "ISO 21434 / TARA: LDF content is untrusted input (CWE-20); a panic or hang on malformed input is a denial-of-service vector.",
+      "tags": ["security", "cyber", "robustness", "ldf"]
+    },
+    {
+      "id": "REQ-SEC-002",
+      "level": "LLR",
+      "title": "E2E CRC detects payload tampering",
+      "description": "Receiver.Unwrap shall return an ErrCRCMismatch error when any byte of the protected header or payload has been altered.",
+      "asil": "ASIL-B",
+      "rationale": "ISO 21434 / TARA: detects tampering (STRIDE-T, CWE-354) of safety-relevant payloads in transit on the bus.",
+      "tags": ["security", "cyber", "integrity", "safety"]
+    },
+    {
+      "id": "REQ-SEC-003",
+      "level": "LLR",
+      "title": "E2E sequence counter detects replay",
+      "description": "Receiver.Unwrap shall return an ErrSequenceGap error when a frame's sequence counter indicates a replayed or skipped frame.",
+      "asil": "ASIL-B",
+      "rationale": "ISO 21434 / TARA: detects replay/spoofing (STRIDE-S, CWE-294) of previously valid safety frames.",
+      "tags": ["security", "cyber", "replay", "safety"]
+    },
+    {
+      "id": "REQ-SEC-004",
+      "level": "LLR",
+      "title": "Frame validation bounds untrusted input at the trust boundary",
+      "description": "ValidateFrame shall reject any frame whose ID exceeds 0x3F or whose data length is outside 1-8 bytes before it is transmitted or processed.",
+      "asil": "ASIL-B",
+      "rationale": "IEC 62443 FR3 / TARA: enforces input bounds (CWE-20) at the library trust boundary so out-of-range untrusted frames cannot propagate.",
+      "tags": ["security", "cyber", "validation"]
+    },
+    {
+      "id": "REQ-SEC-005",
+      "level": "LLR",
+      "title": "FromMessage rejects out-of-range IDs from untrusted envelopes",
+      "description": "FromMessage shall return an error when the relay.Message ID does not parse to a decimal frame ID in range 0-63.",
+      "asil": "ASIL-B",
+      "rationale": "IEC 62443 FR3 / TARA: a relay.Message arriving from another protocol node is untrusted; an out-of-range ID must not yield a usable Frame.",
+      "tags": ["security", "cyber", "validation", "relay"]
+    },
+    {
+      "id": "REQ-SEC-006",
+      "level": "LLR",
+      "title": "Interop convert driver rejects invalid input safely",
+      "description": "The CLI convert command shall reject a structurally invalid frame with the ErrInvalidFrame sentinel name on stderr and a non-zero exit code, without emitting a converted message.",
+      "asil": "ASIL-B",
+      "rationale": "ISO 21434 / TARA: the convert driver processes untrusted JSON on stdin; invalid input must fail closed (CWE-20) and not leak a partial conversion.",
+      "tags": ["security", "cyber", "validation", "cli"]
     }
   ]
 }

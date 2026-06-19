@@ -1,12 +1,12 @@
 {
   "format": "go-FuSa dFMEA v1",
-  "generated_at": "2026-06-19T19:31:14.516157399Z",
+  "generated_at": "2026-06-19T20:33:23.960872Z",
   "module": "github.com/SoundMatt/go-LIN",
   "entries": [
     {
       "component": "go-LIN (lin)",
       "function": "Adapt",
-      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/adapt.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -25,7 +25,7 @@
     {
       "component": "go-LIN (lin)",
       "function": "CalcChecksum",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -51,7 +51,7 @@
     {
       "component": "go-LIN (lin)",
       "function": "Close",
-      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/adapt.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -70,15 +70,18 @@
     {
       "component": "go-LIN (lin)",
       "function": "FromMessage",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
       "effects": [
         "Silent failure propagated to caller"
       ],
-      "severity": "medium",
-      "detection_control": "unit tests",
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-SEC-005"
+      ],
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -91,7 +94,7 @@
     {
       "component": "go-LIN (lin)",
       "function": "Matches",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -112,7 +115,7 @@
     {
       "component": "go-LIN (lin)",
       "function": "ProtectID",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -138,7 +141,7 @@
     {
       "component": "go-LIN (lin)",
       "function": "Protocol",
-      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/adapt.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -157,7 +160,7 @@
     {
       "component": "go-LIN (lin)",
       "function": "Send",
-      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/adapt.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -177,7 +180,7 @@
     {
       "component": "go-LIN (lin)",
       "function": "Subscribe",
-      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/adapt.go",
       "failure_modes": [
         "Returns unexpected error",
         "Goroutine not terminated"
@@ -198,7 +201,7 @@
     {
       "component": "go-LIN (lin)",
       "function": "ToMessage",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -219,7 +222,7 @@
     {
       "component": "go-LIN (lin)",
       "function": "ValidateFrame",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -234,7 +237,8 @@
         "REQ-LIN-003",
         "REQ-LIN-015",
         "REQ-LIN-016",
-        "REQ-LIN-017"
+        "REQ-LIN-017",
+        "REQ-SEC-004"
       ],
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -248,7 +252,7 @@
     {
       "component": "go-LIN (lin)",
       "function": "VerifyPID",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -273,7 +277,7 @@
     {
       "component": "ldf",
       "function": "Decode",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/ldf/parser.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -294,7 +298,7 @@
     {
       "component": "ldf",
       "function": "Frame",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/ldf/parser.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -315,7 +319,7 @@
     {
       "component": "ldf",
       "function": "Frames",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/ldf/parser.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -336,7 +340,7 @@
     {
       "component": "ldf",
       "function": "Parse",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/ldf/parser.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -350,7 +354,8 @@
         "REQ-LDF-002",
         "REQ-LDF-003",
         "REQ-LDF-004",
-        "REQ-LDF-014"
+        "REQ-LDF-014",
+        "REQ-SEC-001"
       ],
       "cyber_risks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -360,7 +365,7 @@
     {
       "component": "ldf",
       "function": "Schedule",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/ldf/parser.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -380,7 +385,7 @@
     {
       "component": "ldf",
       "function": "Signal",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/ldf/parser.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -401,7 +406,7 @@
     {
       "component": "ldf",
       "function": "Signals",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/ldf/parser.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -422,7 +427,7 @@
     {
       "component": "master",
       "function": "New",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/master/master.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -438,7 +443,7 @@
     {
       "component": "master",
       "function": "OnError",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/master/master.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -454,7 +459,7 @@
     {
       "component": "master",
       "function": "OnFrame",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/master/master.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -470,7 +475,7 @@
     {
       "component": "master",
       "function": "Run",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/master/master.go",
       "failure_modes": [
         "Returns unexpected error",
         "Uncontrolled execution"
@@ -495,7 +500,7 @@
     {
       "component": "master",
       "function": "SendHeader",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/master/master.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -511,7 +516,7 @@
     {
       "component": "master",
       "function": "SetSchedule",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/master/master.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -529,7 +534,7 @@
     {
       "component": "mock",
       "function": "New",
-      "file": "/home/runner/work/go-LIN/go-LIN/mock/mock.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/mock/mock.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -545,7 +550,7 @@
     {
       "component": "safety",
       "function": "Error",
-      "file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/safety/e2e.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -561,7 +566,7 @@
     {
       "component": "safety",
       "function": "NewProtector",
-      "file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/safety/e2e.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -580,7 +585,7 @@
     {
       "component": "safety",
       "function": "NewReceiver",
-      "file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/safety/e2e.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -599,7 +604,7 @@
     {
       "component": "safety",
       "function": "Protect",
-      "file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/safety/e2e.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -625,7 +630,7 @@
     {
       "component": "safety",
       "function": "Unwrap",
-      "file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/safety/e2e.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -641,7 +646,9 @@
         "REQ-SAFETY-010",
         "REQ-SAFETY-011",
         "REQ-SAFETY-013",
-        "REQ-SAFETY-015"
+        "REQ-SAFETY-015",
+        "REQ-SEC-002",
+        "REQ-SEC-003"
       ],
       "cyber_risks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
@@ -650,7 +657,7 @@
     {
       "component": "slave",
       "function": "New",
-      "file": "/home/runner/work/go-LIN/go-LIN/slave/slave.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/slave/slave.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -666,7 +673,7 @@
     {
       "component": "slave",
       "function": "RegisteredIDs",
-      "file": "/home/runner/work/go-LIN/go-LIN/slave/slave.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/slave/slave.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -683,7 +690,7 @@
     {
       "component": "slave",
       "function": "SetResponse",
-      "file": "/home/runner/work/go-LIN/go-LIN/slave/slave.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/slave/slave.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -702,7 +709,7 @@
     {
       "component": "slave",
       "function": "Subscribe",
-      "file": "/home/runner/work/go-LIN/go-LIN/slave/slave.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/slave/slave.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -718,7 +725,7 @@
     {
       "component": "virtual",
       "function": "Close",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/virtual/bus.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -735,7 +742,7 @@
     {
       "component": "virtual",
       "function": "CloseWithDrain",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/virtual/bus.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -748,7 +755,7 @@
     {
       "component": "virtual",
       "function": "Health",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/virtual/bus.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -761,7 +768,7 @@
     {
       "component": "virtual",
       "function": "Metrics",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/virtual/bus.go",
       "failure_modes": [
         "Incorrect output"
       ],
@@ -774,7 +781,7 @@
     {
       "component": "virtual",
       "function": "New",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/virtual/bus.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -790,7 +797,7 @@
     {
       "component": "virtual",
       "function": "Publish",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/virtual/bus.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -810,7 +817,7 @@
     {
       "component": "virtual",
       "function": "PublishClassic",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/virtual/bus.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -823,7 +830,7 @@
     {
       "component": "virtual",
       "function": "SendHeader",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/virtual/bus.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -845,7 +852,7 @@
     {
       "component": "virtual",
       "function": "SetSchedule",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/virtual/bus.go",
       "failure_modes": [
         "Returns unexpected error"
       ],
@@ -858,7 +865,7 @@
     {
       "component": "virtual",
       "function": "Subscribe",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
+      "file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/virtual/bus.go",
       "failure_modes": [
         "Returns unexpected error"
       ],

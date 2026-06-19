@@ -1,0 +1,103 @@
+{
+  "project": "go-LIN",
+  "standard": "ISO 26262",
+  "operationalSituations": [
+    {
+      "id": "OS-001",
+      "description": "Vehicle driving with an active LIN sub-bus controlling body electronics (windows, mirrors, seats, wipers, climate flaps)."
+    },
+    {
+      "id": "OS-002",
+      "description": "Vehicle stationary, ignition on, comfort and convenience LIN functions active."
+    },
+    {
+      "id": "OS-003",
+      "description": "Diagnostic session in progress using LIN master request (0x3C) and slave response (0x3D) frames during service or production."
+    },
+    {
+      "id": "OS-004",
+      "description": "Industrial LIN segment driving actuators (valves, motors, lighting) under continuous master schedule execution."
+    }
+  ],
+  "hazards": [
+    {
+      "id": "H-01",
+      "description": "Master transmits a header for the wrong frame ID — an unintended slave actuates the wrong actuator.",
+      "situations": ["OS-001", "OS-004"],
+      "risk": {"severity": "S2", "exposure": "E3", "controllability": "C2", "asil": "ASIL-B"},
+      "safetyGoals": ["SG-01", "SG-05"]
+    },
+    {
+      "id": "H-02",
+      "description": "A corrupted LIN frame payload is received without error detection and an incorrect command is delivered to an actuator.",
+      "situations": ["OS-001", "OS-004"],
+      "risk": {"severity": "S2", "exposure": "E3", "controllability": "C2", "asil": "ASIL-B"},
+      "safetyGoals": ["SG-02"]
+    },
+    {
+      "id": "H-03",
+      "description": "Incorrect PID parity allows a wrong frame ID to be accepted as valid.",
+      "situations": ["OS-001", "OS-002"],
+      "risk": {"severity": "S2", "exposure": "E3", "controllability": "C2", "asil": "ASIL-B"},
+      "safetyGoals": ["SG-01"]
+    },
+    {
+      "id": "H-04",
+      "description": "A checksum error is not detected and corrupted data is passed to the application.",
+      "situations": ["OS-001", "OS-004"],
+      "risk": {"severity": "S2", "exposure": "E3", "controllability": "C2", "asil": "ASIL-B"},
+      "safetyGoals": ["SG-02"]
+    },
+    {
+      "id": "H-05",
+      "description": "An LDF signal is decoded with wrong bit offsets and an actuator is set to an out-of-range value.",
+      "situations": ["OS-001", "OS-004"],
+      "risk": {"severity": "S1", "exposure": "E3", "controllability": "C2", "asil": "ASIL-A"},
+      "safetyGoals": ["SG-03"]
+    },
+    {
+      "id": "H-06",
+      "description": "An E2E sequence-counter gap is not detected — a replayed or lost safety frame goes unnoticed.",
+      "situations": ["OS-001", "OS-003", "OS-004"],
+      "risk": {"severity": "S2", "exposure": "E2", "controllability": "C2", "asil": "ASIL-A"},
+      "safetyGoals": ["SG-04"]
+    }
+  ],
+  "safetyGoals": [
+    {
+      "id": "SG-01",
+      "description": "go-LIN shall correctly identify frame IDs using PID parity computation and verification.",
+      "hazards": ["H-01", "H-03"],
+      "asil": "ASIL-B",
+      "safeState": "Frame with an unverifiable or mismatched PID is rejected and not delivered to the application."
+    },
+    {
+      "id": "SG-02",
+      "description": "go-LIN shall detect frame payload corruption using the LIN checksum algorithm.",
+      "hazards": ["H-02", "H-04"],
+      "asil": "ASIL-B",
+      "safeState": "Frame failing checksum verification is rejected and reported as an error rather than delivered."
+    },
+    {
+      "id": "SG-03",
+      "description": "go-LIN shall correctly parse LDF signal definitions and decode frame payloads without offset errors.",
+      "hazards": ["H-05"],
+      "asil": "ASIL-A",
+      "safeState": "Malformed LDF input is rejected at parse time with a descriptive error; no decode occurs."
+    },
+    {
+      "id": "SG-04",
+      "description": "go-LIN shall detect E2E sequence gaps and CRC mismatches.",
+      "hazards": ["H-06"],
+      "asil": "ASIL-A",
+      "safeState": "E2E-protected frame with a sequence gap or CRC mismatch is surfaced as an E2EError and not treated as valid."
+    },
+    {
+      "id": "SG-05",
+      "description": "go-LIN shall validate all frame IDs and data lengths at API boundaries.",
+      "hazards": ["H-01"],
+      "asil": "ASIL-B",
+      "safeState": "Out-of-range frame ID or data length is rejected by ValidateFrame before transmission or processing."
+    }
+  ]
+}

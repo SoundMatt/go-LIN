@@ -1,6 +1,6 @@
 # Safety Case: github.com/SoundMatt/go-LIN
 
-Generated: 2026-06-19T19:31:15Z  
+Generated: 2026-06-19T20:33:25Z  
 Standard: generic
 
 ## Top Claim
@@ -12,10 +12,10 @@ argued by demonstrating compliance with the safety development lifecycle.
 
 | ID | Description | Status | Detail |
 |---|---|---|---|
-| Sn1 | Coding standard and static analysis checks | ⚠ absent | run 'gofusa check --output check-report.json' to generate |
-| Sn2 | Requirements traceability matrix | ✅ present | 106 requirements |
-| Sn3 | Test evidence bundle | ✅ present | 137/137 tests passed |
-| Sn4 | Tool qualification report | ⚠ absent | run 'gofusa qualify' to generate |
+| Sn1 | Coding standard and static analysis checks | ✅ present | 294 findings (0 errors, 233 warnings) |
+| Sn2 | Requirements traceability matrix | ✅ present | 112 requirements |
+| Sn3 | Test evidence bundle | ✅ present | 176/176 tests passed |
+| Sn4 | Tool qualification report | ✅ present | 44/44 cases passed |
 | Sn5 | SBOM (SPDX 3.0.1) | ✅ present |  |
 | Sn6 | Build provenance | ✅ present |  |
 
@@ -31,7 +31,4 @@ argued by demonstrating compliance with the safety development lifecycle.
 
 ## Gaps
 
-The following evidence items are absent:
-
-- `check`
-- `qualify`
+None — all evidence present.

@@ -63,11 +63,11 @@ func main() {
 	}
 	switch os.Args[1] {
 	case "version":
-		cmdVersion(os.Args[2:])
+		cmdVersion(os.Args[2:], os.Stdout)
 	case "capabilities":
-		cmdCapabilities()
+		cmdCapabilities(os.Stdout)
 	case "status":
-		cmdStatus(os.Args[2:])
+		cmdStatus(os.Args[2:], os.Stdout)
 	case "send":
 		cmdSend(os.Args[2:])
 	case "subscribe":
@@ -77,9 +77,9 @@ func main() {
 	case "dump":
 		cmdDump()
 	case "pid":
-		cmdPID(os.Args[2:])
+		cmdPID(os.Args[2:], os.Stdout)
 	case "cs":
-		cmdCS(os.Args[2:])
+		cmdCS(os.Args[2:], os.Stdout)
 	default:
 		fmt.Fprintf(os.Stderr, "%s: unknown subcommand %q\n", toolName, os.Args[1])
 		usage()
@@ -110,7 +110,7 @@ RELAY interop driver:
 
 // ── RELAY mandatory commands ──────────────────────────────────────────────────
 
-func cmdVersion(args []string) {
+func cmdVersion(args []string, w io.Writer) {
 	format := "text"
 	for _, a := range args {
 		if a == "--format=json" || a == "json" {
@@ -131,15 +131,15 @@ func cmdVersion(args []string) {
 			"language":     "go",
 			"runtime":      runtime.Version(),
 		}
-		enc := json.NewEncoder(os.Stdout)
+		enc := json.NewEncoder(w)
 		enc.SetIndent("", "  ")
 		_ = enc.Encode(out)
 	} else {
-		fmt.Printf("%s %s (RELAY spec %s, %s)\n", toolName, ver, lin.SpecVersion, runtime.Version())
+		fmt.Fprintf(w, "%s %s (RELAY spec %s, %s)\n", toolName, ver, lin.SpecVersion, runtime.Version())
 	}
 }
 
-func cmdCapabilities() {
+func cmdCapabilities(w io.Writer) {
 	ver := toolVersion()
 	out := map[string]any{
 		"kind":                "capabilities",
@@ -155,12 +155,12 @@ func cmdCapabilities() {
 		"optional_interfaces": []string{"HealthProvider", "MetricsProvider", "Drainer"},
 		"adapt":               true,
 	}
-	enc := json.NewEncoder(os.Stdout)
+	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
 	_ = enc.Encode(out)
 }
 
-func cmdStatus(args []string) {
+func cmdStatus(args []string, w io.Writer) {
 	format := "text"
 	for _, a := range args {
 		if a == "--format=json" || a == "json" {
@@ -178,11 +178,11 @@ func cmdStatus(args []string) {
 			"endpoint":  "",
 			"details":   map[string]any{},
 		}
-		enc := json.NewEncoder(os.Stdout)
+		enc := json.NewEncoder(w)
 		enc.SetIndent("", "  ")
 		_ = enc.Encode(out)
 	} else {
-		fmt.Printf("%s %s: healthy\n", toolName, ver)
+		fmt.Fprintf(w, "%s %s: healthy\n", toolName, ver)
 	}
 }
 
@@ -314,6 +314,8 @@ func cmdSubscribe(args []string) {
 // — writing the relay.Message as JSON on stdout. The timestamp is left zero so
 // interop comparisons are deterministic. On invalid input it writes the RELAY
 // §5 sentinel name to stderr. Exit: 0 converted, 1 invalid input, 2 invalid args.
+//
+//fusa:req REQ-SEC-006
 func cmdConvert(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("convert", flag.ContinueOnError)
 	fs.SetOutput(stderr)
@@ -403,17 +405,17 @@ func cmdDump() {
 	}
 }
 
-func cmdPID(args []string) {
+func cmdPID(args []string, w io.Writer) {
 	if len(args) != 1 {
 		fmt.Fprintf(os.Stderr, "usage: %s pid <id>\n", toolName)
 		os.Exit(1)
 	}
 	id := parseID(args[0])
 	pid := lin.ProtectID(id)
-	fmt.Printf("ID=0x%02X  PID=0x%02X  binary=%08b\n", id, pid, pid)
+	fmt.Fprintf(w, "ID=0x%02X  PID=0x%02X  binary=%08b\n", id, pid, pid)
 }
 
-func cmdCS(args []string) {
+func cmdCS(args []string, w io.Writer) {
 	if len(args) != 2 {
 		fmt.Fprintf(os.Stderr, "usage: %s cs <id> <hex-data>\n", toolName)
 		os.Exit(1)
@@ -422,7 +424,7 @@ func cmdCS(args []string) {
 	data := parseHex(args[1])
 	pid := lin.ProtectID(id)
 	cs := lin.CalcChecksum(pid, data, lin.EnhancedChecksum)
-	fmt.Printf("ID=0x%02X  PID=0x%02X  data=%s  checksum(enhanced)=0x%02X\n",
+	fmt.Fprintf(w, "ID=0x%02X  PID=0x%02X  data=%s  checksum(enhanced)=0x%02X\n",
 		id, pid, strings.ToUpper(hex.EncodeToString(data)), cs)
 }
 

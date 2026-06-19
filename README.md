@@ -116,6 +116,32 @@ go run ./cmd/lintool send 0x10 01020304 # publish response + trigger exchange
 go run ./cmd/lintool dump               # subscribe to all frames
 ```
 
+## Safety & compliance
+
+go-LIN is developed as a Safety Element Out Of Context (SEOOC) targeting
+**ASIL-B / SIL 2**, with a complete, continuously-verified evidence pack. Every
+CI run gates on the full go-FuSa lifecycle (`check`, 100% requirement
+traceability **and** test coverage, `cyber`, `vuln`, `qualify`), RELAY
+conformance (`relay conform --strict`, `relay interop`), a per-package coverage
+floor, and **zero-GAP compliance gap reports** across seven standards.
+
+| Standard | Report | Evidence |
+|---|---|---|
+| ISO 26262 (Part 6) | `gofusa iso26262` | [HARA.md](HARA.md), `.fusa-hara.json`, [SEOOC.md](SEOOC.md), `fmea.*` |
+| IEC 61508 (Parts 1-3) | `gofusa iec61508` | [SAFETY_PLAN.md](SAFETY_PLAN.md), [SVP.md](SVP.md), `coverage-report.json` |
+| ISO/SAE 21434 | `gofusa iso21434` | [tara.md](tara.md), [SECURITY.md](SECURITY.md), `vuln.json` |
+| IEC 62443-4-2 | `gofusa iec62443` | `.fusa-iec62443.json`, [INCIDENT-RESPONSE.md](INCIDENT-RESPONSE.md) |
+| DO-178C (Annex A) | `gofusa do178` | [SVP.md](SVP.md), [SCMP.md](SCMP.md), [SQAP.md](SQAP.md), `sas.md` |
+| UN R.155 (CSMS) | `gofusa unece` | [SECURITY.md](SECURITY.md), `tara.json` |
+| SLSA v1.0 | `gofusa slsa` | `provenance.json`, `sbom.json` |
+
+Start with the **[Safety Manual](SAFETY_MANUAL.md)** — it is the integration-facing
+document covering safety goals, the safety mechanisms go-LIN provides, the
+conditions of use the integrator must satisfy, and the error-handling contract.
+The architecture trust boundary is in `boundary.mermaid`; the assembled argument
+is in [safety-case.md](safety-case.md). 112 atomic requirements
+(`.fusa-reqs.json`) are each traced to code and to a test.
+
 ## Philosophy
 
 - **Interface-first** — one stable `lin.Bus` interface; transports are swappable.

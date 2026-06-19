@@ -160,6 +160,8 @@ func NewReceiver(cfg Config) *Receiver {
 //fusa:req REQ-SAFETY-011
 //fusa:req REQ-SAFETY-013
 //fusa:req REQ-SAFETY-015
+//fusa:req REQ-SEC-002
+//fusa:req REQ-SEC-003
 func (r *Receiver) Unwrap(data []byte) ([]byte, error) {
 	if len(data) < headerSize {
 		return nil, &E2EError{

@@ -1,0 +1,18 @@
+{
+  "project": "go-LIN",
+  "standard": "IEC 62443-4-2",
+  "component_type": "embedded device / software component (SEOOC)",
+  "target_sl": "SL-2",
+  "achieved_sl": "SL-2",
+  "incident_resp_doc": "SECURITY.md",
+  "rationale": "go-LIN is a LIN protocol library used as a building block in automotive and industrial control systems. SL-2 (protection against intentional violation using simple means with low resources, generic skills and low motivation) is the appropriate target for a sub-bus protocol component: it processes untrusted frame and LDF input but does not itself terminate external network connectivity. Integrators requiring SL-3/SL-4 layer additional access control and network segmentation around the component (see SEOOC.md).",
+  "foundational_requirements": {
+    "FR1_identification_authentication": "N/A at component level — provided by the integrating ECU.",
+    "FR2_use_control": "N/A at component level — provided by the integrating ECU.",
+    "FR3_system_integrity": "ValidateFrame, PID parity, LIN checksum and E2E (CRC-16/CCITT-FALSE + sequence counter) protect frame and payload integrity.",
+    "FR4_data_confidentiality": "N/A — LIN is a plaintext field bus; confidentiality is out of scope for the protocol layer.",
+    "FR5_restricted_data_flow": "Library exposes no network listeners; data flow is bounded by the caller-provided Bus.",
+    "FR6_timely_response_to_events": "Errors are surfaced synchronously as typed sentinel errors (RELAY §5) for the integrator to act on.",
+    "FR7_resource_availability": "Bounded allocations; fuzz-tested parsers; no unbounded recursion or goroutine leaks."
+  }
+}

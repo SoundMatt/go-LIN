@@ -153,6 +153,7 @@ func TestCalcChecksum_carryAround(t *testing.T) {
 //fusa:test REQ-LIN-015
 //fusa:test REQ-LIN-016
 //fusa:test REQ-LIN-017
+//fusa:test REQ-SEC-004
 
 func TestValidateFrame_rejectsHighID(t *testing.T) {
 	if err := lin.ValidateFrame(lin.Frame{ID: 0x40, Data: []byte{0x01}}); err == nil {
@@ -275,6 +276,7 @@ func TestFrame_ToMessage_roundtrip(t *testing.T) {
 	}
 }
 
+//fusa:test REQ-SEC-005
 func TestFromMessage_invalidID(t *testing.T) {
 	relay := lin.Frame{}.ToMessage()
 	relay.ID = "not-a-number"

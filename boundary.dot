@@ -1,0 +1,31 @@
+// Module: github.com/SoundMatt/go-LIN
+// Generated: 2026-06-19T20:33:24Z
+digraph {
+    rankdir=LR
+    node [shape=box style=rounded fontname=Helvetica]
+
+    "github_com_SoundMatt_go_LIN" [label="lin"]
+    "github_com_SoundMatt_go_LIN_cmd_go_lin" [label="github.com/SoundMatt/go-LIN/cmd/go-lin"]
+    "github_com_SoundMatt_go_LIN_cmd_lintool" [label="github.com/SoundMatt/go-LIN/cmd/lintool"]
+    "github_com_SoundMatt_go_LIN_examples_quickstart" [label="github.com/SoundMatt/go-LIN/examples/quickstart"]
+    "github_com_SoundMatt_go_LIN_ldf" [label="ldf"]
+    "github_com_SoundMatt_go_LIN_master" [label="master"]
+    "github_com_SoundMatt_go_LIN_mock" [label="mock"]
+    "github_com_SoundMatt_go_LIN_safety" [label="safety"]
+    "github_com_SoundMatt_go_LIN_slave" [label="slave"]
+    "github_com_SoundMatt_go_LIN_virtual" [label="virtual"]
+
+    "github_com_SoundMatt_go_LIN_cmd_go_lin" -> "github_com_SoundMatt_go_LIN"
+    "github_com_SoundMatt_go_LIN_cmd_go_lin" -> "github_com_SoundMatt_go_LIN_virtual"
+    "github_com_SoundMatt_go_LIN_cmd_lintool" -> "github_com_SoundMatt_go_LIN"
+    "github_com_SoundMatt_go_LIN_cmd_lintool" -> "github_com_SoundMatt_go_LIN_virtual"
+    "github_com_SoundMatt_go_LIN_examples_quickstart" -> "github_com_SoundMatt_go_LIN"
+    "github_com_SoundMatt_go_LIN_examples_quickstart" -> "github_com_SoundMatt_go_LIN_master"
+    "github_com_SoundMatt_go_LIN_examples_quickstart" -> "github_com_SoundMatt_go_LIN_slave"
+    "github_com_SoundMatt_go_LIN_examples_quickstart" -> "github_com_SoundMatt_go_LIN_virtual"
+    "github_com_SoundMatt_go_LIN_ldf" -> "github_com_SoundMatt_go_LIN"
+    "github_com_SoundMatt_go_LIN_master" -> "github_com_SoundMatt_go_LIN"
+    "github_com_SoundMatt_go_LIN_mock" -> "github_com_SoundMatt_go_LIN_virtual"
+    "github_com_SoundMatt_go_LIN_slave" -> "github_com_SoundMatt_go_LIN"
+    "github_com_SoundMatt_go_LIN_virtual" -> "github_com_SoundMatt_go_LIN"
+}
