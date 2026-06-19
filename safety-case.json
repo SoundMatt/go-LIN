@@ -1,6 +1,6 @@
 {
   "format": "go-FuSa Safety Case v1",
-  "generatedAt": "2026-06-19T20:33:25.265531Z",
+  "generatedAt": "2026-06-19T20:36:23.952283887Z",
   "module": "github.com/SoundMatt/go-LIN",
   "standard": "generic",
   "evidence": [
@@ -8,8 +8,8 @@
       "id": "check",
       "description": "Coding standard and static analysis checks",
       "file": "check-report.json",
-      "status": "present",
-      "detail": "294 findings (0 errors, 233 warnings)"
+      "status": "absent",
+      "detail": "run 'gofusa check --output check-report.json' to generate"
     },
     {
       "id": "trace",
@@ -29,8 +29,8 @@
       "id": "qualify",
       "description": "Tool qualification report",
       "file": "qualify-report.json",
-      "status": "present",
-      "detail": "44/44 cases passed"
+      "status": "absent",
+      "detail": "run 'gofusa qualify' to generate"
     },
     {
       "id": "sbom",
@@ -88,5 +88,8 @@
       ]
     }
   ],
-  "gaps": null
+  "gaps": [
+    "check",
+    "qualify"
+  ]
 }

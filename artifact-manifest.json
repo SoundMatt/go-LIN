@@ -4,16 +4,16 @@
   "tool": "go-FuSa",
   "toolVersion": "0.30.0",
   "language": "go",
-  "generatedAt": "2026-06-19T20:33:25.294104Z",
+  "generatedAt": "2026-06-19T20:36:23.971737184Z",
   "format": "x-FuSa manifest v1",
   "artifacts": [
     {
-      "path": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/sbom.json",
-      "sha256": "a56cbbdadc064ce7ce410649b49c498cf94d0d749d6ab415fb79921a6600769f"
+      "path": "/home/runner/work/go-LIN/go-LIN/sbom.json",
+      "sha256": "84e5495f2faf5cf12c5329c99a0e85efcce8a9551df41f140455475c80f65718"
     },
     {
-      "path": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/provenance.json",
-      "sha256": "8b2a037e70efef235b1e345cc246b7fb62e627dce6b9979f03cdf310a21299a8"
+      "path": "/home/runner/work/go-LIN/go-LIN/provenance.json",
+      "sha256": "38ee0e1d31cde7b88ff3a4cdf935adbe2cfa875e7ad9ba1e3f5336895bf2cdf7"
     }
   ]
 }

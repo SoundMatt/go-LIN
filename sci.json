@@ -1,7 +1,7 @@
 {
   "project": "go-LIN",
   "version": "1",
-  "generated": "2026-06-19T20:33:24.103721Z",
+  "generated": "2026-06-19T20:36:22.6054889Z",
   "items": [
     {
       "name": "Software Development Plan",
@@ -55,7 +55,7 @@
       "name": "SBOM (SPDX 3.0.1)",
       "file": "sbom.json",
       "class": "Configuration Management",
-      "sha256": "cdd66828f131e3be2b4bc5b5694f131f65f36abf89c8aba6e917d49ef7a23c10",
+      "sha256": "a56cbbdadc064ce7ce410649b49c498cf94d0d749d6ab415fb79921a6600769f",
       "present": true,
       "note": "DO-178C §11.15, NTIA SBOM"
     },
@@ -63,7 +63,7 @@
       "name": "Build Provenance",
       "file": "provenance.json",
       "class": "Configuration Management",
-      "sha256": "a5d76696ad1aac5d1de8e9075376c2cdacf779447ebd67d55502bf1ad2e561d7",
+      "sha256": "4db172cd17b5f7291a9cfe5fbf42cea3e35173ad53f7406b81e8d551eb9ec1c9",
       "present": true,
       "note": "SLSA L2"
     },
@@ -78,23 +78,21 @@
       "name": "Test Evidence Bundle",
       "file": ".fusa-evidence.json",
       "class": "Verification",
-      "sha256": "4308a52d324af4b580e398c97d8c9b631b8c89ca80d1979b1d83e988b77d6e99",
-      "present": true,
+      "present": false,
       "note": "DO-178C §11.14"
     },
     {
       "name": "Vulnerability Report",
       "file": "vuln.json",
       "class": "Verification",
-      "sha256": "9fe691cce817f659da4cc036299c3c82d1da09bc214e1f63690f56d03e89a4e4",
-      "present": true,
+      "present": false,
       "note": "ISO 21434 / OSV"
     },
     {
       "name": "FMEA Table",
       "file": "fmea.json",
       "class": "Verification",
-      "sha256": "d9374c086f0bcdedaf72a38cdc8e5fc7d584872dc067a9be1aa1eff0eee9be6a",
+      "sha256": "3f5c974763a8122d8e91e928dbdafcbd07f442de24a5acb02548c79bdb0464a3",
       "present": true,
       "note": "DO-178C §11.9 (safety analysis)"
     },
@@ -102,7 +100,7 @@
       "name": "TARA Report",
       "file": "tara.json",
       "class": "Verification",
-      "sha256": "2d1d2c1d83322cd42ce48e2ea8c55424562893b21c1dc64d8bf4acb97d65c64d",
+      "sha256": "55feea5a338c7c6f589934964f086790edecc4990cede7dacb836912b03cfdcb",
       "present": true,
       "note": "ISO 21434 §9"
     },
@@ -110,7 +108,7 @@
       "name": "TARA Markdown",
       "file": "tara.md",
       "class": "Verification",
-      "sha256": "6ee2465cae49efc5b900ec41c502dfee61b679b463d067845572716676f6b5c0",
+      "sha256": "61c1972c17f188f497308aca9929d4fc50d42f08038ef8280f572d42b78835b3",
       "present": true,
       "note": "ISO 21434 §9"
     },
@@ -118,7 +116,7 @@
       "name": "Boundary Diagram",
       "file": "boundary.mermaid",
       "class": "Verification",
-      "sha256": "1d2ed29dd4ffdded24fa917f1e6f56e544c7c5fa4c4ee8d7f509847088408a9e",
+      "sha256": "6dbfe99f9ff9e0f6c38b8b1436bbcf8f2bbd9741560463133dd3da1be107378d",
       "present": true,
       "note": "DO-178C §11.10 (architecture)"
     },
@@ -126,23 +124,21 @@
       "name": "Cyber Report",
       "file": "cyber-report.json",
       "class": "Verification",
-      "sha256": "1aa64aeb340914ecd59b6bbd6cb37fc6ba7a03a704b479aed7e5c5c06f0bc86b",
-      "present": true,
+      "present": false,
       "note": "ISO 21434 §11"
     },
     {
       "name": "Tool Qualification Report",
       "file": "qualify-report.json",
       "class": "Quality Assurance",
-      "sha256": "b5401c681b62190a18f41b52d02856236ae181a158ea1d7d6aafeecbe0be18e2",
-      "present": true,
+      "present": false,
       "note": "DO-178C §12 / DO-330"
     },
     {
       "name": "Safety Case",
       "file": "safety-case.json",
       "class": "Accomplishment Summary",
-      "sha256": "cf24ef8a3ff9cb470e07bcc1258a059992fca55e11235a9de9cee5a1061dc5a4",
+      "sha256": "2463c6a5e377cee245bea8ca3325bb83d456312bf85c7c3acae51a3b0937eee7",
       "present": true,
       "note": "DO-178C §11.20 (SAS input)"
     },
