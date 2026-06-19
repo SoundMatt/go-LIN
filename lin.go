@@ -271,6 +271,7 @@ func CalcChecksum(pid uint8, data []byte, ct LINChecksumType) uint8 {
 //fusa:req REQ-LIN-015
 //fusa:req REQ-LIN-016
 //fusa:req REQ-LIN-017
+//fusa:req REQ-SEC-004
 func ValidateFrame(f Frame) error {
 	if f.ID > LINMaxID {
 		return fmt.Errorf("lin: frame ID 0x%02X exceeds maximum 0x%02X: %w", f.ID, LINMaxID, ErrInvalidFrame)
@@ -310,6 +311,8 @@ func (f Frame) ToMessage() relay.Message {
 }
 
 // FromMessage converts a relay.Message envelope back to a Frame per RELAY spec §15.3.
+//
+//fusa:req REQ-SEC-005
 func FromMessage(m relay.Message) (Frame, error) {
 	id, err := strconv.ParseUint(m.ID, 10, 8)
 	if err != nil || id > LINMaxID {

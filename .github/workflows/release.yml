@@ -34,6 +34,11 @@ jobs:
       - name: Regenerate TARA (threat analysis, ISO 21434)
         run: gofusa tara
 
+      - name: Regenerate architecture boundary + configuration index
+        run: |
+          gofusa boundary
+          gofusa sci -output sci.json
+
       - name: Generate test evidence bundle (closes safety-case verify gap)
         run: gofusa verify || true
 
@@ -42,6 +47,20 @@ jobs:
 
       - name: Regenerate SBOM, provenance, and artifact manifest
         run: gofusa release
+
+      - name: Inject build provenance builder (SLSA L2 / IEC 62443 CR 1.4)
+        run: |
+          python3 - <<'PY'
+          import json, os
+          p = "provenance.json"
+          d = json.load(open(p))
+          server = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
+          repo = os.environ.get("GITHUB_REPOSITORY", "SoundMatt/go-LIN")
+          ref = os.environ.get("GITHUB_REF", "refs/heads/main")
+          d["builder"] = f"{server}/{repo}/.github/workflows/release.yml@{ref}"
+          json.dump(d, open(p, "w"), indent=2)
+          print("builder:", d["builder"])
+          PY
 
       - name: Configure git
         run: |
@@ -53,6 +72,7 @@ jobs:
           TAG="${{ github.ref_name }}"
           git add fmea.csv fmea.json \
                   tara.json tara.md \
+                  boundary.mermaid boundary.dot sci.json \
                   safety-case.json safety-case.md safety-case.mermaid \
                   sbom.json provenance.json artifact-manifest.json
           if git diff --cached --quiet; then

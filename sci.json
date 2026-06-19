@@ -1,0 +1,212 @@
+{
+  "project": "go-LIN",
+  "version": "1",
+  "generated": "2026-06-19T20:33:24.103721Z",
+  "items": [
+    {
+      "name": "Software Development Plan",
+      "file": "SAFETY_PLAN.md",
+      "class": "Plan",
+      "sha256": "a0298c2e34d2c87d8a1fe69d732bee77fcba7a3ebefc23a9c79afb896470877f",
+      "present": true,
+      "note": "DO-178C §11.1"
+    },
+    {
+      "name": "Software Verification Plan",
+      "file": "SVP.md",
+      "class": "Plan",
+      "sha256": "0e57facb1a9ef1312c04cb162d764450694feb4e7c0e7d8d2dc2060f675df8ba",
+      "present": true,
+      "note": "DO-178C §11.3"
+    },
+    {
+      "name": "Software Configuration Management Plan",
+      "file": "SCMP.md",
+      "class": "Plan",
+      "sha256": "78d5f02c213bccb48cf8cb386dd9fdf43ca512142db16020e32cad134463a4b0",
+      "present": true,
+      "note": "DO-178C §11.4"
+    },
+    {
+      "name": "Software Quality Assurance Plan",
+      "file": "SQAP.md",
+      "class": "Plan",
+      "sha256": "610405870f2e6f967452459fcd682ded6c058446baa081a868f235f4bb05b84e",
+      "present": true,
+      "note": "DO-178C §11.5"
+    },
+    {
+      "name": "Requirements Manifest",
+      "file": ".fusa-reqs.json",
+      "class": "Development",
+      "sha256": "28ea64cc1ca18cf4da1b04fa04b2bb7ca4563323462e680a979d28844ab3c2a0",
+      "present": true,
+      "note": "DO-178C §11.9"
+    },
+    {
+      "name": "Project Configuration",
+      "file": ".fusa.json",
+      "class": "Configuration Management",
+      "sha256": "9f6c303db5cdb46f0c3a6ee76ab05e7610a1bf548e379ddf28f34930d9a30c69",
+      "present": true,
+      "note": "go-FuSa project config"
+    },
+    {
+      "name": "SBOM (SPDX 3.0.1)",
+      "file": "sbom.json",
+      "class": "Configuration Management",
+      "sha256": "cdd66828f131e3be2b4bc5b5694f131f65f36abf89c8aba6e917d49ef7a23c10",
+      "present": true,
+      "note": "DO-178C §11.15, NTIA SBOM"
+    },
+    {
+      "name": "Build Provenance",
+      "file": "provenance.json",
+      "class": "Configuration Management",
+      "sha256": "a5d76696ad1aac5d1de8e9075376c2cdacf779447ebd67d55502bf1ad2e561d7",
+      "present": true,
+      "note": "SLSA L2"
+    },
+    {
+      "name": "Artifact Manifest",
+      "file": "manifest.json",
+      "class": "Configuration Management",
+      "present": false,
+      "note": "go-FuSa release"
+    },
+    {
+      "name": "Test Evidence Bundle",
+      "file": ".fusa-evidence.json",
+      "class": "Verification",
+      "sha256": "4308a52d324af4b580e398c97d8c9b631b8c89ca80d1979b1d83e988b77d6e99",
+      "present": true,
+      "note": "DO-178C §11.14"
+    },
+    {
+      "name": "Vulnerability Report",
+      "file": "vuln.json",
+      "class": "Verification",
+      "sha256": "9fe691cce817f659da4cc036299c3c82d1da09bc214e1f63690f56d03e89a4e4",
+      "present": true,
+      "note": "ISO 21434 / OSV"
+    },
+    {
+      "name": "FMEA Table",
+      "file": "fmea.json",
+      "class": "Verification",
+      "sha256": "d9374c086f0bcdedaf72a38cdc8e5fc7d584872dc067a9be1aa1eff0eee9be6a",
+      "present": true,
+      "note": "DO-178C §11.9 (safety analysis)"
+    },
+    {
+      "name": "TARA Report",
+      "file": "tara.json",
+      "class": "Verification",
+      "sha256": "2d1d2c1d83322cd42ce48e2ea8c55424562893b21c1dc64d8bf4acb97d65c64d",
+      "present": true,
+      "note": "ISO 21434 §9"
+    },
+    {
+      "name": "TARA Markdown",
+      "file": "tara.md",
+      "class": "Verification",
+      "sha256": "6ee2465cae49efc5b900ec41c502dfee61b679b463d067845572716676f6b5c0",
+      "present": true,
+      "note": "ISO 21434 §9"
+    },
+    {
+      "name": "Boundary Diagram",
+      "file": "boundary.mermaid",
+      "class": "Verification",
+      "sha256": "1d2ed29dd4ffdded24fa917f1e6f56e544c7c5fa4c4ee8d7f509847088408a9e",
+      "present": true,
+      "note": "DO-178C §11.10 (architecture)"
+    },
+    {
+      "name": "Cyber Report",
+      "file": "cyber-report.json",
+      "class": "Verification",
+      "sha256": "1aa64aeb340914ecd59b6bbd6cb37fc6ba7a03a704b479aed7e5c5c06f0bc86b",
+      "present": true,
+      "note": "ISO 21434 §11"
+    },
+    {
+      "name": "Tool Qualification Report",
+      "file": "qualify-report.json",
+      "class": "Quality Assurance",
+      "sha256": "b5401c681b62190a18f41b52d02856236ae181a158ea1d7d6aafeecbe0be18e2",
+      "present": true,
+      "note": "DO-178C §12 / DO-330"
+    },
+    {
+      "name": "Safety Case",
+      "file": "safety-case.json",
+      "class": "Accomplishment Summary",
+      "sha256": "cf24ef8a3ff9cb470e07bcc1258a059992fca55e11235a9de9cee5a1061dc5a4",
+      "present": true,
+      "note": "DO-178C §11.20 (SAS input)"
+    },
+    {
+      "name": "Software Accomplishment Summary",
+      "file": "sas.md",
+      "class": "Accomplishment Summary",
+      "sha256": "0f7ddcc95be64e8365704d1ffea5351942c3e7884ea3d503b37ede708f4d4361",
+      "present": true,
+      "note": "DO-178C §11.20"
+    },
+    {
+      "name": "Audit Pack",
+      "file": "audit-pack.zip",
+      "class": "Configuration Management",
+      "present": false,
+      "note": "go-FuSa audit bundle"
+    },
+    {
+      "name": "Problem Reports",
+      "file": ".fusa-problems.json",
+      "class": "Quality Assurance",
+      "sha256": "0f6160948f7e3d118049be40709eba371a05d4d59f80d83f1693d88dcf125526",
+      "present": true,
+      "note": "DO-178C §11.17"
+    },
+    {
+      "name": "IEC 62443 Config",
+      "file": ".fusa-iec62443.json",
+      "class": "Configuration Management",
+      "sha256": "ed0728709873b6dea22392d644395a4a1cce7bfc9ce5ee5a50c78daa030bd105",
+      "present": true,
+      "note": "IEC 62443-4-1"
+    },
+    {
+      "name": "CODEOWNERS",
+      "file": ".github/CODEOWNERS",
+      "class": "Configuration Management",
+      "present": false,
+      "note": "SLSA L3 review evidence"
+    },
+    {
+      "name": "CI Workflow",
+      "file": ".github/workflows/ci.yml",
+      "class": "Configuration Management",
+      "sha256": "57218c31b37e2df3175c7b9298f453a29cd07f9bcab143d15f5903a7abbfe552",
+      "present": true,
+      "note": "DO-178C §12.2 (tool env)"
+    },
+    {
+      "name": "Incident Response Plan",
+      "file": "INCIDENT-RESPONSE.md",
+      "class": "Plan",
+      "sha256": "eb6a38f00c92470b6cd93c882f5b4a20a25dd56b2eedc423e1a729ef3c9fc602",
+      "present": true,
+      "note": "IEC 62443-4-2 CR 6.2.1"
+    },
+    {
+      "name": "Security Policy",
+      "file": "SECURITY.md",
+      "class": "Quality Assurance",
+      "sha256": "3a138cd578dd8da3137a38af0303aec5b26862b5e75aabdf24f2a99776ea1c19",
+      "present": true,
+      "note": "IEC 62443-4-2 CR 6.2"
+    }
+  ]
+}

@@ -134,6 +134,7 @@ func TestUnwrap_headerTooShort(t *testing.T) {
 // ── REQ-SAFETY-008: ErrCRCMismatch ───────────────────────────────────────────
 
 //fusa:test REQ-SAFETY-008
+//fusa:test REQ-SEC-002
 
 func TestUnwrap_crcMismatch(t *testing.T) {
 	p := safety.NewProtector(cfg)
@@ -174,6 +175,7 @@ func TestUnwrap_dataCorruption(t *testing.T) {
 // ── REQ-SAFETY-009: ErrSequenceGap ───────────────────────────────────────────
 
 //fusa:test REQ-SAFETY-009
+//fusa:test REQ-SEC-003
 
 func TestUnwrap_sequenceGap(t *testing.T) {
 	p := safety.NewProtector(cfg)

@@ -41,6 +41,39 @@ jobs:
           name: coverage
           path: coverage.out
 
+  # ── Per-package coverage floor ────────────────────────────────────────────
+  # Library packages must hold >= 85% statement coverage. cmd/ (CLI glue with
+  # os.Exit / signal handling) and examples/ are excluded.
+  coverage-gate:
+    name: Coverage floor (library packages >= 85%)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+
+      - name: Enforce per-package coverage floor
+        shell: bash
+        run: |
+          FLOOR=85
+          fail=0
+          while read -r line; do
+            pkg=$(echo "$line" | grep -oE 'github.com/[^[:space:]]+' | head -1)
+            cov=$(echo "$line" | grep -oE '[0-9.]+%' | head -1 | tr -d '%')
+            case "$pkg" in
+              */cmd/*|*/examples/*) echo "skip $pkg (excluded)"; continue ;;
+            esac
+            [ -z "$cov" ] && continue
+            if awk "BEGIN{exit !($cov < $FLOOR)}"; then
+              echo "FAIL $pkg ${cov}% < ${FLOOR}%"; fail=1
+            else
+              echo "ok   $pkg ${cov}%"
+            fi
+          done < <(go test -cover ./... 2>/dev/null | grep 'coverage:')
+          exit $fail
+
   # ── Benchmark smoke run ───────────────────────────────────────────────────
   benchmark-smoke:
     name: Benchmark smoke (ubuntu-latest)
@@ -165,20 +198,52 @@ jobs:
       - name: gofusa vuln (dependency vulnerability scan)
         run: gofusa vuln
 
+      - name: gofusa trace (gate on 100% requirements tested)
+        run: gofusa trace -sec-tested 100
+
+      - name: gofusa cyber (cybersecurity analysis)
+        run: gofusa cyber
+
+      - name: gofusa vuln (dependency vulnerability scan)
+        run: gofusa vuln
+
       - name: gofusa qualify (tool qualification suite)
         run: gofusa qualify
 
       - name: gofusa verify (test evidence bundle)
-        run: gofusa verify || true
+        run: gofusa verify
 
-      - name: gofusa tara (threat analysis, ISO 21434)
-        run: gofusa tara || true
+      - name: gofusa coverage (structural coverage report)
+        run: |
+          go test -coverprofile=coverage.out ./...
+          gofusa coverage -format json -output coverage-report.json
 
-      - name: gofusa fmea (dFMEA)
-        run: gofusa fmea || true
+      - name: gofusa hara (validate HARA structured data)
+        run: gofusa hara show > /dev/null
+
+      - name: gofusa boundary / sci / coupling / tara / fmea (evidence)
+        run: |
+          gofusa boundary
+          gofusa sci -output sci.json
+          gofusa coupling
+          gofusa tara
+          gofusa fmea -cyber
 
       - name: gofusa release (SBOM + build provenance, SLSA)
-        run: gofusa release || true
+        run: gofusa release
+
+      - name: Inject build provenance builder (SLSA L2 / IEC 62443 CR 1.4)
+        run: |
+          python3 - <<'PY'
+          import json, os
+          p = "provenance.json"
+          d = json.load(open(p))
+          server = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
+          repo = os.environ.get("GITHUB_REPOSITORY", "SoundMatt/go-LIN")
+          d["builder"] = f"{server}/{repo}/.github/workflows/ci.yml@{os.environ.get('GITHUB_REF','refs/heads/main')}"
+          json.dump(d, open(p, "w"), indent=2)
+          print("builder:", d["builder"])
+          PY
 
       - name: gofusa audit-pack (bundle all evidence)
         run: gofusa audit-pack --output gofusa-audit-pack.zip || true
@@ -190,3 +255,66 @@ jobs:
           name: gofusa-safety-evidence
           path: gofusa-audit-pack.zip
           if-no-files-found: ignore
+
+  # ── Standards compliance gates (ISO 26262 / IEC 61508 / ISO 21434 /
+  #    IEC 62443 / DO-178C / UN R.155 / SLSA) ──────────────────────────────────
+  # Generates the full evidence set, then runs every go-FuSa compliance gap
+  # report. Each report exits non-zero on a GAP or FAIL, so this job fails if
+  # the project drifts out of compliance with any standard.
+  compliance:
+    name: Standards compliance (ISO / IEC / DO / UNECE / SLSA)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+
+      - name: Install go-FuSa
+        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.30.0
+
+      - name: Generate evidence
+        run: |
+          go test -coverprofile=coverage.out ./...
+          gofusa check ./...
+          gofusa cyber
+          gofusa vuln
+          gofusa qualify
+          gofusa verify
+          gofusa coverage -format json -output coverage-report.json
+          gofusa boundary
+          gofusa sci -output sci.json
+          gofusa coupling
+          gofusa tara
+          gofusa fmea -cyber
+          gofusa safety-case
+          gofusa check --output cyber-plan.json
+          gofusa release
+
+      - name: Inject build provenance builder (SLSA L2 / IEC 62443 CR 1.4)
+        run: |
+          python3 - <<'PY'
+          import json, os
+          p = "provenance.json"
+          d = json.load(open(p))
+          server = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
+          repo = os.environ.get("GITHUB_REPOSITORY", "SoundMatt/go-LIN")
+          d["builder"] = f"{server}/{repo}/.github/workflows/ci.yml@{os.environ.get('GITHUB_REF','refs/heads/main')}"
+          json.dump(d, open(p, "w"), indent=2)
+          PY
+
+      - name: ISO 26262 (Part 6)
+        run: gofusa iso26262
+      - name: IEC 61508 (Parts 1-3)
+        run: gofusa iec61508
+      - name: ISO 21434 (cybersecurity)
+        run: gofusa iso21434
+      - name: IEC 62443-4-2 (IACS cybersecurity)
+        run: gofusa iec62443
+      - name: DO-178C (Annex A)
+        run: gofusa do178
+      - name: UN R.155 (CSMS)
+        run: gofusa unece
+      - name: SLSA v1.0 (supply chain)
+        run: gofusa slsa

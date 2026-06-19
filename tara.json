@@ -1,6 +1,6 @@
 {
   "format": "go-FuSa TARA v1",
-  "generated_at": "2026-06-19T19:31:14.715093225Z",
+  "generated_at": "2026-06-19T20:33:24.089271Z",
   "module": "github.com/SoundMatt/go-LIN",
   "entries": [
     {
@@ -20,7 +20,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/adapt.go",
       "source_line": 44
     },
     {
@@ -40,8 +40,8 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/cmd/go-lin/main.go",
-      "source_line": 447
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/cmd/go-lin/main.go",
+      "source_line": 449
     },
     {
       "id": "TARA-003",
@@ -60,7 +60,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/cmd/lintool/main.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/cmd/lintool/main.go",
       "source_line": 155
     },
     {
@@ -80,7 +80,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/examples/quickstart/main.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/examples/quickstart/main.go",
       "source_line": 53
     },
     {
@@ -100,7 +100,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/examples/quickstart/main.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/examples/quickstart/main.go",
       "source_line": 54
     },
     {
@@ -120,7 +120,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/examples/quickstart/main.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/examples/quickstart/main.go",
       "source_line": 65
     },
     {
@@ -140,7 +140,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/examples/quickstart/main.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/examples/quickstart/main.go",
       "source_line": 66
     },
     {
@@ -160,7 +160,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/examples/quickstart/main.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/examples/quickstart/main.go",
       "source_line": 93
     },
     {
@@ -180,7 +180,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/examples/quickstart/main.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/examples/quickstart/main.go",
       "source_line": 99
     },
     {
@@ -200,7 +200,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/examples/quickstart/main.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/examples/quickstart/main.go",
       "source_line": 100
     },
     {
@@ -220,8 +220,8 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
-      "source_line": 441
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/ldf/parser.go",
+      "source_line": 442
     },
     {
       "id": "TARA-012",
@@ -240,8 +240,8 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
-      "source_line": 487
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/ldf/parser.go",
+      "source_line": 488
     },
     {
       "id": "TARA-013",
@@ -260,7 +260,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
       "source_line": 255
     },
     {
@@ -280,7 +280,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
       "source_line": 258
     },
     {
@@ -300,7 +300,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
       "source_line": 263
     },
     {
@@ -320,7 +320,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/lin.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
       "source_line": 263
     },
     {
@@ -340,8 +340,8 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/lin.go",
-      "source_line": 327
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
+      "source_line": 330
     },
     {
       "id": "TARA-018",
@@ -360,8 +360,8 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/lin.go",
-      "source_line": 329
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin.go",
+      "source_line": 332
     },
     {
       "id": "TARA-019",
@@ -380,7 +380,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/lin_test.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin_test.go",
       "source_line": 93
     },
     {
@@ -400,7 +400,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/lin_test.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin_test.go",
       "source_line": 95
     },
     {
@@ -420,7 +420,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/lin_test.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin_test.go",
       "source_line": 100
     },
     {
@@ -440,7 +440,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/lin_test.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin_test.go",
       "source_line": 134
     },
     {
@@ -460,7 +460,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/lin_test.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/lin_test.go",
       "source_line": 139
     },
     {
@@ -480,8 +480,8 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
-      "source_line": 231
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/safety/e2e.go",
+      "source_line": 233
     },
     {
       "id": "TARA-025",
@@ -500,7 +500,7 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/safety/e2e_test.go",
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/safety/e2e_test.go",
       "source_line": 61
     },
     {
@@ -520,8 +520,8 @@
       "current_control": "Add range check before conversion",
       "residual_risk": "Low after remediation",
       "cyber_rule_id": "CYBER009",
-      "source_file": "/home/runner/work/go-LIN/go-LIN/safety/e2e_test.go",
-      "source_line": 229
+      "source_file": "/Users/matt/Documents/Coding/SoundMatt/go-LIN/safety/e2e_test.go",
+      "source_line": 231
     }
   ]
 }

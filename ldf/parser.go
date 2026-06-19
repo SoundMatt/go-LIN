@@ -104,6 +104,7 @@ type Signal struct {
 //fusa:req REQ-LDF-003
 //fusa:req REQ-LDF-004
 //fusa:req REQ-LDF-014
+//fusa:req REQ-SEC-001
 func Parse(r io.Reader) (*DB, error) {
 	db := &DB{
 		frames:    make(map[uint8]*Frame),
