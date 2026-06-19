@@ -88,12 +88,60 @@ jobs:
       - name: FuzzProtectUnwrap (safety)
         run: go test -fuzz=^FuzzProtectUnwrap$ -fuzztime=200000x ./safety/...
 
-  # ── go-FuSa safety checks ─────────────────────────────────────────────────
-  # Pinned to v0.30.0; exits 1 on any ERROR-level finding.
-  # To upgrade: install the new version locally, run 'gofusa check ./...',
-  # fix all findings, then bump the @version pin below.
+  # ── RELAY conformance gate (spec §12 / §17 / §20.1.1) ─────────────────────
+  # Validates the built CLI's version/capabilities/status documents against the
+  # §12 JSON Schemas embedded in the relay binary. --strict fails on FAIL or WARN.
+  # Pin the relay version so spec bumps are an explicit upgrade.
+  relay-conform:
+    name: RELAY conform (--strict)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+
+      - name: Install relay CLI
+        run: go install github.com/SoundMatt/RELAY/cmd/relay@v1.10.0
+
+      - name: Build CLI
+        run: go build -o /tmp/go-lin ./cmd/go-lin
+
+      - name: relay conform --strict
+        run: relay conform --strict /tmp/go-lin
+
+  # ── RELAY interop behavioural conformance (spec §11.2 / §20.2) ────────────
+  # Drives the CLI's `convert` command with the LIN golden vectors and confirms
+  # its relay.Message output is EQUIVALENT to the reference implementation.
+  relay-interop:
+    name: RELAY interop (LIN)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.25"
+
+      - name: Install relay CLI
+        run: go install github.com/SoundMatt/RELAY/cmd/relay@v1.10.0
+
+      - name: Build CLI
+        run: go build -o /tmp/go-lin ./cmd/go-lin
+
+      - name: relay interop --protocol LIN
+        run: relay interop --protocol LIN /tmp/go-lin
+
+  # ── go-FuSa full safety lifecycle (spec §20.1.2) ──────────────────────────
+  # Pinned to v0.30.0. §20 makes the full lifecycle normative: every change must
+  # pass check (ERROR gate), 100% requirement traceability, cybersecurity
+  # analysis, dependency vulnerability scan, and tool qualification. The
+  # remaining steps generate evidence artifacts (verify/fmea/release) and are
+  # non-gating. To upgrade: install the new version locally, run the gating
+  # commands, fix all findings, then bump the @version pin below.
   gofusa:
-    name: go-FuSa safety check (v0.30.0)
+    name: go-FuSa full lifecycle (v0.30.0)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -105,5 +153,40 @@ jobs:
       - name: Install go-FuSa
         run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.30.0
 
-      - name: gofusa check
+      - name: gofusa check (gate on ERROR findings)
         run: gofusa check ./...
+
+      - name: gofusa trace (gate on 100% requirement traceability)
+        run: gofusa trace -req-coverage 100
+
+      - name: gofusa cyber (cybersecurity analysis)
+        run: gofusa cyber
+
+      - name: gofusa vuln (dependency vulnerability scan)
+        run: gofusa vuln
+
+      - name: gofusa qualify (tool qualification suite)
+        run: gofusa qualify
+
+      - name: gofusa verify (test evidence bundle)
+        run: gofusa verify || true
+
+      - name: gofusa tara (threat analysis, ISO 21434)
+        run: gofusa tara || true
+
+      - name: gofusa fmea (dFMEA)
+        run: gofusa fmea || true
+
+      - name: gofusa release (SBOM + build provenance, SLSA)
+        run: gofusa release || true
+
+      - name: gofusa audit-pack (bundle all evidence)
+        run: gofusa audit-pack --output gofusa-audit-pack.zip || true
+
+      - name: Upload safety evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: gofusa-safety-evidence
+          path: gofusa-audit-pack.zip
+          if-no-files-found: ignore

@@ -16,6 +16,8 @@ import "github.com/SoundMatt/go-LIN/virtual"
 
 // New returns a fully functional in-process LIN bus for testing.
 // It implements lin.MasterBus (Publish, Subscribe, SendHeader, SetSchedule, Close).
+//
+//fusa:req REQ-MOCK-001
 func New() (*virtual.Bus, error) {
 	return virtual.New()
 }

@@ -31,6 +31,12 @@ jobs:
       - name: Regenerate dFMEA table
         run: gofusa fmea -cyber
 
+      - name: Regenerate TARA (threat analysis, ISO 21434)
+        run: gofusa tara
+
+      - name: Generate test evidence bundle (closes safety-case verify gap)
+        run: gofusa verify || true
+
       - name: Regenerate safety case
         run: gofusa safety-case
 
@@ -46,6 +52,7 @@ jobs:
         run: |
           TAG="${{ github.ref_name }}"
           git add fmea.csv fmea.json \
+                  tara.json tara.md \
                   safety-case.json safety-case.md safety-case.mermaid \
                   sbom.json provenance.json artifact-manifest.json
           if git diff --cached --quiet; then

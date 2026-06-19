@@ -16,6 +16,8 @@ import (
 
 // Adapt wraps bus as a relay.Node for use with protocol-agnostic applications.
 // Adapt does not block; it does not connect.
+//
+//fusa:req REQ-ADAPT-001
 func Adapt(bus Bus) relay.Node {
 	return &linNode{bus: bus}
 }
@@ -24,12 +26,16 @@ type linNode struct {
 	bus Bus
 }
 
+//fusa:req REQ-ADAPT-001
 func (n *linNode) Protocol() relay.Protocol {
 	return relay.LIN
 }
 
 // Send publishes msg.Payload as a slave response for the frame ID in msg.ID.
 // msg.ID must be a decimal string in range 0–63.
+//
+//fusa:req REQ-ADAPT-002
+//fusa:req REQ-ADAPT-003
 func (n *linNode) Send(ctx context.Context, msg relay.Message) error {
 	id, err := strconv.ParseUint(msg.ID, 10, 8)
 	if err != nil || id > LINMaxID {
@@ -39,6 +45,8 @@ func (n *linNode) Send(ctx context.Context, msg relay.Message) error {
 }
 
 // Subscribe returns a channel of relay.Message envelopes for all received frames.
+//
+//fusa:req REQ-ADAPT-004
 func (n *linNode) Subscribe(opts ...relay.SubscriberOption) (<-chan relay.Message, error) {
 	cfg := relay.ApplySubscriberOpts(opts)
 	ch := make(chan relay.Message, cfg.ChanDepth(64))
@@ -75,6 +83,7 @@ func (n *linNode) Subscribe(opts ...relay.SubscriberOption) (<-chan relay.Messag
 	return ch, nil
 }
 
+//fusa:req REQ-ADAPT-005
 func (n *linNode) Close() error {
 	return n.bus.Close()
 }
