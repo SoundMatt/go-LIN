@@ -4,15 +4,15 @@
   "tool": "go-FuSa",
   "toolVersion": "0.30.0",
   "language": "go",
-  "generatedAt": "2026-06-17T14:31:08.903084284Z",
+  "generatedAt": "2026-06-19T19:27:27.272357Z",
   "format": "x-FuSa SBOM v1",
   "module": "github.com/SoundMatt/go-LIN",
   "goVersion": "1.25.0",
   "components": [
     {
       "name": "github.com/SoundMatt/RELAY",
-      "version": "v1.0.0",
-      "hash": "sha256:79be0fbf11eb25dd23b11f7bcc11ce79334965707af52dcc585a5a927261a3a7"
+      "version": "v1.10.0",
+      "hash": "sha256:3fe52b6da302c1be3828a3dda2d0523df8cfb6a9c2e8692b09983c94d4a0b4a1"
     }
   ]
 }

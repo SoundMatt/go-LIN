@@ -800,6 +800,54 @@
       "asil": "ASIL-B",
       "rationale": "go-LIN uses time.After for slot delays; clock accuracy below 1 ms will cause schedule timing jitter.",
       "tags": ["seooc", "assumption", "timing"]
+    },
+    {
+      "id": "REQ-ADAPT-001",
+      "title": "Adapt returns a LIN relay.Node",
+      "description": "Adapt shall return a non-nil relay.Node whose Protocol method reports relay.LIN.",
+      "asil": "ASIL-B",
+      "rationale": "RELAY §10.3/§13.7: the protocol-agnostic application layer must observe the correct protocol tag to route LIN traffic.",
+      "tags": ["adapt", "relay"]
+    },
+    {
+      "id": "REQ-ADAPT-002",
+      "title": "linNode.Send publishes payload for a valid frame ID",
+      "description": "linNode.Send shall publish msg.Payload as the slave response for the frame ID parsed from msg.ID when the ID is in range 0-63.",
+      "asil": "ASIL-B",
+      "rationale": "RELAY §10.3: the adapter egress path must faithfully forward application payloads onto the LIN bus.",
+      "tags": ["adapt", "relay"]
+    },
+    {
+      "id": "REQ-ADAPT-003",
+      "title": "linNode.Send rejects an out-of-range frame ID",
+      "description": "linNode.Send shall return a non-nil error and shall not publish when msg.ID is not a decimal string in range 0-63.",
+      "asil": "ASIL-B",
+      "rationale": "SG-05: an invalid identifier supplied through the adapter must not be transmitted.",
+      "tags": ["adapt", "relay", "validation"]
+    },
+    {
+      "id": "REQ-ADAPT-004",
+      "title": "linNode.Subscribe converts frames to relay.Message",
+      "description": "linNode.Subscribe shall return a channel that yields one relay.Message per received frame, each carrying the frame's canonical ToMessage() conversion.",
+      "asil": "ASIL-B",
+      "rationale": "RELAY §10.5: the adapter ingress path must deliver every received frame to the application as a canonical envelope.",
+      "tags": ["adapt", "relay"]
+    },
+    {
+      "id": "REQ-ADAPT-005",
+      "title": "linNode.Close closes the underlying bus",
+      "description": "linNode.Close shall close the wrapped Bus and return its error unchanged.",
+      "asil": "ASIL-B",
+      "rationale": "RELAY §6 lifecycle: closing the node must release the underlying transport so no further frames are processed.",
+      "tags": ["adapt", "relay", "lifecycle"]
+    },
+    {
+      "id": "REQ-MOCK-001",
+      "title": "mock.New returns a MasterBus-satisfying bus",
+      "description": "mock.New shall return a non-nil bus that satisfies lin.MasterBus (Publish, Subscribe, SendHeader, SetSchedule, Close).",
+      "asil": "ASIL-B",
+      "rationale": "RELAY §7 rule 4 / §13.7: a mandatory mock transport must implement the full bus contract so applications can be tested without hardware.",
+      "tags": ["mock", "relay"]
     }
   ]
 }
