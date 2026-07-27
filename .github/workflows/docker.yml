@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [quickstart, lintool]
+        target: [go-lin, quickstart, lintool]
 
     steps:
       - uses: actions/checkout@v5
@@ -40,11 +40,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # go-lin is the RELAY-conformant CLI (spec §13.5): it publishes under
+      # the bare tool name (ghcr.io/soundmatt/go-lin), not a "-go-lin" suffix.
+      # quickstart/lintool are example/legacy images and keep their suffix.
+      - name: Resolve image name
+        id: image
+        run: |
+          if [ "${{ matrix.target }}" = "go-lin" ]; then
+            echo "name=${{ env.IMAGE_BASE }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=${{ env.IMAGE_BASE }}-${{ matrix.target }}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE_BASE }}-${{ matrix.target }}
+          images: ${{ steps.image.outputs.name }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}

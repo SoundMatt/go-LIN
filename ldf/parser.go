@@ -223,6 +223,57 @@ func extractBits(data []byte, bitOffset, bitWidth int) uint64 {
 	return val
 }
 
+// Encode packs signal values into a raw LIN frame payload (the write
+// direction of Decode).
+//
+// The returned payload is sized to the frame's declared Length. Signals
+// present in the LDF's frame definition but absent from the signals map are
+// packed with the signal's declared InitValue, matching the LDF's own
+// default-value semantics. Values wider than the signal's declared BitWidth
+// are silently truncated to the low BitWidth bits (matching extractBits'
+// inverse). Returns nil when id is not present in the LDF.
+//
+//fusa:req REQ-LDF-009
+//fusa:req REQ-LDF-010
+func (db *DB) Encode(id uint8, signals map[string]uint64) []byte {
+	f, ok := db.frames[id]
+	if !ok {
+		return nil
+	}
+	data := make([]byte, f.Length)
+	for _, ref := range f.Signals {
+		sig, ok := db.signals[ref.Name]
+		if !ok {
+			continue
+		}
+		val, provided := signals[ref.Name]
+		if !provided {
+			val = sig.InitValue
+		}
+		packBits(data, ref.BitOffset, sig.BitWidth, val)
+	}
+	return data
+}
+
+// packBits writes the low bitWidth bits of val into data starting at
+// bitOffset (LSB first, Intel byte order) — the exact inverse of extractBits.
+//
+//fusa:req REQ-LDF-009
+func packBits(data []byte, bitOffset, bitWidth int, val uint64) {
+	for i := 0; i < bitWidth; i++ {
+		byteIdx := (bitOffset + i) / 8
+		bitIdx := uint((bitOffset + i) % 8)
+		if byteIdx >= len(data) {
+			break
+		}
+		if val&(1<<uint(i)) != 0 {
+			data[byteIdx] |= 1 << bitIdx
+		} else {
+			data[byteIdx] &^= 1 << bitIdx
+		}
+	}
+}
+
 // parse does the actual lexing and parsing of the LDF text.
 func (db *DB) parse(r io.Reader) error {
 	scanner := bufio.NewScanner(r)

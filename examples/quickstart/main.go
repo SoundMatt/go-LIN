@@ -28,8 +28,8 @@ import (
 )
 
 const (
-	windowID  = 0x10 // window position frame
-	mirrorID  = 0x11 // mirror angle frame
+	windowID   = 0x10 // window position frame
+	mirrorID   = 0x11 // mirror angle frame
 	intervalMs = 500
 )
 

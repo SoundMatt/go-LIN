@@ -13,12 +13,15 @@
 //
 // Protocol commands:
 //
-//	send   <id> <hex-data>   Publish a response for a frame ID and trigger one exchange.
-//	send   --format json     Streaming relay.Message NDJSON sink (crossbar spoke, §11.2).
-//	subscribe --format json  Streaming relay.Message NDJSON source (crossbar spoke, §11.2).
-//	dump                     Subscribe to all frames and print them to stdout.
-//	pid    <id>              Compute and display the Protected Identifier.
-//	cs     <id> <hex-data>   Compute and display the enhanced checksum.
+//	send   <id> <hex-data>          Publish a response for a frame ID and trigger one exchange.
+//	send   --id <uint> --data <hex> Same as above; the §11.2 protocol-flag form.
+//	send   --format json            Streaming relay.Message NDJSON sink (crossbar spoke, §11.2).
+//	subscribe --format json [--count N]
+//	                                 Streaming relay.Message NDJSON source (crossbar spoke,
+//	                                 §11.2). Exits after N messages when --count is given.
+//	dump                            Subscribe to all frames and print them to stdout.
+//	pid    <id>                     Compute and display the Protected Identifier.
+//	cs     <id> <hex-data>          Compute and display the enhanced checksum.
 //
 // RELAY interop driver (§11.2):
 //
@@ -96,12 +99,15 @@ RELAY mandatory commands:
   status [--format text|json]    print self-assessed health
 
 Protocol commands:
-  send <id> <hex-data>   publish response for <id> and trigger one frame exchange
-  send --format json     streaming relay.Message NDJSON sink (crossbar spoke)
-  subscribe --format json  streaming relay.Message NDJSON source (crossbar spoke)
-  dump                   print all frames on the virtual bus until SIGINT
-  pid  <id>              compute the Protected Identifier for a 6-bit frame ID
-  cs   <id> <hex-data>   compute the enhanced LIN checksum for a frame
+  send <id> <hex-data>          publish response for <id> and trigger one frame exchange
+  send --id <uint> --data <hex> same as above, spec §11.2 flag form
+  send --format json            streaming relay.Message NDJSON sink (crossbar spoke)
+  subscribe --format json [--count N]
+                                 streaming relay.Message NDJSON source (crossbar spoke);
+                                 exits after N messages when --count is given, else on SIGINT
+  dump                          print all frames on the virtual bus until SIGINT
+  pid  <id>                     compute the Protected Identifier for a 6-bit frame ID
+  cs   <id> <hex-data>          compute the enhanced LIN checksum for a frame
 
 RELAY interop driver:
   convert --protocol LIN [--format json]   lin.Frame JSON (stdin) -> relay.Message JSON (stdout)
@@ -190,16 +196,17 @@ func cmdStatus(args []string, w io.Writer) {
 
 func cmdSend(args []string) {
 	// `send --format json` is the streaming NDJSON sink / crossbar spoke (§11.2);
-	// `send <id> <hex-data>` is the ad-hoc single-exchange form.
+	// `send --id <uint> --data <hex>` is the spec §11.2 protocol-flag form;
+	// `send <id> <hex-data>` is the ad-hoc positional single-exchange form.
 	if flagFormat(args) == "json" {
 		os.Exit(cmdSendStream(os.Stdin, os.Stdout, os.Stderr))
 	}
-	if len(args) != 2 {
-		fmt.Fprintf(os.Stderr, "usage: %s send <id> <hex-data> | send --format json\n", toolName)
-		os.Exit(1)
+
+	id, data, ok := parseSendArgs(args)
+	if !ok {
+		fmt.Fprintf(os.Stderr, "usage: %s send <id> <hex-data> | send --id <uint> --data <hex> | send --format json\n", toolName)
+		os.Exit(2)
 	}
-	id := parseID(args[0])
-	data := parseHex(args[1])
 
 	bus, err := virtual.New()
 	if err != nil {
@@ -266,13 +273,24 @@ func cmdSendStream(stdin io.Reader, w, errw io.Writer) int {
 
 // cmdSubscribe is the streaming JSON source (RELAY §11.2 / crossbar spoke). With
 // `--format json` it subscribes to every frame on the virtual bus and writes each
-// as a one-line relay.Message (NDJSON) to stdout until SIGINT. It is the ingress
-// dual of `send --format json`.
+// as a one-line relay.Message (NDJSON) to stdout until SIGINT, or until --count N
+// messages have been written. It is the ingress dual of `send --format json`.
 func cmdSubscribe(args []string) {
 	if flagFormat(args) != "json" {
-		fmt.Fprintf(os.Stderr, "usage: %s subscribe --format json\n", toolName)
+		fmt.Fprintf(os.Stderr, "usage: %s subscribe --format json [--count N]\n", toolName)
 		os.Exit(1)
 	}
+
+	count := -1 // -1 = unbounded, run until SIGINT
+	if s, ok := flagValue(args, "--count"); ok {
+		n, err := strconv.Atoi(s)
+		if err != nil || n < 0 {
+			fmt.Fprintf(os.Stderr, "%s: invalid --count %q: must be a non-negative integer\n", toolName, s)
+			os.Exit(2)
+		}
+		count = n
+	}
+
 	bus, err := virtual.New()
 	if err != nil {
 		fatal("virtual.New: %v", err)
@@ -287,9 +305,21 @@ func cmdSubscribe(args []string) {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	enc := json.NewEncoder(os.Stdout)
+	runSubscribe(ctx, ch, count, os.Stdout)
+}
+
+// runSubscribe drains ch, writing each frame as a one-line relay.Message
+// (NDJSON) to w, until ctx is done, ch closes, or count messages have been
+// written (count < 0 means unbounded). It is the testable core of
+// cmdSubscribe, split out because cmdSubscribe wires up a real bus and a
+// SIGINT/SIGTERM-cancelled context that a unit test cannot easily drive.
+func runSubscribe(ctx context.Context, ch <-chan lin.Frame, count int, w io.Writer) {
+	enc := json.NewEncoder(w)
 	var seq uint64
 	for {
+		if count == 0 {
+			return
+		}
 		select {
 		case <-ctx.Done():
 			return
@@ -302,6 +332,9 @@ func cmdSubscribe(args []string) {
 			msg.Seq = seq
 			seq++
 			_ = enc.Encode(msg) // one compact JSON object per line (NDJSON)
+			if count > 0 {
+				count--
+			}
 		}
 	}
 }
@@ -365,15 +398,33 @@ func cmdConvert(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 
 // flagFormat returns the value of a --format flag (e.g. "json"), or "" if absent.
 func flagFormat(args []string) string {
+	v, _ := flagValue(args, "--format")
+	return v
+}
+
+// flagValue returns the value of a "--name value" or "--name=value" flag and
+// whether it was present.
+func flagValue(args []string, name string) (string, bool) {
 	for i, a := range args {
 		switch {
-		case a == "--format" && i+1 < len(args):
-			return args[i+1]
-		case strings.HasPrefix(a, "--format="):
-			return strings.TrimPrefix(a, "--format=")
+		case a == name && i+1 < len(args):
+			return args[i+1], true
+		case strings.HasPrefix(a, name+"="):
+			return strings.TrimPrefix(a, name+"="), true
 		}
 	}
-	return ""
+	return "", false
+}
+
+// hasFlag reports whether name appears anywhere in args (as "--name" or
+// "--name=..."), regardless of whether it takes a value.
+func hasFlag(args []string, name string) bool {
+	for _, a := range args {
+		if a == name || strings.HasPrefix(a, name+"=") {
+			return true
+		}
+	}
+	return false
 }
 
 func cmdDump() {
@@ -433,6 +484,27 @@ func cmdCS(args []string, w io.Writer) {
 func printFrame(f lin.Frame) {
 	fmt.Printf("%02X#%s  cs=0x%02X\n",
 		f.ID, strings.ToUpper(hex.EncodeToString(f.Data)), f.Checksum)
+}
+
+// parseSendArgs parses the argument forms accepted by `send` other than
+// `--format json` (handled separately by the caller): the spec §11.2
+// `--id <uint> --data <hex>` flag form, and the ad-hoc positional
+// `<id> <hex-data>` form. It reports ok=false, with no side effects, when
+// neither form matches so the caller can print usage and exit 2.
+func parseSendArgs(args []string) (id uint8, data []byte, ok bool) {
+	switch {
+	case hasFlag(args, "--id") || hasFlag(args, "--data"):
+		idStr, idOK := flagValue(args, "--id")
+		dataStr, dataOK := flagValue(args, "--data")
+		if !idOK || !dataOK {
+			return 0, nil, false
+		}
+		return parseID(idStr), parseHex(dataStr), true
+	case len(args) == 2:
+		return parseID(args[0]), parseHex(args[1]), true
+	default:
+		return 0, nil, false
+	}
 }
 
 func parseID(s string) uint8 {

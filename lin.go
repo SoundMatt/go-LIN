@@ -316,7 +316,7 @@ func (f Frame) ToMessage() relay.Message {
 func FromMessage(m relay.Message) (Frame, error) {
 	id, err := strconv.ParseUint(m.ID, 10, 8)
 	if err != nil || id > LINMaxID {
-		return Frame{}, fmt.Errorf("lin: invalid frame ID %q", m.ID)
+		return Frame{}, fmt.Errorf("lin: invalid frame ID %q: %w", m.ID, ErrInvalidFrame)
 	}
 	ct := ClassicChecksum
 	if m.Meta["lin.checksum_type"] == "enhanced" {

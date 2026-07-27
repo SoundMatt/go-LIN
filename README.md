@@ -18,7 +18,9 @@ The `lin.Bus` interface is stable. Implementations are swappable without changin
 | `master` | LIN master node — schedule execution and header transmission. | Nothing |
 | `slave` | LIN slave node — response registration and frame subscription. | Nothing |
 | `safety` | E2E protection header — DataID, SourceID, SequenceCounter, CRC-16. | Nothing |
-| `cmd/lintool` | CLI tool: `send`, `dump`, `pid`, `cs` subcommands. | Nothing |
+| `stats` | Observability: per-second frame rate, per-ID counters, estimated bus load. | Nothing |
+| `cmd/go-lin` | RELAY-conformant CLI: `version`, `capabilities`, `status`, `convert`, `send`, `subscribe`, plus `dump`/`pid`/`cs`. Built and gated by CI (`relay conform --strict`, `relay interop`). | Nothing |
+| `cmd/lintool` | Legacy example CLI (pre-RELAY): `send`, `dump`, `pid`, `cs` subcommands. Not RELAY-conformant — use `cmd/go-lin` instead. | Nothing |
 
 ## Install
 
@@ -64,6 +66,12 @@ docker compose -f docker/docker-compose.yml up --build
 Runs a single container with a slave goroutine publishing synthetic window-position frames
 and a master goroutine driving the schedule and printing each received frame.
 
+The RELAY-conformant CLI is also published as an image:
+
+```bash
+docker run --rm ghcr.io/soundmatt/go-lin version
+```
+
 ## LDF parser
 
 ```go
@@ -73,7 +81,45 @@ db, _ := ldf.Parse(strings.NewReader(ldfContent))
 frame := db.Frame(0x10)           // frame descriptor
 sig := db.Signal("EngineSpeed")   // signal descriptor
 vals := db.Decode(0x10, rawData)  // map[string]uint64 of raw signal values
+raw := db.Encode(0x10, vals)      // write direction: pack signal values into a frame payload
 sched := db.Schedule("NormalSchedule")
+```
+
+## Diagnostic frames
+
+```go
+import lin "github.com/SoundMatt/go-LIN"
+
+// master.Node.Diagnostics drives the LIN 2.x §4.2.3 master-request (0x3C) /
+// slave-response (0x3D) exchange.
+req := lin.MasterRequestFrame{NAD: 0x01, SID: 0xB2, Data: []byte{0x01, 0x02}}
+resp, err := masterNode.Diagnostics(ctx, req)
+```
+
+## Sporadic frames
+
+```go
+// master.Node.SetSporadicGroup declares a schedule slot as sporadic
+// (LIN 2.x §2.3.2.4): on each pass, the master transmits the header of the
+// highest-priority candidate the application has flagged as pending, or
+// skips the slot entirely if nothing is pending.
+m.SetSporadicGroup(0x30, []uint8{0x11, 0x12}) // 0x11 has priority over 0x12
+m.SetSchedule([]lin.ScheduleEntry{{ID: 0x30, DelayMs: 10}})
+m.SetPending(0x11) // application marks 0x11's data as changed
+```
+
+## Statistics
+
+```go
+import "github.com/SoundMatt/go-LIN/stats"
+
+c := stats.New(19.2) // bus speed in kbit/s, for BusLoad
+ch, _ := bus.Subscribe(nil)
+go c.Watch(ch)
+// ... later:
+c.FrameRate() // frames/sec
+c.BusLoad()   // estimated % of bus bandwidth used
+c.PerID()     // map[uint8]uint64 of per-frame-ID counts
 ```
 
 ## Protected Identifier (PID)
@@ -107,14 +153,35 @@ original, err := r.Unwrap(protected) // checks CRC, sequence counter
 The 10-byte E2E header exceeds the standard LIN payload (1–8 bytes). Use with diagnostic
 frames (0x3C/0x3D) or a multi-slot transport layer.
 
-## CLI tool
+## RELAY CLI
+
+`cmd/go-lin` is the RELAY-conformant CLI: the binary CI builds and gates with
+`relay conform --strict` and `relay interop` (spec §11.1/§11.2), and the one
+published as `ghcr.io/soundmatt/go-lin` (spec §13.5).
 
 ```bash
-go run ./cmd/lintool pid  0x10          # compute PID
-go run ./cmd/lintool cs   0x10 01020304 # compute enhanced checksum
-go run ./cmd/lintool send 0x10 01020304 # publish response + trigger exchange
-go run ./cmd/lintool dump               # subscribe to all frames
+# RELAY mandatory commands (spec §11.1)
+go run ./cmd/go-lin version                    # tool + spec version, JSON or text
+go run ./cmd/go-lin capabilities                # capabilities document (JSON)
+go run ./cmd/go-lin status                      # self-assessed health
+
+# RELAY interop driver (spec §11.2)
+go run ./cmd/go-lin convert --protocol LIN      # lin.Frame JSON (stdin) -> relay.Message JSON (stdout)
+
+# Crossbar spokes (spec §11.2 optional commands)
+go run ./cmd/go-lin send --id 0x10 --data 01020304   # publish response + trigger exchange
+go run ./cmd/go-lin send --format json               # NDJSON relay.Message sink (stdin)
+go run ./cmd/go-lin subscribe --format json --count 5 # NDJSON relay.Message source (stdout), exit after 5
+
+# Convenience / debugging
+go run ./cmd/go-lin dump                        # subscribe to all frames until SIGINT
+go run ./cmd/go-lin pid  0x10                    # compute PID
+go run ./cmd/go-lin cs   0x10 01020304           # compute enhanced checksum
 ```
+
+`cmd/lintool` is a legacy pre-RELAY example CLI (`send`, `dump`, `pid`, `cs`
+only — no `version`/`capabilities`/`status`/`convert`) kept for backward
+compatibility. New integrations should use `cmd/go-lin`.
 
 ## Safety & compliance
 

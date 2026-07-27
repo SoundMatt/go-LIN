@@ -186,8 +186,8 @@ func TestUnwrap_sequenceGap(t *testing.T) {
 
 	// skip seq 1 by creating a new protector (simulates gap)
 	p2 := safety.NewProtector(cfg)
-	_ = p2.Protect([]byte{0x00}) // seq 0
-	_ = p2.Protect([]byte{0x00}) // seq 1 — skip
+	_ = p2.Protect([]byte{0x00})      // seq 0
+	_ = p2.Protect([]byte{0x00})      // seq 1 — skip
 	third := p2.Protect([]byte{0x03}) // seq 2
 
 	_, err := r.Unwrap(third)

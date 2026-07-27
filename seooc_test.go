@@ -180,9 +180,9 @@ func TestSEOOC_OperatesAbovePhysicalLayer(t *testing.T) {
 func TestSEOOC_ValidateFrameOnExternalData(t *testing.T) {
 	// Frames as they might arrive from untrusted hardware decode.
 	bad := []lin.Frame{
-		{ID: 0x40, Data: []byte{0x01}},               // ID overflow
-		{ID: 0x10, Data: nil},                        // empty payload
-		{ID: 0x10, Data: make([]byte, 9)},            // oversized payload
+		{ID: 0x40, Data: []byte{0x01}},    // ID overflow
+		{ID: 0x10, Data: nil},             // empty payload
+		{ID: 0x10, Data: make([]byte, 9)}, // oversized payload
 	}
 	for i, f := range bad {
 		if err := lin.ValidateFrame(f); err == nil {
