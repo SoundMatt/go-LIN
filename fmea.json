@@ -1,6 +1,6 @@
 {
   "format": "go-FuSa dFMEA v1",
-  "generated_at": "2026-06-19T20:36:22.298530597Z",
+  "generated_at": "2026-07-27T16:36:21.703273805Z",
   "module": "github.com/SoundMatt/go-LIN",
   "entries": [
     {
@@ -114,6 +114,46 @@
     },
     {
       "component": "go-LIN (lin)",
+      "function": "ParseMasterRequestFrame",
+      "file": "/home/runner/work/go-LIN/go-LIN/diagnostic.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-SEC-005"
+      ],
+      "cyber_risks": [
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
+    {
+      "component": "go-LIN (lin)",
+      "function": "ParseSlaveResponseFrame",
+      "file": "/home/runner/work/go-LIN/go-LIN/diagnostic.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-SEC-005"
+      ],
+      "cyber_risks": [
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
+    {
+      "component": "go-LIN (lin)",
       "function": "ProtectID",
       "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
       "failure_modes": [
@@ -200,6 +240,46 @@
     },
     {
       "component": "go-LIN (lin)",
+      "function": "ToFrame",
+      "file": "/home/runner/work/go-LIN/go-LIN/diagnostic.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-LIN-001"
+      ],
+      "cyber_risks": [
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
+    {
+      "component": "go-LIN (lin)",
+      "function": "ToFrame",
+      "file": "/home/runner/work/go-LIN/go-LIN/diagnostic.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-LIN-001"
+      ],
+      "cyber_risks": [
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
+    {
+      "component": "go-LIN (lin)",
       "function": "ToMessage",
       "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
       "failure_modes": [
@@ -277,6 +357,27 @@
     {
       "component": "ldf",
       "function": "Decode",
+      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-LDF-009",
+        "REQ-LDF-010"
+      ],
+      "cyber_risks": [
+        "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
+        "CYBER009: uint32(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
+      ]
+    },
+    {
+      "component": "ldf",
+      "function": "Encode",
       "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
       "failure_modes": [
         "Incorrect output"
@@ -426,6 +527,22 @@
     },
     {
       "component": "master",
+      "function": "Diagnostics",
+      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-MASTER-014"
+      ]
+    },
+    {
+      "component": "master",
       "function": "New",
       "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
       "failure_modes": [
@@ -494,7 +611,8 @@
         "REQ-MASTER-007",
         "REQ-MASTER-008",
         "REQ-MASTER-009",
-        "REQ-MASTER-013"
+        "REQ-MASTER-013",
+        "REQ-MASTER-016"
       ]
     },
     {
@@ -515,6 +633,22 @@
     },
     {
       "component": "master",
+      "function": "SetPending",
+      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-MASTER-015"
+      ]
+    },
+    {
+      "component": "master",
       "function": "SetSchedule",
       "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
       "failure_modes": [
@@ -529,6 +663,22 @@
         "REQ-MASTER-010",
         "REQ-MASTER-011",
         "REQ-MASTER-012"
+      ]
+    },
+    {
+      "component": "master",
+      "function": "SetSporadicGroup",
+      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
+      "failure_modes": [
+        "Returns unexpected error"
+      ],
+      "effects": [
+        "Silent failure propagated to caller"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-MASTER-016"
       ]
     },
     {
@@ -720,6 +870,134 @@
       "detection_control": "requirement testing + unit tests",
       "requirement_ids": [
         "REQ-SLAVE-006"
+      ]
+    },
+    {
+      "component": "stats",
+      "function": "BusLoad",
+      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-STATS-004"
+      ]
+    },
+    {
+      "component": "stats",
+      "function": "FrameRate",
+      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-STATS-003"
+      ]
+    },
+    {
+      "component": "stats",
+      "function": "New",
+      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-STATS-001"
+      ]
+    },
+    {
+      "component": "stats",
+      "function": "Observe",
+      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-STATS-002"
+      ]
+    },
+    {
+      "component": "stats",
+      "function": "PerID",
+      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-STATS-005"
+      ]
+    },
+    {
+      "component": "stats",
+      "function": "Reset",
+      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-STATS-007"
+      ]
+    },
+    {
+      "component": "stats",
+      "function": "TotalCount",
+      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-STATS-006"
+      ]
+    },
+    {
+      "component": "stats",
+      "function": "Watch",
+      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
+      "failure_modes": [
+        "Incorrect output"
+      ],
+      "effects": [
+        "Incorrect system behavior"
+      ],
+      "severity": "high",
+      "detection_control": "requirement testing + unit tests",
+      "requirement_ids": [
+        "REQ-STATS-008"
       ]
     },
     {

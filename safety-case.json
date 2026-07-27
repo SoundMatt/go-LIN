@@ -1,6 +1,6 @@
 {
   "format": "go-FuSa Safety Case v1",
-  "generatedAt": "2026-06-19T20:36:23.952283887Z",
+  "generatedAt": "2026-07-27T16:36:24.806689776Z",
   "module": "github.com/SoundMatt/go-LIN",
   "standard": "generic",
   "evidence": [
@@ -16,14 +16,14 @@
       "description": "Requirements traceability matrix",
       "file": ".fusa-reqs.json",
       "status": "present",
-      "detail": "112 requirements"
+      "detail": "123 requirements"
     },
     {
       "id": "verify",
       "description": "Test evidence bundle",
       "file": ".fusa-evidence.json",
       "status": "present",
-      "detail": "176/176 tests passed"
+      "detail": "221/221 tests passed"
     },
     {
       "id": "qualify",

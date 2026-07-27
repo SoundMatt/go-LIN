@@ -1,18 +1,18 @@
 {
-  "schemaVersion": "1.9",
+  "schemaVersion": "1.10.12",
   "kind": "sbom",
   "tool": "go-FuSa",
-  "toolVersion": "0.30.0",
+  "toolVersion": "0.33.3",
   "language": "go",
-  "generatedAt": "2026-06-19T20:36:23.966059956Z",
+  "generatedAt": "2026-07-27T16:36:24.824512748Z",
   "format": "x-FuSa SBOM v1",
   "module": "github.com/SoundMatt/go-LIN",
   "goVersion": "1.25.0",
   "components": [
     {
       "name": "github.com/SoundMatt/RELAY",
-      "version": "v1.10.0",
-      "hash": "sha256:3fe52b6da302c1be3828a3dda2d0523df8cfb6a9c2e8692b09983c94d4a0b4a1"
+      "version": "v1.11.0",
+      "hash": "sha256:66a190a54fda93914d5b800e1e3b5503abcf1a32615c2c05cc02021e51e33451"
     }
   ]
 }

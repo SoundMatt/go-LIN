@@ -1,5 +1,5 @@
 // Module: github.com/SoundMatt/go-LIN
-// Generated: 2026-06-19T20:36:22Z
+// Generated: 2026-07-27T16:36:22Z
 digraph {
     rankdir=LR
     node [shape=box style=rounded fontname=Helvetica]
@@ -13,6 +13,7 @@ digraph {
     "github_com_SoundMatt_go_LIN_mock" [label="mock"]
     "github_com_SoundMatt_go_LIN_safety" [label="safety"]
     "github_com_SoundMatt_go_LIN_slave" [label="slave"]
+    "github_com_SoundMatt_go_LIN_stats" [label="stats"]
     "github_com_SoundMatt_go_LIN_virtual" [label="virtual"]
 
     "github_com_SoundMatt_go_LIN_cmd_go_lin" -> "github_com_SoundMatt_go_LIN"
@@ -27,5 +28,6 @@ digraph {
     "github_com_SoundMatt_go_LIN_master" -> "github_com_SoundMatt_go_LIN"
     "github_com_SoundMatt_go_LIN_mock" -> "github_com_SoundMatt_go_LIN_virtual"
     "github_com_SoundMatt_go_LIN_slave" -> "github_com_SoundMatt_go_LIN"
+    "github_com_SoundMatt_go_LIN_stats" -> "github_com_SoundMatt_go_LIN"
     "github_com_SoundMatt_go_LIN_virtual" -> "github_com_SoundMatt_go_LIN"
 }

@@ -1,7 +1,7 @@
 {
   "project": "go-LIN",
   "version": "1",
-  "generated": "2026-06-19T20:36:22.6054889Z",
+  "generated": "2026-07-27T16:36:22.070628351Z",
   "items": [
     {
       "name": "Software Development Plan",
@@ -39,7 +39,7 @@
       "name": "Requirements Manifest",
       "file": ".fusa-reqs.json",
       "class": "Development",
-      "sha256": "28ea64cc1ca18cf4da1b04fa04b2bb7ca4563323462e680a979d28844ab3c2a0",
+      "sha256": "e8d9aa8b5eedbd47297b8963d8587bdcc848cf136ee3c46596347ba150bdff68",
       "present": true,
       "note": "DO-178C §11.9"
     },
@@ -55,7 +55,7 @@
       "name": "SBOM (SPDX 3.0.1)",
       "file": "sbom.json",
       "class": "Configuration Management",
-      "sha256": "a56cbbdadc064ce7ce410649b49c498cf94d0d749d6ab415fb79921a6600769f",
+      "sha256": "84e5495f2faf5cf12c5329c99a0e85efcce8a9551df41f140455475c80f65718",
       "present": true,
       "note": "DO-178C §11.15, NTIA SBOM"
     },
@@ -63,7 +63,7 @@
       "name": "Build Provenance",
       "file": "provenance.json",
       "class": "Configuration Management",
-      "sha256": "4db172cd17b5f7291a9cfe5fbf42cea3e35173ad53f7406b81e8d551eb9ec1c9",
+      "sha256": "1c9318b4db81d614c4ce36192efe60f405a89db93d4733a09579f05efb1dfc40",
       "present": true,
       "note": "SLSA L2"
     },
@@ -92,7 +92,7 @@
       "name": "FMEA Table",
       "file": "fmea.json",
       "class": "Verification",
-      "sha256": "3f5c974763a8122d8e91e928dbdafcbd07f442de24a5acb02548c79bdb0464a3",
+      "sha256": "0219aefc73fc5af7da5de17b9cb1986d63a3b1bd219f70472323ba8d1319a582",
       "present": true,
       "note": "DO-178C §11.9 (safety analysis)"
     },
@@ -100,7 +100,7 @@
       "name": "TARA Report",
       "file": "tara.json",
       "class": "Verification",
-      "sha256": "55feea5a338c7c6f589934964f086790edecc4990cede7dacb836912b03cfdcb",
+      "sha256": "c7a13a226c36ee96d177fb13fc4bc507853d35c1b0517111ea5d45785ed91f3b",
       "present": true,
       "note": "ISO 21434 §9"
     },
@@ -108,7 +108,7 @@
       "name": "TARA Markdown",
       "file": "tara.md",
       "class": "Verification",
-      "sha256": "61c1972c17f188f497308aca9929d4fc50d42f08038ef8280f572d42b78835b3",
+      "sha256": "637351406e2b3974a8b59eb549ebba6f8c3772b32591b4c392ab28c306cd42b9",
       "present": true,
       "note": "ISO 21434 §9"
     },
@@ -116,7 +116,7 @@
       "name": "Boundary Diagram",
       "file": "boundary.mermaid",
       "class": "Verification",
-      "sha256": "6dbfe99f9ff9e0f6c38b8b1436bbcf8f2bbd9741560463133dd3da1be107378d",
+      "sha256": "79c76c9019a3d7ea0be4b805ccc70fb427a37ed01cc092928ab9bed3512ea542",
       "present": true,
       "note": "DO-178C §11.10 (architecture)"
     },
@@ -138,7 +138,7 @@
       "name": "Safety Case",
       "file": "safety-case.json",
       "class": "Accomplishment Summary",
-      "sha256": "2463c6a5e377cee245bea8ca3325bb83d456312bf85c7c3acae51a3b0937eee7",
+      "sha256": "ab81c556a2680b8b261db473c24f680f99103f1b3a87aa96ef7dfe01c4734c2c",
       "present": true,
       "note": "DO-178C §11.20 (SAS input)"
     },
@@ -184,7 +184,7 @@
       "name": "CI Workflow",
       "file": ".github/workflows/ci.yml",
       "class": "Configuration Management",
-      "sha256": "57218c31b37e2df3175c7b9298f453a29cd07f9bcab143d15f5903a7abbfe552",
+      "sha256": "b020c28c48f5ec850b309bf32af30e50f015c8195a642f87d3dffea17ea9290c",
       "present": true,
       "note": "DO-178C §12.2 (tool env)"
     },

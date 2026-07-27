@@ -1,7 +1,7 @@
 %{init: {"theme": "default"}}%
 flowchart LR
     % Module: github.com/SoundMatt/go-LIN
-    % Generated: 2026-06-19T20:36:22Z
+    % Generated: 2026-07-27T16:36:22Z
 
     github_com_SoundMatt_go_LIN["lin"]
     github_com_SoundMatt_go_LIN_cmd_go_lin["github.com/SoundMatt/go-LIN/cmd/go-lin"]
@@ -12,6 +12,7 @@ flowchart LR
     github_com_SoundMatt_go_LIN_mock["mock"]
     github_com_SoundMatt_go_LIN_safety["safety"]
     github_com_SoundMatt_go_LIN_slave["slave"]
+    github_com_SoundMatt_go_LIN_stats["stats"]
     github_com_SoundMatt_go_LIN_virtual["virtual"]
 
     github_com_SoundMatt_go_LIN_cmd_go_lin --> github_com_SoundMatt_go_LIN
@@ -26,4 +27,5 @@ flowchart LR
     github_com_SoundMatt_go_LIN_master --> github_com_SoundMatt_go_LIN
     github_com_SoundMatt_go_LIN_mock --> github_com_SoundMatt_go_LIN_virtual
     github_com_SoundMatt_go_LIN_slave --> github_com_SoundMatt_go_LIN
+    github_com_SoundMatt_go_LIN_stats --> github_com_SoundMatt_go_LIN
     github_com_SoundMatt_go_LIN_virtual --> github_com_SoundMatt_go_LIN

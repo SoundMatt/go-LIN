@@ -1,19 +1,19 @@
 {
-  "schemaVersion": "1.9",
+  "schemaVersion": "1.10.12",
   "kind": "artifact-manifest",
   "tool": "go-FuSa",
-  "toolVersion": "0.30.0",
+  "toolVersion": "0.33.3",
   "language": "go",
-  "generatedAt": "2026-06-19T20:36:23.971737184Z",
+  "generatedAt": "2026-07-27T16:36:24.831335689Z",
   "format": "x-FuSa manifest v1",
   "artifacts": [
     {
       "path": "/home/runner/work/go-LIN/go-LIN/sbom.json",
-      "sha256": "84e5495f2faf5cf12c5329c99a0e85efcce8a9551df41f140455475c80f65718"
+      "sha256": "2c49b8ad418d6801b3a7ee7b77f394ad0390bfeb9e49a798daeab2938abcc53e"
     },
     {
       "path": "/home/runner/work/go-LIN/go-LIN/provenance.json",
-      "sha256": "38ee0e1d31cde7b88ff3a4cdf935adbe2cfa875e7ad9ba1e3f5336895bf2cdf7"
+      "sha256": "7a908bf1bb6b13d6a8094af58fc3fe31f52bea7e255e7ec5b90049774a58fc0c"
     }
   ]
 }

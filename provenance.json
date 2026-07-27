@@ -1,16 +1,16 @@
 {
-  "schemaVersion": "1.9",
+  "schemaVersion": "1.10.12",
   "kind": "provenance",
   "tool": "go-FuSa",
-  "toolVersion": "0.30.0",
+  "toolVersion": "0.33.3",
   "language": "go",
-  "generatedAt": "2026-06-19T20:36:23.971525085Z",
+  "generatedAt": "2026-07-27T16:36:24.831115877Z",
   "format": "x-FuSa provenance v1",
   "module": "github.com/SoundMatt/go-LIN",
-  "goVersion": "go1.25.11",
+  "goVersion": "go1.25.12",
   "goos": "linux",
   "goarch": "amd64",
-  "vcsRevision": "e854a3fadbbad53891a152e3cf5538a5b0b1f6c0",
+  "vcsRevision": "fdd8204a2190c6c4b64f22cbf4943a7335415cb8",
   "vcsModified": true,
-  "builder": "https://github.com/SoundMatt/go-LIN/.github/workflows/release.yml@refs/tags/v1.2.0"
+  "builder": "https://github.com/SoundMatt/go-LIN/.github/workflows/release.yml@refs/tags/v1.3.0"
 }
