@@ -285,6 +285,18 @@ func TestFromMessage_invalidID(t *testing.T) {
 	}
 }
 
+func TestFromMessage_invalidID_wrapsErrInvalidFrame(t *testing.T) {
+	cases := []string{"not-a-number", "64", "255"}
+	for _, id := range cases {
+		relay := lin.Frame{}.ToMessage()
+		relay.ID = id
+		_, err := lin.FromMessage(relay)
+		if !errors.Is(err, lin.ErrInvalidFrame) {
+			t.Errorf("FromMessage(ID=%q): errors.Is(err, lin.ErrInvalidFrame) = false, want true (err=%v)", id, err)
+		}
+	}
+}
+
 // ── SpecVersion ───────────────────────────────────────────────────────────────
 
 func TestSpecVersion(t *testing.T) {

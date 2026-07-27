@@ -580,10 +580,10 @@
     {
       "id": "REQ-MASTER-010",
       "level": "LLR",
-      "title": "SetSchedule rejects empty schedule",
-      "description": "SetSchedule shall return an error when called with nil or a zero-length slice.",
+      "title": "SetSchedule accepts an empty schedule",
+      "description": "SetSchedule shall accept nil or a zero-length slice without error, matching the lin.MasterBus.SetSchedule contract (an empty schedule disables scheduled transmission). The busy-loop hazard of running an empty schedule remains independently mitigated by REQ-MASTER-009, which makes Run fail fast when the active schedule is empty.",
       "asil": "ASIL-B",
-      "rationale": "REQ-MASTER-009 precondition enforced at configuration time.",
+      "rationale": "REQ-MASTER-009 already enforces the safety-relevant precondition at Run time; rejecting an empty slice here as well contradicted the documented lin.MasterBus.SetSchedule contract without adding safety value.",
       "tags": ["master", "validation"]
     },
     {
@@ -612,6 +612,33 @@
       "asil": "ASIL-B",
       "rationale": "A temporarily absent slave must not halt the entire LIN schedule.",
       "tags": ["master", "resilience"]
+    },
+    {
+      "id": "REQ-MASTER-014",
+      "level": "LLR",
+      "title": "Diagnostics drives a master-request/slave-response exchange",
+      "description": "Diagnostics shall publish req on LINDiagRequestID, trigger its header, then trigger LINDiagResponseID and return the parsed SlaveResponseFrame. It shall return an error without transmitting the response header when publishing or sending the request fails.",
+      "asil": "ASIL-B",
+      "rationale": "LIN diagnostic services (LIN 2.x §4.2.3) are the standard path for node configuration and fault reporting; a malformed or partially-sent request must not be followed by a response header that the target never saw.",
+      "tags": ["master", "diagnostics"]
+    },
+    {
+      "id": "REQ-MASTER-015",
+      "level": "LLR",
+      "title": "SetPending marks a frame ID eligible for sporadic selection",
+      "description": "SetPending shall record id as pending; the next Run pass over a sporadic slot (SetSporadicGroup) whose candidates include id shall select it if it is the highest-priority pending candidate.",
+      "asil": "ASIL-B",
+      "rationale": "LIN 2.x §2.3.2.4: sporadic frame transmission is driven by the application's pending-update state, not a fixed schedule.",
+      "tags": ["master", "sporadic"]
+    },
+    {
+      "id": "REQ-MASTER-016",
+      "level": "LLR",
+      "title": "Run selects and skips sporadic slots correctly",
+      "description": "For a schedule slot whose ID is registered via SetSporadicGroup, Run shall transmit the header of the highest-priority pending candidate (clearing its pending flag) or, if no candidate is pending, skip the slot entirely without transmitting a header or invoking OnFrame/OnError.",
+      "asil": "ASIL-B",
+      "rationale": "LIN 2.x §2.3.2.4: an empty sporadic slot must remain silent on the bus, and OnError must not report a false failure for a slot that was correctly skipped.",
+      "tags": ["master", "sporadic"]
     },
     {
       "id": "REQ-SLAVE-001",
@@ -1008,6 +1035,78 @@
       "asil": "ASIL-B",
       "rationale": "ISO 21434 / TARA: the convert driver processes untrusted JSON on stdin; invalid input must fail closed (CWE-20) and not leak a partial conversion.",
       "tags": ["security", "cyber", "validation", "cli"]
+    },
+    {
+      "id": "REQ-STATS-001",
+      "level": "LLR",
+      "title": "New returns a ready Collector",
+      "description": "stats.New shall return a non-nil Collector with zeroed counters, ready to Observe frames immediately.",
+      "asil": "ASIL-A",
+      "rationale": "SG-03-class observability path: stats is a passive, out-of-band consumer of already-validated frames and has no authority over bus behaviour, so it is rated ASIL-A rather than the ASIL-B rating of the frame-validation/transmission path it observes.",
+      "tags": ["stats", "observability"]
+    },
+    {
+      "id": "REQ-STATS-002",
+      "level": "LLR",
+      "title": "Observe updates total and per-ID counters",
+      "description": "Observe shall increment the total frame count and the counter for f.ID by exactly one per call.",
+      "asil": "ASIL-A",
+      "rationale": "Correct counters are required for the observability data to be trustworthy, but a miscount has no effect on bus safety.",
+      "tags": ["stats", "observability"]
+    },
+    {
+      "id": "REQ-STATS-003",
+      "level": "LLR",
+      "title": "FrameRate reports a non-negative, finite rate",
+      "description": "FrameRate shall return 0, not NaN or Inf, when called before any measurable time has elapsed since New or Reset.",
+      "asil": "ASIL-A",
+      "rationale": "A NaN/Inf result propagating into a caller's logging or alerting path is a robustness defect, not a safety hazard.",
+      "tags": ["stats", "observability"]
+    },
+    {
+      "id": "REQ-STATS-004",
+      "level": "LLR",
+      "title": "BusLoad returns 0 when the bus speed is unknown",
+      "description": "BusLoad shall return 0 when the Collector was constructed with baudKbps <= 0, instead of dividing by zero.",
+      "asil": "ASIL-A",
+      "rationale": "Bus speed is not always known to an observer; BusLoad must degrade gracefully rather than panic or return a meaningless value.",
+      "tags": ["stats", "observability"]
+    },
+    {
+      "id": "REQ-STATS-005",
+      "level": "LLR",
+      "title": "PerID returns a defensive copy",
+      "description": "PerID shall return a copy of the internal per-ID counter map; mutating the returned map shall not affect the Collector's internal state.",
+      "asil": "ASIL-A",
+      "rationale": "Matches the defensive-copy convention used throughout the codebase (e.g. ldf.DB.Frames, master.Node.SetSchedule) to prevent aliasing bugs.",
+      "tags": ["stats", "observability"]
+    },
+    {
+      "id": "REQ-STATS-006",
+      "level": "LLR",
+      "title": "TotalCount reports the cumulative Observe count",
+      "description": "TotalCount shall return the number of Observe calls since New or the last Reset.",
+      "asil": "ASIL-A",
+      "rationale": "Direct consequence of REQ-STATS-002's counting contract.",
+      "tags": ["stats", "observability"]
+    },
+    {
+      "id": "REQ-STATS-007",
+      "level": "LLR",
+      "title": "Reset clears all counters and the rate window",
+      "description": "Reset shall zero the total count, per-ID counters, and bit-time accumulator, and restart the elapsed-time window used by FrameRate and BusLoad.",
+      "asil": "ASIL-A",
+      "rationale": "A caller must be able to start a fresh measurement interval without recreating the Collector.",
+      "tags": ["stats", "observability"]
+    },
+    {
+      "id": "REQ-STATS-008",
+      "level": "LLR",
+      "title": "Watch observes every frame until the channel closes",
+      "description": "Watch shall call Observe once per frame received from ch and return when ch is closed.",
+      "asil": "ASIL-A",
+      "rationale": "Watch is a convenience wrapper; its only safety-relevant property is that it terminates cleanly on channel close rather than leaking a goroutine.",
+      "tags": ["stats", "observability"]
     }
   ]
 }

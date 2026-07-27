@@ -7,11 +7,13 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"strings"
 	"testing"
 
 	relay "github.com/SoundMatt/RELAY"
+	lin "github.com/SoundMatt/go-LIN"
 )
 
 // TestConvert_goldenVector verifies the §11.2 interop driver produces the
@@ -200,5 +202,122 @@ func TestConvert_wrongFormat(t *testing.T) {
 		strings.NewReader(`{}`), &out, &errb)
 	if code != 2 {
 		t.Errorf("convert --format yaml exit = %d, want 2", code)
+	}
+}
+
+// TestFlagValue and TestHasFlag cover the generic --name/--name=value flag
+// helpers added for the spec §11.2 send/subscribe flag forms (issue #41).
+func TestFlagValue(t *testing.T) {
+	cases := []struct {
+		args    []string
+		name    string
+		wantVal string
+		wantOK  bool
+	}{
+		{[]string{"--id", "16"}, "--id", "16", true},
+		{[]string{"--id=16"}, "--id", "16", true},
+		{[]string{"--data", "01020304"}, "--data", "01020304", true},
+		{[]string{"--id"}, "--id", "", false}, // dangling flag, no value follows
+		{[]string{}, "--id", "", false},
+		{[]string{"--other", "x"}, "--id", "", false},
+	}
+	for _, tc := range cases {
+		got, ok := flagValue(tc.args, tc.name)
+		if got != tc.wantVal || ok != tc.wantOK {
+			t.Errorf("flagValue(%v, %q) = (%q, %v), want (%q, %v)", tc.args, tc.name, got, ok, tc.wantVal, tc.wantOK)
+		}
+	}
+}
+
+func TestHasFlag(t *testing.T) {
+	cases := []struct {
+		args []string
+		name string
+		want bool
+	}{
+		{[]string{"--id", "16"}, "--id", true},
+		{[]string{"--id=16"}, "--id", true},
+		{[]string{"--data", "01"}, "--id", false},
+		{[]string{}, "--id", false},
+	}
+	for _, tc := range cases {
+		if got := hasFlag(tc.args, tc.name); got != tc.want {
+			t.Errorf("hasFlag(%v, %q) = %v, want %v", tc.args, tc.name, got, tc.want)
+		}
+	}
+}
+
+// TestParseSendArgs_flagForm covers the spec §11.2 `send --id <uint> --data
+// <hex>` protocol-flag form (issue #41), alongside the pre-existing
+// positional form and the invalid-args case.
+func TestParseSendArgs_flagForm(t *testing.T) {
+	id, data, ok := parseSendArgs([]string{"--id", "16", "--data", "01020304"})
+	if !ok {
+		t.Fatal("parseSendArgs(--id/--data): ok = false, want true")
+	}
+	if id != 0x10 {
+		t.Errorf("id = 0x%02X, want 0x10", id)
+	}
+	if string(data) != "\x01\x02\x03\x04" {
+		t.Errorf("data = % X, want 01 02 03 04", data)
+	}
+}
+
+func TestParseSendArgs_positionalForm(t *testing.T) {
+	id, data, ok := parseSendArgs([]string{"0x10", "01020304"})
+	if !ok {
+		t.Fatal("parseSendArgs(positional): ok = false, want true")
+	}
+	if id != 0x10 || string(data) != "\x01\x02\x03\x04" {
+		t.Errorf("parseSendArgs(positional) = (0x%02X, % X)", id, data)
+	}
+}
+
+func TestParseSendArgs_invalid(t *testing.T) {
+	cases := [][]string{
+		{},
+		{"only-one-arg"},
+		{"--id", "16"},   // --data missing
+		{"--data", "01"}, // --id missing
+	}
+	for _, args := range cases {
+		if _, _, ok := parseSendArgs(args); ok {
+			t.Errorf("parseSendArgs(%v): ok = true, want false", args)
+		}
+	}
+}
+
+// TestRunSubscribe_count verifies `subscribe --format json --count N` (issue
+// #41) exits after N messages rather than running until the channel closes
+// or the context is cancelled.
+func TestRunSubscribe_count(t *testing.T) {
+	ch := make(chan lin.Frame, 3)
+	ch <- lin.Frame{ID: 0x10, Data: []byte{0x01}}
+	ch <- lin.Frame{ID: 0x11, Data: []byte{0x02}}
+	ch <- lin.Frame{ID: 0x12, Data: []byte{0x03}}
+
+	var out bytes.Buffer
+	runSubscribe(context.Background(), ch, 2, &out)
+
+	lines := strings.Count(strings.TrimSpace(out.String()), "\n") + 1
+	if lines != 2 {
+		t.Errorf("runSubscribe(count=2) wrote %d line(s), want 2:\n%s", lines, out.String())
+	}
+}
+
+// TestRunSubscribe_unboundedStopsOnClose verifies count < 0 (no --count
+// flag) runs until the channel closes.
+func TestRunSubscribe_unboundedStopsOnClose(t *testing.T) {
+	ch := make(chan lin.Frame, 2)
+	ch <- lin.Frame{ID: 0x10, Data: []byte{0x01}}
+	ch <- lin.Frame{ID: 0x11, Data: []byte{0x02}}
+	close(ch)
+
+	var out bytes.Buffer
+	runSubscribe(context.Background(), ch, -1, &out)
+
+	lines := strings.Count(strings.TrimSpace(out.String()), "\n") + 1
+	if lines != 2 {
+		t.Errorf("runSubscribe(count=-1) wrote %d line(s), want 2:\n%s", lines, out.String())
 	}
 }

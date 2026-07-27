@@ -26,25 +26,40 @@ The project focuses on:
 
 ---
 
-## Release Plan
+## Release History
 
-| Version | Theme | Status |
+See [CHANGELOG.md](CHANGELOG.md) for the detailed per-version changelog. Summary:
+
+| Version | Theme |
+|---|---|
+| v0.1.0 | Core `lin.Bus`/`MasterBus` interfaces, virtual bus, LDF parser, master/slave nodes, E2E safety, `cmd/lintool` CLI, Docker quickstart |
+| v0.2.0 | 100 atomic ASIL-B SEOOC requirements |
+| v0.3.0 | RELAY spec v0.2 conformance — `Subscribe` slice signature, optional interfaces (`HealthProvider`, `MetricsProvider`, `Drainer`) |
+| v0.4.0 | RELAY spec v0.3 conformance |
+| v1.0.0 | RELAY spec v1.0 (stable) conformance |
+| v1.1.0 | RELAY spec v1.10 conformance — §13.7 cross-language library architecture, §20 continuous conformance |
+| v1.2.0 | Full ISO/IEC/DO compliance evidence pack, max coverage |
+| Unreleased | RELAY spec v1.11 conformance; `cmd/go-lin` RELAY CLI docs/Docker image; diagnostic frames, sporadic frames, LDF write-direction encoding, `stats` package; see CHANGELOG |
+
+---
+
+## Planned / Open Work
+
+Re-baselined against the current issue tracker (2026-07) — this table replaces
+the original pre-RELAY plan, which described work later superseded by the
+RELAY spec-conformance releases above.
+
+| Issue | Theme | Status |
 |---|---|---|
-| v0.1.0 | Core `lin.Bus`/`MasterBus` interfaces, virtual bus, LDF parser, master/slave nodes, E2E safety, CLI, Docker quickstart | **next** |
-| v0.2.0 | Serial/UART transport (`transport/`) — physical LIN on Linux via `/dev/ttyS*` | planned |
-| v0.3.0 | Diagnostic frames — master request (0x3C) and slave response (0x3D) handling | planned |
-| v0.4.0 | Sleep/wakeup frame sequences — go-to-sleep command, wakeup pulse | planned |
-| v0.5.0 | Sporadic frames — master selects which frame to transmit based on flags | planned |
-| v0.6.0 | Event-triggered frames — multi-slave collision resolution | planned |
-| v0.7.0 | LDF signal encoding (write direction) and value table support | planned |
-| v0.8.0 | go-FuSa v0.30.0 → latest; coverage 80% across all packages | planned |
-| v0.9.0 | Statistics — bus load, frame error counters, per-ID metrics | planned |
-| v1.0.0 | API stability, full serial transport, documentation complete | planned |
-| v1.1.0 | **Bridge — CAN** (`bridge/can/`) — LIN-over-CAN gateway (works with go-CAN) | planned |
-| v1.2.0 | **Bridge — MQTT** (`bridge/mqtt/`) — publish/subscribe LIN frames over MQTT | planned |
-| v1.3.0 | **Bridge — DDS** (`bridge/dds/`) — LIN frame distribution over DDS topics | planned |
-| v1.4.0 | **Bridge — SOME/IP** (`bridge/someip/`) — LIN frames as SOME/IP service events | planned |
-| v1.5.0 | **Bridge — gRPC** (`bridge/grpc/`) — stream LIN frames over gRPC | planned |
+| [#1](https://github.com/SoundMatt/go-LIN/issues/1) | Serial/UART transport (`transport/`) — physical LIN on Linux via `/dev/ttyS*` | open — hardware-facing; needs a real-hardware or hardware-in-the-loop validation plan before landing in a safety library |
+| [#3](https://github.com/SoundMatt/go-LIN/issues/3) | Sleep/wakeup frame sequences — go-to-sleep command, wakeup pulse generation/detection | open — wakeup pulse handling is a physical-transport concern, blocked on #1 |
+| [#5](https://github.com/SoundMatt/go-LIN/issues/5) | Event-triggered frames — multi-slave collision resolution | open — needs a dedicated protocol-timing design pass |
+| [#7](https://github.com/SoundMatt/go-LIN/issues/7) | **Bridge — CAN** (`bridge/can/`) — LIN-over-CAN gateway (works with go-CAN) | open — cross-repo dependency on go-CAN |
+| [#8](https://github.com/SoundMatt/go-LIN/issues/8) | **Bridge — MQTT** (`bridge/mqtt/`) — publish/subscribe LIN frames over MQTT | open — needs an MQTT client dependency, not yet vendored |
+
+Delivered since the original plan was written (see CHANGELOG for details):
+diagnostic frames (#2), sporadic frames (#4), LDF write-direction encoding (#6),
+statistics (#10), godoc examples (#11), go-FuSa/coverage (#9).
 
 ---
 
@@ -72,6 +87,7 @@ The project focuses on:
 - Frame definitions (ID, publisher, length, signal-to-bit-offset mappings)
 - Schedule table parsing (frame name + delay)
 - Signal decoder: `db.Decode(id, data) map[string]uint64`
+- Signal encoder (write direction): `db.Encode(id, signals) []byte`
 - Fuzz target for `Parse`
 
 ### 4 — Master Node
@@ -79,6 +95,10 @@ The project focuses on:
 - `SendHeader` driving `MasterBus`
 - `OnFrame` and `OnError` callbacks
 - Context-cancellation support
+- `Diagnostics` — LIN 2.x §4.2.3 master-request/slave-response exchange
+  (`MasterRequestFrame`/`SlaveResponseFrame`)
+- Sporadic frame slots — `SetSporadicGroup`/`SetPending`, priority-ordered
+  candidate selection per LIN 2.x §2.3.2.4
 
 ### 5 — Slave Node
 - Response registration per frame ID
@@ -91,13 +111,21 @@ The project focuses on:
 - Detects CRC mismatch, sequence gaps, and short headers
 - Fuzz target for `ProtectUnwrap`
 
-### 7 — CLI (lintool)
-- `send <id> <hex-data>` — publish response and trigger one frame exchange
-- `dump` — print all received frames to stdout
-- `pid <id>` — compute and display Protected Identifier
-- `cs <id> <hex-data>` — compute and display enhanced checksum
+### 7 — CLI
+- `cmd/go-lin` — the RELAY-conformant CLI: `version`/`capabilities`/`status`
+  (spec §11.1), `convert` (spec §11.2 interop driver), `send`/`subscribe`
+  (spec §11.2 optional crossbar-spoke commands, including the
+  `--id`/`--data`/`--count` flag forms), plus `dump`/`pid`/`cs`
+- `cmd/lintool` — legacy pre-RELAY example CLI (`send`, `dump`, `pid`, `cs`),
+  kept for backward compatibility
 
-### 8 — Docker Quickstart
-- Multi-stage Dockerfile (builder → quickstart, builder → lintool)
+### 8 — Docker
+- Multi-stage Dockerfile (builder → go-lin, quickstart, lintool)
+- `go-lin` image carries the spec §13.5 `io.relay.*` labels, published as
+  `ghcr.io/soundmatt/go-lin`
 - docker-compose.yml for zero-config demo
 - Multi-arch images (linux/amd64, linux/arm64) published to GHCR
+
+### 9 — Observability
+- `stats.Collector` — frames/sec, per-frame-ID counters, estimated bus load
+  percentage

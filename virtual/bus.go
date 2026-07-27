@@ -245,6 +245,10 @@ func (b *Bus) Close() error {
 
 // CloseWithDrain closes the bus after waiting for all subscriber channels to be
 // drained or until ctx expires. Implements lin.Drainer (RELAY §9).
+//
+// If draining completes before ctx expires, it returns nil. If ctx expires
+// first, it closes immediately, counts every still-buffered frame across all
+// subscriber channels into DropCount, and returns lin.ErrTimeout.
 func (b *Bus) CloseWithDrain(ctx context.Context) error {
 	// Poll until all subscriber channels are empty or ctx is done.
 	ticker := time.NewTicker(time.Millisecond)
@@ -264,7 +268,17 @@ func (b *Bus) CloseWithDrain(ctx context.Context) error {
 		}
 		select {
 		case <-ctx.Done():
-			return b.Close()
+			b.mu.RLock()
+			var undelivered uint64
+			for _, s := range b.subs {
+				undelivered += uint64(len(s.ch))
+			}
+			b.mu.RUnlock()
+			b.dropCount.Add(undelivered)
+			if err := b.Close(); err != nil {
+				return err
+			}
+			return lin.ErrTimeout
 		case <-ticker.C:
 		}
 	}

@@ -153,8 +153,11 @@ func TestCloseWithDrain_ctxCancel(t *testing.T) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Millisecond)
 	defer cancel()
-	if err := bus.CloseWithDrain(ctx); err != nil {
-		t.Fatalf("CloseWithDrain (ctx cancel path): %v", err)
+	if err := bus.CloseWithDrain(ctx); !errors.Is(err, lin.ErrTimeout) {
+		t.Fatalf("CloseWithDrain (ctx cancel path) = %v, want errors.Is(err, lin.ErrTimeout)", err)
+	}
+	if m := bus.Metrics(); m.DropCount == 0 {
+		t.Errorf("Metrics.DropCount = 0 after CloseWithDrain timed out with an undelivered frame, want > 0")
 	}
 }
 
