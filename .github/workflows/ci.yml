@@ -167,14 +167,14 @@ jobs:
         run: relay interop --protocol LIN /tmp/go-lin
 
   # ── go-FuSa full safety lifecycle (spec §20.1.2) ──────────────────────────
-  # Pinned to v0.33.3. §20 makes the full lifecycle normative: every change must
+  # Pinned to v0.36.0. §20 makes the full lifecycle normative: every change must
   # pass check (ERROR gate), 100% requirement traceability, cybersecurity
   # analysis, dependency vulnerability scan, and tool qualification. The
   # remaining steps generate evidence artifacts (verify/fmea/release) and are
   # non-gating. To upgrade: install the new version locally, run the gating
   # commands, fix all findings, then bump the @version pin below.
   gofusa:
-    name: go-FuSa full lifecycle (v0.33.3)
+    name: go-FuSa full lifecycle (v0.36.0)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -184,7 +184,7 @@ jobs:
           go-version: "1.25"
 
       - name: Install go-FuSa
-        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.33.3
+        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.36.0
 
       - name: gofusa check (gate on ERROR findings)
         run: gofusa check ./...
@@ -272,7 +272,7 @@ jobs:
           go-version: "1.25"
 
       - name: Install go-FuSa
-        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.33.3
+        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.36.0
 
       - name: Generate evidence
         run: |
