@@ -6,6 +6,8 @@ canonical list. Dates are release dates (UTC-7, matching tag creation).
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-07-27
+
 - fix: `virtual.Bus.CloseWithDrain` now returns `lin.ErrTimeout` (and counts
   undelivered frames into `DropCount`) when the context expires before
   draining completes, instead of silently returning `nil` (#37)
