@@ -26,10 +26,18 @@ jobs:
           go-version: "1.25"
 
       - name: Install go-FuSa
-        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.36.0
+        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.47.0
 
+      # -strict enforces the x-FuSa spec §1.6.2 content-quality gate: as of
+      # go-FuSa v0.47.0 (go-FuSa#60) dFMEA entries vary failureMode/effect/
+      # cause text by each function's own component/receiver/parameter
+      # shape, so this repo's fmea.json clears the FUSA-STUB002
+      # blanket-fallback threshold (25 distinct value-sets across 61
+      # entries) and the gate is safe to enforce here too, matching ci.yml's
+      # gofusa/compliance jobs, so release evidence can't silently regress
+      # to boilerplate independently of PR-time CI.
       - name: Regenerate dFMEA table
-        run: gofusa fmea -cyber
+        run: gofusa fmea -cyber -strict
 
       - name: Regenerate TARA (threat analysis, ISO 21434)
         run: gofusa tara
@@ -81,3 +89,25 @@ jobs:
             git commit -m "chore: regenerate safety artifacts for $TAG [skip ci]"
             git push origin HEAD:refs/heads/main
           fi
+
+      # SBOM/provenance/etc. were previously only ever committed to main, so
+      # "the SBOM for v1.3.0" had no stable, versioned, downloadable location
+      # — main's current copy is regenerated and overwritten on every tag and
+      # does not correspond to any one past release. Attach the safety
+      # evidence this job just (re)generated to the GitHub Release for this
+      # tag as downloadable assets, the standard SLSA/SBOM distribution
+      # pattern `gh release download` and SBOM scanners expect. The release
+      # for this tag may already exist (created by whatever process pushed
+      # the tag) or may not yet — handle both.
+      - name: Attach safety evidence to the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.ref_name }}"
+          REPO="${{ github.repository }}"
+          if ! gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$REPO" --title "$TAG" --generate-notes
+          fi
+          gh release upload "$TAG" --repo "$REPO" --clobber \
+            sbom.json provenance.json artifact-manifest.json \
+            fmea.json tara.json safety-case.json
