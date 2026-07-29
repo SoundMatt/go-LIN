@@ -81,3 +81,25 @@ jobs:
             git commit -m "chore: regenerate safety artifacts for $TAG [skip ci]"
             git push origin HEAD:refs/heads/main
           fi
+
+      # SBOM/provenance/etc. were previously only ever committed to main, so
+      # "the SBOM for v1.3.0" had no stable, versioned, downloadable location
+      # — main's current copy is regenerated and overwritten on every tag and
+      # does not correspond to any one past release. Attach the safety
+      # evidence this job just (re)generated to the GitHub Release for this
+      # tag as downloadable assets, the standard SLSA/SBOM distribution
+      # pattern `gh release download` and SBOM scanners expect. The release
+      # for this tag may already exist (created by whatever process pushed
+      # the tag) or may not yet — handle both.
+      - name: Attach safety evidence to the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ github.ref_name }}"
+          REPO="${{ github.repository }}"
+          if ! gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
+            gh release create "$TAG" --repo "$REPO" --title "$TAG" --generate-notes
+          fi
+          gh release upload "$TAG" --repo "$REPO" --clobber \
+            sbom.json provenance.json artifact-manifest.json \
+            fmea.json tara.json safety-case.json
