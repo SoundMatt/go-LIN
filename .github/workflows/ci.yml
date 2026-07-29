@@ -167,14 +167,14 @@ jobs:
         run: relay interop --protocol LIN /tmp/go-lin
 
   # ── go-FuSa full safety lifecycle (spec §20.1.2) ──────────────────────────
-  # Pinned to v0.36.0. §20 makes the full lifecycle normative: every change must
+  # Pinned to v0.47.0. §20 makes the full lifecycle normative: every change must
   # pass check (ERROR gate), 100% requirement traceability, cybersecurity
   # analysis, dependency vulnerability scan, and tool qualification. The
   # remaining steps generate evidence artifacts (verify/fmea/release) and are
   # non-gating. To upgrade: install the new version locally, run the gating
   # commands, fix all findings, then bump the @version pin below.
   gofusa:
-    name: go-FuSa full lifecycle (v0.36.0)
+    name: go-FuSa full lifecycle (v0.47.0)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -184,7 +184,7 @@ jobs:
           go-version: "1.25"
 
       - name: Install go-FuSa
-        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.36.0
+        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.47.0
 
       - name: gofusa check (gate on ERROR findings)
         run: gofusa check ./...
@@ -222,12 +222,22 @@ jobs:
         run: gofusa hara show > /dev/null
 
       - name: gofusa boundary / sci / coupling / tara / fmea (evidence)
+        # fmea carries -strict (x-FuSa spec §1.6.2 content-quality gate): as of
+        # go-FuSa v0.47.0 (go-FuSa#60) dFMEA entries vary failureMode/effect/
+        # cause text by each function's own component/receiver/parameter
+        # shape, so this repo's fmea.json now clears the FUSA-STUB002
+        # blanket-fallback threshold (25 distinct value-sets across 61
+        # entries) and the gate is safe to enforce as a regression guard.
+        # tara deliberately has no -strict: every one of this repo's CYBER
+        # findings is a genuine CYBER009 (narrowing conversion) hit, so
+        # tara.json's single-rule-type repetition is factually accurate, not
+        # templated boilerplate — go-LIN#50 has the full writeup.
         run: |
           gofusa boundary
           gofusa sci -output sci.json
           gofusa coupling
           gofusa tara
-          gofusa fmea -cyber
+          gofusa fmea -cyber -strict
 
       - name: gofusa release (SBOM + build provenance, SLSA)
         run: gofusa release
@@ -246,7 +256,7 @@ jobs:
           PY
 
       - name: gofusa audit-pack (bundle all evidence)
-        run: gofusa audit-pack --output gofusa-audit-pack.zip || true
+        run: gofusa audit-pack --output gofusa-audit-pack.zip
 
       - name: Upload safety evidence
         if: always()
@@ -272,7 +282,7 @@ jobs:
           go-version: "1.25"
 
       - name: Install go-FuSa
-        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.36.0
+        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.47.0
 
       - name: Generate evidence
         run: |
@@ -287,7 +297,7 @@ jobs:
           gofusa sci -output sci.json
           gofusa coupling
           gofusa tara
-          gofusa fmea -cyber
+          gofusa fmea -cyber -strict
           gofusa safety-case
           gofusa check --output cyber-plan.json
           gofusa release
@@ -318,3 +328,31 @@ jobs:
         run: gofusa unece
       - name: SLSA v1.0 (supply chain)
         run: gofusa slsa
+
+      # go-FuSa v0.36.0's DO-178C text-report summary line was observed
+      # printing a nonsensical negative GAP count (go-LIN#53); the -format
+      # json summary counts were correct even then, so this backstop re-runs
+      # every standard's report through -format json and fails loudly if any
+      # summary count is negative, independent of whether the text renderer
+      # has this class of bug. Filed upstream as SoundMatt/go-FuSa#<TBD>.
+      # The gofusa invocation below intentionally is not gated on its own
+      # exit code: a real GAP/FAIL is expected and already enforced by the
+      # dedicated per-standard steps above (none of which swallow their exit
+      # code) — this step's only job is inspecting the json summary shape.
+      - name: Sanity check — gap-report summary counts must never be negative
+        run: |
+          set -e
+          for std in do178 iso21434 iso26262 iec61508 iec62443 unece slsa; do
+            gofusa "$std" -format json -output "/tmp/${std}-gap.json" >/dev/null 2>&1 || true
+            python3 - "$std" "/tmp/${std}-gap.json" <<'PY'
+          import json, sys
+          std, path = sys.argv[1], sys.argv[2]
+          with open(path) as fh:
+              doc = json.load(fh)
+          summary = doc.get("summary", {})
+          negative = {k: v for k, v in summary.items() if isinstance(v, (int, float)) and v < 0}
+          if negative:
+              print(f"::error::{std} gap-report summary has negative count(s): {negative}")
+              sys.exit(1)
+          PY
+          done

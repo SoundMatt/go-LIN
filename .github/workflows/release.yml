@@ -40,7 +40,7 @@ jobs:
           gofusa sci -output sci.json
 
       - name: Generate test evidence bundle (closes safety-case verify gap)
-        run: gofusa verify || true
+        run: gofusa verify
 
       - name: Regenerate safety case
         run: gofusa safety-case
