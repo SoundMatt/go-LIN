@@ -201,6 +201,13 @@ func TestUnwrap_sequenceGap(t *testing.T) {
 	if e2e.Kind != safety.ErrSequenceGap {
 		t.Errorf("ErrorKind = %v, want ErrSequenceGap", e2e.Kind)
 	}
+	// The diagnostic message must report the actual last-accepted sequence
+	// counter (0, from the first Unwrap above), not seq-1 of the just-received
+	// frame — see REQ-SAFETY-009 and the go-LIN #49 fix.
+	const wantMsg = "sequence gap: last=0 recv=2"
+	if e2e.Message != wantMsg {
+		t.Errorf("Message = %q, want %q", e2e.Message, wantMsg)
+	}
 }
 
 // ── REQ-SAFETY-010: Unwrap returns original payload ──────────────────────────
