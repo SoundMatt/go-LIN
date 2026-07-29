@@ -198,11 +198,12 @@ func (r *Receiver) Unwrap(data []byte) ([]byte, error) {
 	defer r.mu.Unlock()
 
 	if !r.first && seq != r.lastSeq+1 {
+		prev := r.lastSeq
 		r.lastSeq = seq
 		return nil, &E2EError{
 			Kind:    ErrSequenceGap,
 			Counter: seq,
-			Message: fmt.Sprintf("sequence gap: last=%d recv=%d", r.lastSeq-1, seq),
+			Message: fmt.Sprintf("sequence gap: last=%d recv=%d", prev, seq),
 		}
 	}
 	r.lastSeq = seq
