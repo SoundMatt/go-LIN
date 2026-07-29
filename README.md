@@ -206,7 +206,7 @@ Start with the **[Safety Manual](SAFETY_MANUAL.md)** — it is the integration-f
 document covering safety goals, the safety mechanisms go-LIN provides, the
 conditions of use the integrator must satisfy, and the error-handling contract.
 The architecture trust boundary is in `boundary.mermaid`; the assembled argument
-is in [safety-case.md](safety-case.md). 112 atomic requirements
+is in [safety-case.md](safety-case.md). 123 atomic requirements
 (`.fusa-reqs.json`) are each traced to code and to a test.
 
 ## Philosophy
