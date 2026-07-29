@@ -26,10 +26,18 @@ jobs:
           go-version: "1.25"
 
       - name: Install go-FuSa
-        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.36.0
+        run: go install github.com/SoundMatt/go-FuSa/cmd/gofusa@v0.47.0
 
+      # -strict enforces the x-FuSa spec §1.6.2 content-quality gate: as of
+      # go-FuSa v0.47.0 (go-FuSa#60) dFMEA entries vary failureMode/effect/
+      # cause text by each function's own component/receiver/parameter
+      # shape, so this repo's fmea.json clears the FUSA-STUB002
+      # blanket-fallback threshold (25 distinct value-sets across 61
+      # entries) and the gate is safe to enforce here too, matching ci.yml's
+      # gofusa/compliance jobs, so release evidence can't silently regress
+      # to boilerplate independently of PR-time CI.
       - name: Regenerate dFMEA table
-        run: gofusa fmea -cyber
+        run: gofusa fmea -cyber -strict
 
       - name: Regenerate TARA (threat analysis, ISO 21434)
         run: gofusa tara
