@@ -246,7 +246,7 @@ jobs:
           PY
 
       - name: gofusa audit-pack (bundle all evidence)
-        run: gofusa audit-pack --output gofusa-audit-pack.zip || true
+        run: gofusa audit-pack --output gofusa-audit-pack.zip
 
       - name: Upload safety evidence
         if: always()
