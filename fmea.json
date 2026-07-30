@@ -1,45 +1,68 @@
 {
+  "schemaVersion": "1.15.2",
+  "kind": "fmea-report",
+  "tool": "go-FuSa",
+  "toolVersion": "0.47.0",
+  "language": "go",
+  "generatedAt": "2026-07-30T21:15:02.401702779Z",
   "format": "go-FuSa dFMEA v1",
-  "generated_at": "2026-07-27T16:36:21.703273805Z",
   "module": "github.com/SoundMatt/go-LIN",
   "entries": [
     {
+      "id": "FMEA-001",
+      "item": "go-LIN (lin).Adapt",
       "component": "go-LIN (lin)",
       "function": "Adapt",
-      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "adapt.go",
+      "failureMode": "go-LIN (lin) produces incorrect output for a given input combination",
+      "effect": "incorrect system behavior from go-LIN (lin)",
+      "cause": "a logic error in go-LIN (lin) not surfaced as an error return or panic",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this function's documented behaviour"
+      ],
+      "requirementIds": [
         "REQ-ADAPT-001"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) produces incorrect output for a given input combination"
+      ],
+      "effects": [
+        "incorrect system behavior from go-LIN (lin)"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-002",
+      "item": "go-LIN (lin).CalcChecksum",
       "component": "go-LIN (lin)",
       "function": "CalcChecksum",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "lin.go",
+      "failureMode": "go-LIN (lin) produces incorrect output for a given input combination",
+      "effect": "incorrect system behavior from go-LIN (lin)",
+      "cause": "a logic error in go-LIN (lin) not surfaced as an error return or panic",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this function's documented behaviour"
+      ],
+      "requirementIds": [
         "REQ-LIN-008",
         "REQ-LIN-009",
         "REQ-LIN-010"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) produces incorrect output for a given input combination"
+      ],
+      "effects": [
+        "incorrect system behavior from go-LIN (lin)"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -49,40 +72,58 @@
       ]
     },
     {
+      "id": "FMEA-003",
+      "item": "go-LIN (lin).Close",
       "component": "go-LIN (lin)",
       "function": "Close",
-      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "adapt.go",
+      "failureMode": "go-LIN (lin) returns an unexpected error",
+      "effect": "silent failure propagated to go-LIN (lin)'s caller",
+      "cause": "an unhandled error path in go-LIN (lin)'s function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-ADAPT-005"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to go-LIN (lin)'s caller"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-004",
+      "item": "go-LIN (lin).FromMessage",
       "component": "go-LIN (lin)",
       "function": "FromMessage",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "lin.go",
+      "failureMode": "go-LIN (lin) returns an unexpected error",
+      "effect": "silent failure propagated to go-LIN (lin)'s caller",
+      "cause": "an unhandled error path in go-LIN (lin)'s function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-SEC-005"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to go-LIN (lin)'s caller"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -92,18 +133,27 @@
       ]
     },
     {
+      "id": "FMEA-005",
+      "item": "go-LIN (lin).Matches",
       "component": "go-LIN (lin)",
       "function": "Matches",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "lin.go",
+      "failureMode": "go-LIN (lin) derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from go-LIN (lin)",
+      "cause": "a logic error in go-LIN (lin) combining receiver state with its arguments, not surfaced as an error return or panic",
+      "severity": "low",
+      "actionPriority": "low",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "failureModes": [
+        "go-LIN (lin) derives incorrect output from receiver and argument state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "incorrect system behavior from go-LIN (lin)"
       ],
-      "severity": "low",
-      "detection_control": "unit tests",
-      "cyber_risks": [
+      "detectionControl": "unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -113,63 +163,90 @@
       ]
     },
     {
+      "id": "FMEA-006",
+      "item": "go-LIN (lin).ParseMasterRequestFrame",
       "component": "go-LIN (lin)",
       "function": "ParseMasterRequestFrame",
-      "file": "/home/runner/work/go-LIN/go-LIN/diagnostic.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "diagnostic.go",
+      "failureMode": "go-LIN (lin) returns an unexpected error",
+      "effect": "silent failure propagated to go-LIN (lin)'s caller",
+      "cause": "an unhandled error path in go-LIN (lin)'s function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-SEC-005"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to go-LIN (lin)'s caller"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-007",
+      "item": "go-LIN (lin).ParseSlaveResponseFrame",
       "component": "go-LIN (lin)",
       "function": "ParseSlaveResponseFrame",
-      "file": "/home/runner/work/go-LIN/go-LIN/diagnostic.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "diagnostic.go",
+      "failureMode": "go-LIN (lin) returns an unexpected error",
+      "effect": "silent failure propagated to go-LIN (lin)'s caller",
+      "cause": "an unhandled error path in go-LIN (lin)'s function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-SEC-005"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to go-LIN (lin)'s caller"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-008",
+      "item": "go-LIN (lin).ProtectID",
       "component": "go-LIN (lin)",
       "function": "ProtectID",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "lin.go",
+      "failureMode": "go-LIN (lin) produces incorrect output for a given input combination",
+      "effect": "incorrect system behavior from go-LIN (lin)",
+      "cause": "a logic error in go-LIN (lin) not surfaced as an error return or panic",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this function's documented behaviour"
+      ],
+      "requirementIds": [
         "REQ-LIN-004",
         "REQ-LIN-005",
         "REQ-LIN-018"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) produces incorrect output for a given input combination"
+      ],
+      "effects": [
+        "incorrect system behavior from go-LIN (lin)"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -179,118 +256,173 @@
       ]
     },
     {
+      "id": "FMEA-009",
+      "item": "go-LIN (lin).Protocol",
       "component": "go-LIN (lin)",
       "function": "Protocol",
-      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "adapt.go",
+      "failureMode": "go-LIN (lin) returns stale or inconsistent receiver state",
+      "effect": "caller of go-LIN (lin) observes state that no longer reflects a concurrent mutation",
+      "cause": "go-LIN (lin) reads receiver fields with no synchronisation against concurrent mutation",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "requirementIds": [
         "REQ-ADAPT-001"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) returns stale or inconsistent receiver state"
+      ],
+      "effects": [
+        "caller of go-LIN (lin) observes state that no longer reflects a concurrent mutation"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-010",
+      "item": "go-LIN (lin).Send",
       "component": "go-LIN (lin)",
       "function": "Send",
-      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "adapt.go",
+      "failureMode": "go-LIN (lin) returns an unexpected error",
+      "effect": "silent failure propagated to go-LIN (lin)'s caller",
+      "cause": "an unhandled error path in go-LIN (lin)'s function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-ADAPT-002",
         "REQ-ADAPT-003"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to go-LIN (lin)'s caller"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-011",
+      "item": "go-LIN (lin).Subscribe",
       "component": "go-LIN (lin)",
       "function": "Subscribe",
-      "file": "/home/runner/work/go-LIN/go-LIN/adapt.go",
-      "failure_modes": [
-        "Returns unexpected error",
-        "Goroutine not terminated"
-      ],
-      "effects": [
-        "Silent failure propagated to caller",
-        "Memory leak or deadlock"
-      ],
+      "file": "adapt.go",
+      "failureMode": "go-LIN (lin) returns an unexpected error; goroutine spawned in go-LIN (lin) not terminated",
+      "effect": "silent failure propagated to go-LIN (lin)'s caller; memory leak or deadlock in go-LIN (lin)",
+      "cause": "an unhandled error path in go-LIN (lin)'s function body or a callee; a spawned goroutine in go-LIN (lin) with no cancellation, timeout, or WaitGroup join",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path",
+        "join or cancel the goroutine before the function returns"
+      ],
+      "requirementIds": [
         "REQ-ADAPT-004"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) returns an unexpected error",
+        "goroutine spawned in go-LIN (lin) not terminated"
+      ],
+      "effects": [
+        "silent failure propagated to go-LIN (lin)'s caller",
+        "memory leak or deadlock in go-LIN (lin)"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-012",
+      "item": "go-LIN (lin).ToFrame",
       "component": "go-LIN (lin)",
       "function": "ToFrame",
-      "file": "/home/runner/work/go-LIN/go-LIN/diagnostic.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "diagnostic.go",
+      "failureMode": "go-LIN (lin) returns an unexpected error",
+      "effect": "silent failure propagated to go-LIN (lin)'s caller",
+      "cause": "an unhandled error path in go-LIN (lin)'s function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-LIN-001"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to go-LIN (lin)'s caller"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-013",
+      "item": "go-LIN (lin).ToFrame",
       "component": "go-LIN (lin)",
       "function": "ToFrame",
-      "file": "/home/runner/work/go-LIN/go-LIN/diagnostic.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "diagnostic.go",
+      "failureMode": "go-LIN (lin) returns an unexpected error",
+      "effect": "silent failure propagated to go-LIN (lin)'s caller",
+      "cause": "an unhandled error path in go-LIN (lin)'s function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-LIN-001"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to go-LIN (lin)'s caller"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-014",
+      "item": "go-LIN (lin).ToMessage",
       "component": "go-LIN (lin)",
       "function": "ToMessage",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "lin.go",
+      "failureMode": "go-LIN (lin) returns stale or inconsistent receiver state",
+      "effect": "caller of go-LIN (lin) observes state that no longer reflects a concurrent mutation",
+      "cause": "go-LIN (lin) reads receiver fields with no synchronisation against concurrent mutation",
+      "severity": "low",
+      "actionPriority": "low",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "failureModes": [
+        "go-LIN (lin) returns stale or inconsistent receiver state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "caller of go-LIN (lin) observes state that no longer reflects a concurrent mutation"
       ],
-      "severity": "low",
-      "detection_control": "unit tests",
-      "cyber_risks": [
+      "detectionControl": "unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -300,18 +432,20 @@
       ]
     },
     {
+      "id": "FMEA-015",
+      "item": "go-LIN (lin).ValidateFrame",
       "component": "go-LIN (lin)",
       "function": "ValidateFrame",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "lin.go",
+      "failureMode": "go-LIN (lin) returns an unexpected error",
+      "effect": "silent failure propagated to go-LIN (lin)'s caller",
+      "cause": "an unhandled error path in go-LIN (lin)'s function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-LIN-001",
         "REQ-LIN-002",
         "REQ-LIN-003",
@@ -320,7 +454,14 @@
         "REQ-LIN-017",
         "REQ-SEC-004"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to go-LIN (lin)'s caller"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -330,22 +471,31 @@
       ]
     },
     {
+      "id": "FMEA-016",
+      "item": "go-LIN (lin).VerifyPID",
       "component": "go-LIN (lin)",
       "function": "VerifyPID",
-      "file": "/home/runner/work/go-LIN/go-LIN/lin.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "lin.go",
+      "failureMode": "go-LIN (lin) returns an unexpected error",
+      "effect": "silent failure propagated to go-LIN (lin)'s caller",
+      "cause": "an unhandled error path in go-LIN (lin)'s function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-LIN-006",
         "REQ-LIN-007"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "go-LIN (lin) returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to go-LIN (lin)'s caller"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
@@ -355,102 +505,140 @@
       ]
     },
     {
+      "id": "FMEA-017",
+      "item": "ldf.Decode",
       "component": "ldf",
       "function": "Decode",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "ldf/parser.go",
+      "failureMode": "ldf derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from ldf",
+      "cause": "a logic error in ldf combining receiver state with its arguments, not surfaced as an error return or panic",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "requirementIds": [
         "REQ-LDF-009",
         "REQ-LDF-010"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "ldf derives incorrect output from receiver and argument state"
+      ],
+      "effects": [
+        "incorrect system behavior from ldf"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint32(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-018",
+      "item": "ldf.Encode",
       "component": "ldf",
       "function": "Encode",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "ldf/parser.go",
+      "failureMode": "ldf derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from ldf",
+      "cause": "a logic error in ldf combining receiver state with its arguments, not surfaced as an error return or panic",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "requirementIds": [
         "REQ-LDF-009",
         "REQ-LDF-010"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "ldf derives incorrect output from receiver and argument state"
+      ],
+      "effects": [
+        "incorrect system behavior from ldf"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint32(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-019",
+      "item": "ldf.Frame",
       "component": "ldf",
       "function": "Frame",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "ldf/parser.go",
+      "failureMode": "ldf derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from ldf",
+      "cause": "a logic error in ldf combining receiver state with its arguments, not surfaced as an error return or panic",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "requirementIds": [
         "REQ-LDF-005",
         "REQ-LDF-012"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "ldf derives incorrect output from receiver and argument state"
+      ],
+      "effects": [
+        "incorrect system behavior from ldf"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint32(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-020",
+      "item": "ldf.Frames",
       "component": "ldf",
       "function": "Frames",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "ldf/parser.go",
+      "failureMode": "ldf returns stale or inconsistent receiver state",
+      "effect": "caller of ldf observes state that no longer reflects a concurrent mutation",
+      "cause": "ldf reads receiver fields with no synchronisation against concurrent mutation",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "requirementIds": [
         "REQ-LDF-005",
         "REQ-LDF-015"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "ldf returns stale or inconsistent receiver state"
+      ],
+      "effects": [
+        "caller of ldf observes state that no longer reflects a concurrent mutation"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint32(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-021",
+      "item": "ldf.Parse",
       "component": "ldf",
       "function": "Parse",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "ldf/parser.go",
+      "failureMode": "ldf returns an unexpected error",
+      "effect": "silent failure propagated to ldf's caller",
+      "cause": "an unhandled error path in ldf's function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-LDF-001",
         "REQ-LDF-002",
         "REQ-LDF-003",
@@ -458,152 +646,223 @@
         "REQ-LDF-014",
         "REQ-SEC-001"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "ldf returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to ldf's caller"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint32(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-022",
+      "item": "ldf.Schedule",
       "component": "ldf",
       "function": "Schedule",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "ldf/parser.go",
+      "failureMode": "ldf derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from ldf",
+      "cause": "a logic error in ldf combining receiver state with its arguments, not surfaced as an error return or panic",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "requirementIds": [
         "REQ-LDF-011"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "ldf derives incorrect output from receiver and argument state"
+      ],
+      "effects": [
+        "incorrect system behavior from ldf"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint32(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-023",
+      "item": "ldf.Signal",
       "component": "ldf",
       "function": "Signal",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "ldf/parser.go",
+      "failureMode": "ldf derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from ldf",
+      "cause": "a logic error in ldf combining receiver state with its arguments, not surfaced as an error return or panic",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "requirementIds": [
         "REQ-LDF-007",
         "REQ-LDF-013"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "ldf derives incorrect output from receiver and argument state"
+      ],
+      "effects": [
+        "incorrect system behavior from ldf"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint32(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-024",
+      "item": "ldf.Signals",
       "component": "ldf",
       "function": "Signals",
-      "file": "/home/runner/work/go-LIN/go-LIN/ldf/parser.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "ldf/parser.go",
+      "failureMode": "ldf returns stale or inconsistent receiver state",
+      "effect": "caller of ldf observes state that no longer reflects a concurrent mutation",
+      "cause": "ldf reads receiver fields with no synchronisation against concurrent mutation",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "requirementIds": [
         "REQ-LDF-007",
         "REQ-LDF-008"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "ldf returns stale or inconsistent receiver state"
+      ],
+      "effects": [
+        "caller of ldf observes state that no longer reflects a concurrent mutation"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint8(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range",
         "CYBER009: uint32(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-025",
+      "item": "master.Diagnostics",
       "component": "master",
       "function": "Diagnostics",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
-      "failure_modes": [
-        "Returns unexpected error"
+      "file": "master/master.go",
+      "failureMode": "master returns an unexpected error",
+      "effect": "silent failure propagated to master's caller",
+      "cause": "an unhandled error path in master's function body or a callee",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
+        "REQ-MASTER-014"
+      ],
+      "failureModes": [
+        "master returns an unexpected error"
       ],
       "effects": [
-        "Silent failure propagated to caller"
+        "silent failure propagated to master's caller"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-MASTER-014"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-026",
+      "item": "master.New",
       "component": "master",
       "function": "New",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "master/master.go",
+      "failureMode": "master produces incorrect output for a given input combination",
+      "effect": "incorrect system behavior from master",
+      "cause": "a logic error in master not surfaced as an error return or panic",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this function's documented behaviour"
+      ],
+      "requirementIds": [
+        "REQ-MASTER-001"
+      ],
+      "failureModes": [
+        "master produces incorrect output for a given input combination"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "incorrect system behavior from master"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-MASTER-001"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-027",
+      "item": "master.OnError",
       "component": "master",
       "function": "OnError",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "master/master.go",
+      "failureMode": "master derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from master",
+      "cause": "a logic error in master combining receiver state with its arguments, not surfaced as an error return or panic",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "requirementIds": [
+        "REQ-MASTER-007"
+      ],
+      "failureModes": [
+        "master derives incorrect output from receiver and argument state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "incorrect system behavior from master"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-MASTER-007"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-028",
+      "item": "master.OnFrame",
       "component": "master",
       "function": "OnFrame",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "master/master.go",
+      "failureMode": "master derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from master",
+      "cause": "a logic error in master combining receiver state with its arguments, not surfaced as an error return or panic",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "requirementIds": [
+        "REQ-MASTER-006"
+      ],
+      "failureModes": [
+        "master derives incorrect output from receiver and argument state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "incorrect system behavior from master"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-MASTER-006"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-029",
+      "item": "master.Run",
       "component": "master",
       "function": "Run",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
-      "failure_modes": [
-        "Returns unexpected error",
-        "Uncontrolled execution"
-      ],
-      "effects": [
-        "Silent failure propagated to caller",
-        "Resource exhaustion"
-      ],
+      "file": "master/master.go",
+      "failureMode": "master returns an unexpected error; uncontrolled execution in master",
+      "effect": "silent failure propagated to master's caller; resource exhaustion triggered from master",
+      "cause": "an unhandled error path in master's function body or a callee; no bound on iteration count, input size, or execution time in master",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path",
+        "add a context deadline or explicit resource bound"
+      ],
+      "requirementIds": [
         "REQ-MASTER-003",
         "REQ-MASTER-004",
         "REQ-MASTER-005",
@@ -613,157 +872,240 @@
         "REQ-MASTER-009",
         "REQ-MASTER-013",
         "REQ-MASTER-016"
-      ]
+      ],
+      "failureModes": [
+        "master returns an unexpected error",
+        "uncontrolled execution in master"
+      ],
+      "effects": [
+        "silent failure propagated to master's caller",
+        "resource exhaustion triggered from master"
+      ],
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-030",
+      "item": "master.SendHeader",
       "component": "master",
       "function": "SendHeader",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
-      "failure_modes": [
-        "Returns unexpected error"
+      "file": "master/master.go",
+      "failureMode": "master returns an unexpected error",
+      "effect": "silent failure propagated to master's caller",
+      "cause": "an unhandled error path in master's function body or a callee",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
+        "REQ-MASTER-002"
+      ],
+      "failureModes": [
+        "master returns an unexpected error"
       ],
       "effects": [
-        "Silent failure propagated to caller"
+        "silent failure propagated to master's caller"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-MASTER-002"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-031",
+      "item": "master.SetPending",
       "component": "master",
       "function": "SetPending",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "master/master.go",
+      "failureMode": "master derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from master",
+      "cause": "a logic error in master combining receiver state with its arguments, not surfaced as an error return or panic",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "requirementIds": [
+        "REQ-MASTER-015"
+      ],
+      "failureModes": [
+        "master derives incorrect output from receiver and argument state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "incorrect system behavior from master"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-MASTER-015"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-032",
+      "item": "master.SetSchedule",
       "component": "master",
       "function": "SetSchedule",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "master/master.go",
+      "failureMode": "master returns an unexpected error",
+      "effect": "silent failure propagated to master's caller",
+      "cause": "an unhandled error path in master's function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-MASTER-010",
         "REQ-MASTER-011",
         "REQ-MASTER-012"
-      ]
+      ],
+      "failureModes": [
+        "master returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to master's caller"
+      ],
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-033",
+      "item": "master.SetSporadicGroup",
       "component": "master",
       "function": "SetSporadicGroup",
-      "file": "/home/runner/work/go-LIN/go-LIN/master/master.go",
-      "failure_modes": [
-        "Returns unexpected error"
+      "file": "master/master.go",
+      "failureMode": "master returns an unexpected error",
+      "effect": "silent failure propagated to master's caller",
+      "cause": "an unhandled error path in master's function body or a callee",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
+        "REQ-MASTER-016"
+      ],
+      "failureModes": [
+        "master returns an unexpected error"
       ],
       "effects": [
-        "Silent failure propagated to caller"
+        "silent failure propagated to master's caller"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-MASTER-016"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-034",
+      "item": "mock.New",
       "component": "mock",
       "function": "New",
-      "file": "/home/runner/work/go-LIN/go-LIN/mock/mock.go",
-      "failure_modes": [
-        "Returns unexpected error"
+      "file": "mock/mock.go",
+      "failureMode": "mock returns an unexpected error",
+      "effect": "silent failure propagated to mock's caller",
+      "cause": "an unhandled error path in mock's function body or a callee",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
+        "REQ-MOCK-001"
+      ],
+      "failureModes": [
+        "mock returns an unexpected error"
       ],
       "effects": [
-        "Silent failure propagated to caller"
+        "silent failure propagated to mock's caller"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-MOCK-001"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-035",
+      "item": "safety.Error",
       "component": "safety",
       "function": "Error",
-      "file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "safety/e2e.go",
+      "failureMode": "safety returns stale or inconsistent receiver state",
+      "effect": "caller of safety observes state that no longer reflects a concurrent mutation",
+      "cause": "safety reads receiver fields with no synchronisation against concurrent mutation",
+      "severity": "low",
+      "actionPriority": "low",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "failureModes": [
+        "safety returns stale or inconsistent receiver state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "caller of safety observes state that no longer reflects a concurrent mutation"
       ],
-      "severity": "low",
-      "detection_control": "unit tests",
-      "cyber_risks": [
+      "detectionControl": "unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-036",
+      "item": "safety.NewProtector",
       "component": "safety",
       "function": "NewProtector",
-      "file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "safety/e2e.go",
+      "failureMode": "safety produces incorrect output for a given input combination",
+      "effect": "incorrect system behavior from safety",
+      "cause": "a logic error in safety not surfaced as an error return or panic",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this function's documented behaviour"
+      ],
+      "requirementIds": [
         "REQ-SAFETY-003"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "safety produces incorrect output for a given input combination"
+      ],
+      "effects": [
+        "incorrect system behavior from safety"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-037",
+      "item": "safety.NewReceiver",
       "component": "safety",
       "function": "NewReceiver",
-      "file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "safety/e2e.go",
+      "failureMode": "safety produces incorrect output for a given input combination",
+      "effect": "incorrect system behavior from safety",
+      "cause": "a logic error in safety not surfaced as an error return or panic",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this function's documented behaviour"
+      ],
+      "requirementIds": [
         "REQ-SAFETY-013"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "safety produces incorrect output for a given input combination"
+      ],
+      "effects": [
+        "incorrect system behavior from safety"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-038",
+      "item": "safety.Protect",
       "component": "safety",
       "function": "Protect",
-      "file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "safety/e2e.go",
+      "failureMode": "safety derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from safety",
+      "cause": "a logic error in safety combining receiver state with its arguments, not surfaced as an error return or panic",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "requirementIds": [
         "REQ-SAFETY-001",
         "REQ-SAFETY-002",
         "REQ-SAFETY-003",
@@ -773,23 +1115,32 @@
         "REQ-SAFETY-012",
         "REQ-SAFETY-014"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "safety derives incorrect output from receiver and argument state"
+      ],
+      "effects": [
+        "incorrect system behavior from safety"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-039",
+      "item": "safety.Unwrap",
       "component": "safety",
       "function": "Unwrap",
-      "file": "/home/runner/work/go-LIN/go-LIN/safety/e2e.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "safety/e2e.go",
+      "failureMode": "safety returns an unexpected error",
+      "effect": "silent failure propagated to safety's caller",
+      "cause": "an unhandled error path in safety's function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-SAFETY-007",
         "REQ-SAFETY-008",
         "REQ-SAFETY-009",
@@ -800,324 +1151,526 @@
         "REQ-SEC-002",
         "REQ-SEC-003"
       ],
-      "cyber_risks": [
+      "failureModes": [
+        "safety returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to safety's caller"
+      ],
+      "detectionControl": "requirement testing + unit tests",
+      "cyberRisks": [
         "CYBER009: uint16(x) — explicit narrowing conversion may silently truncate bits if x exceeds the target type's range"
       ]
     },
     {
+      "id": "FMEA-040",
+      "item": "slave.New",
       "component": "slave",
       "function": "New",
-      "file": "/home/runner/work/go-LIN/go-LIN/slave/slave.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "slave/slave.go",
+      "failureMode": "slave produces incorrect output for a given input combination",
+      "effect": "incorrect system behavior from slave",
+      "cause": "a logic error in slave not surfaced as an error return or panic",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this function's documented behaviour"
+      ],
+      "requirementIds": [
+        "REQ-SLAVE-001"
+      ],
+      "failureModes": [
+        "slave produces incorrect output for a given input combination"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "incorrect system behavior from slave"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-SLAVE-001"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-041",
+      "item": "slave.RegisteredIDs",
       "component": "slave",
       "function": "RegisteredIDs",
-      "file": "/home/runner/work/go-LIN/go-LIN/slave/slave.go",
-      "failure_modes": [
-        "Incorrect output"
-      ],
-      "effects": [
-        "Incorrect system behavior"
-      ],
+      "file": "slave/slave.go",
+      "failureMode": "slave returns stale or inconsistent receiver state",
+      "effect": "caller of slave observes state that no longer reflects a concurrent mutation",
+      "cause": "slave reads receiver fields with no synchronisation against concurrent mutation",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "requirementIds": [
         "REQ-SLAVE-005",
         "REQ-SLAVE-007"
-      ]
-    },
-    {
-      "component": "slave",
-      "function": "SetResponse",
-      "file": "/home/runner/work/go-LIN/go-LIN/slave/slave.go",
-      "failure_modes": [
-        "Returns unexpected error"
+      ],
+      "failureModes": [
+        "slave returns stale or inconsistent receiver state"
       ],
       "effects": [
-        "Silent failure propagated to caller"
+        "caller of slave observes state that no longer reflects a concurrent mutation"
       ],
+      "detectionControl": "requirement testing + unit tests"
+    },
+    {
+      "id": "FMEA-042",
+      "item": "slave.SetResponse",
+      "component": "slave",
+      "function": "SetResponse",
+      "file": "slave/slave.go",
+      "failureMode": "slave returns an unexpected error",
+      "effect": "silent failure propagated to slave's caller",
+      "cause": "an unhandled error path in slave's function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-SLAVE-002",
         "REQ-SLAVE-003",
         "REQ-SLAVE-004",
         "REQ-SLAVE-008"
-      ]
+      ],
+      "failureModes": [
+        "slave returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to slave's caller"
+      ],
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-043",
+      "item": "slave.Subscribe",
       "component": "slave",
       "function": "Subscribe",
-      "file": "/home/runner/work/go-LIN/go-LIN/slave/slave.go",
-      "failure_modes": [
-        "Returns unexpected error"
+      "file": "slave/slave.go",
+      "failureMode": "slave returns an unexpected error",
+      "effect": "silent failure propagated to slave's caller",
+      "cause": "an unhandled error path in slave's function body or a callee",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
+        "REQ-SLAVE-006"
+      ],
+      "failureModes": [
+        "slave returns an unexpected error"
       ],
       "effects": [
-        "Silent failure propagated to caller"
+        "silent failure propagated to slave's caller"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-SLAVE-006"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-044",
+      "item": "stats.BusLoad",
       "component": "stats",
       "function": "BusLoad",
-      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "stats/stats.go",
+      "failureMode": "stats returns stale or inconsistent receiver state",
+      "effect": "caller of stats observes state that no longer reflects a concurrent mutation",
+      "cause": "stats reads receiver fields with no synchronisation against concurrent mutation",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "requirementIds": [
+        "REQ-STATS-004"
+      ],
+      "failureModes": [
+        "stats returns stale or inconsistent receiver state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "caller of stats observes state that no longer reflects a concurrent mutation"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-STATS-004"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-045",
+      "item": "stats.FrameRate",
       "component": "stats",
       "function": "FrameRate",
-      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "stats/stats.go",
+      "failureMode": "stats returns stale or inconsistent receiver state",
+      "effect": "caller of stats observes state that no longer reflects a concurrent mutation",
+      "cause": "stats reads receiver fields with no synchronisation against concurrent mutation",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "requirementIds": [
+        "REQ-STATS-003"
+      ],
+      "failureModes": [
+        "stats returns stale or inconsistent receiver state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "caller of stats observes state that no longer reflects a concurrent mutation"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-STATS-003"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-046",
+      "item": "stats.New",
       "component": "stats",
       "function": "New",
-      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "stats/stats.go",
+      "failureMode": "stats produces incorrect output for a given input combination",
+      "effect": "incorrect system behavior from stats",
+      "cause": "a logic error in stats not surfaced as an error return or panic",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this function's documented behaviour"
+      ],
+      "requirementIds": [
+        "REQ-STATS-001"
+      ],
+      "failureModes": [
+        "stats produces incorrect output for a given input combination"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "incorrect system behavior from stats"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-STATS-001"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-047",
+      "item": "stats.Observe",
       "component": "stats",
       "function": "Observe",
-      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "stats/stats.go",
+      "failureMode": "stats derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from stats",
+      "cause": "a logic error in stats combining receiver state with its arguments, not surfaced as an error return or panic",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "requirementIds": [
+        "REQ-STATS-002"
+      ],
+      "failureModes": [
+        "stats derives incorrect output from receiver and argument state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "incorrect system behavior from stats"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-STATS-002"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-048",
+      "item": "stats.PerID",
       "component": "stats",
       "function": "PerID",
-      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "stats/stats.go",
+      "failureMode": "stats returns stale or inconsistent receiver state",
+      "effect": "caller of stats observes state that no longer reflects a concurrent mutation",
+      "cause": "stats reads receiver fields with no synchronisation against concurrent mutation",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "requirementIds": [
+        "REQ-STATS-005"
+      ],
+      "failureModes": [
+        "stats returns stale or inconsistent receiver state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "caller of stats observes state that no longer reflects a concurrent mutation"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-STATS-005"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-049",
+      "item": "stats.Reset",
       "component": "stats",
       "function": "Reset",
-      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "stats/stats.go",
+      "failureMode": "stats returns stale or inconsistent receiver state",
+      "effect": "caller of stats observes state that no longer reflects a concurrent mutation",
+      "cause": "stats reads receiver fields with no synchronisation against concurrent mutation",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "requirementIds": [
+        "REQ-STATS-007"
+      ],
+      "failureModes": [
+        "stats returns stale or inconsistent receiver state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "caller of stats observes state that no longer reflects a concurrent mutation"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-STATS-007"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-050",
+      "item": "stats.TotalCount",
       "component": "stats",
       "function": "TotalCount",
-      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "stats/stats.go",
+      "failureMode": "stats returns stale or inconsistent receiver state",
+      "effect": "caller of stats observes state that no longer reflects a concurrent mutation",
+      "cause": "stats reads receiver fields with no synchronisation against concurrent mutation",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "requirementIds": [
+        "REQ-STATS-006"
+      ],
+      "failureModes": [
+        "stats returns stale or inconsistent receiver state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "caller of stats observes state that no longer reflects a concurrent mutation"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-STATS-006"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-051",
+      "item": "stats.Watch",
       "component": "stats",
       "function": "Watch",
-      "file": "/home/runner/work/go-LIN/go-LIN/stats/stats.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "stats/stats.go",
+      "failureMode": "stats derives incorrect output from receiver and argument state",
+      "effect": "incorrect system behavior from stats",
+      "cause": "a logic error in stats combining receiver state with its arguments, not surfaced as an error return or panic",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add requirement-traced unit tests covering this method's documented behaviour"
+      ],
+      "requirementIds": [
+        "REQ-STATS-008"
+      ],
+      "failureModes": [
+        "stats derives incorrect output from receiver and argument state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "incorrect system behavior from stats"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-STATS-008"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-052",
+      "item": "virtual.Close",
       "component": "virtual",
       "function": "Close",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "virtual/bus.go",
+      "failureMode": "virtual returns an unexpected error",
+      "effect": "silent failure propagated to virtual's caller",
+      "cause": "an unhandled error path in virtual's function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-VIRT-015",
         "REQ-VIRT-016"
-      ]
+      ],
+      "failureModes": [
+        "virtual returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to virtual's caller"
+      ],
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-053",
+      "item": "virtual.CloseWithDrain",
       "component": "virtual",
       "function": "CloseWithDrain",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
-      "failure_modes": [
-        "Returns unexpected error"
+      "file": "virtual/bus.go",
+      "failureMode": "virtual returns an unexpected error",
+      "effect": "silent failure propagated to virtual's caller",
+      "cause": "an unhandled error path in virtual's function body or a callee",
+      "severity": "medium",
+      "actionPriority": "medium",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "failureModes": [
+        "virtual returns an unexpected error"
       ],
       "effects": [
-        "Silent failure propagated to caller"
+        "silent failure propagated to virtual's caller"
       ],
-      "severity": "medium",
-      "detection_control": "unit tests"
+      "detectionControl": "unit tests"
     },
     {
+      "id": "FMEA-054",
+      "item": "virtual.Health",
       "component": "virtual",
       "function": "Health",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "virtual/bus.go",
+      "failureMode": "virtual returns stale or inconsistent receiver state",
+      "effect": "caller of virtual observes state that no longer reflects a concurrent mutation",
+      "cause": "virtual reads receiver fields with no synchronisation against concurrent mutation",
+      "severity": "low",
+      "actionPriority": "low",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "failureModes": [
+        "virtual returns stale or inconsistent receiver state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "caller of virtual observes state that no longer reflects a concurrent mutation"
       ],
-      "severity": "low",
-      "detection_control": "unit tests"
+      "detectionControl": "unit tests"
     },
     {
+      "id": "FMEA-055",
+      "item": "virtual.Metrics",
       "component": "virtual",
       "function": "Metrics",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
-      "failure_modes": [
-        "Incorrect output"
+      "file": "virtual/bus.go",
+      "failureMode": "virtual returns stale or inconsistent receiver state",
+      "effect": "caller of virtual observes state that no longer reflects a concurrent mutation",
+      "cause": "virtual reads receiver fields with no synchronisation against concurrent mutation",
+      "severity": "low",
+      "actionPriority": "low",
+      "mitigations": [
+        "add a mutex, or otherwise make the receiver's field access goroutine-safe"
+      ],
+      "failureModes": [
+        "virtual returns stale or inconsistent receiver state"
       ],
       "effects": [
-        "Incorrect system behavior"
+        "caller of virtual observes state that no longer reflects a concurrent mutation"
       ],
-      "severity": "low",
-      "detection_control": "unit tests"
+      "detectionControl": "unit tests"
     },
     {
+      "id": "FMEA-056",
+      "item": "virtual.New",
       "component": "virtual",
       "function": "New",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
-      "failure_modes": [
-        "Returns unexpected error"
+      "file": "virtual/bus.go",
+      "failureMode": "virtual returns an unexpected error",
+      "effect": "silent failure propagated to virtual's caller",
+      "cause": "an unhandled error path in virtual's function body or a callee",
+      "severity": "high",
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
+        "REQ-VIRT-001"
+      ],
+      "failureModes": [
+        "virtual returns an unexpected error"
       ],
       "effects": [
-        "Silent failure propagated to caller"
+        "silent failure propagated to virtual's caller"
       ],
-      "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
-        "REQ-VIRT-001"
-      ]
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-057",
+      "item": "virtual.Publish",
       "component": "virtual",
       "function": "Publish",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "virtual/bus.go",
+      "failureMode": "virtual returns an unexpected error",
+      "effect": "silent failure propagated to virtual's caller",
+      "cause": "an unhandled error path in virtual's function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-VIRT-002",
         "REQ-VIRT-003",
         "REQ-VIRT-004",
         "REQ-VIRT-005",
         "REQ-VIRT-019"
-      ]
+      ],
+      "failureModes": [
+        "virtual returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to virtual's caller"
+      ],
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-058",
+      "item": "virtual.PublishClassic",
       "component": "virtual",
       "function": "PublishClassic",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
-      "failure_modes": [
-        "Returns unexpected error"
+      "file": "virtual/bus.go",
+      "failureMode": "virtual returns an unexpected error",
+      "effect": "silent failure propagated to virtual's caller",
+      "cause": "an unhandled error path in virtual's function body or a callee",
+      "severity": "medium",
+      "actionPriority": "medium",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "failureModes": [
+        "virtual returns an unexpected error"
       ],
       "effects": [
-        "Silent failure propagated to caller"
+        "silent failure propagated to virtual's caller"
       ],
-      "severity": "medium",
-      "detection_control": "unit tests"
+      "detectionControl": "unit tests"
     },
     {
+      "id": "FMEA-059",
+      "item": "virtual.PublishFrame",
       "component": "virtual",
-      "function": "SendHeader",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
-      "failure_modes": [
-        "Returns unexpected error"
+      "function": "PublishFrame",
+      "file": "virtual/bus.go",
+      "failureMode": "virtual returns an unexpected error",
+      "effect": "silent failure propagated to virtual's caller",
+      "cause": "an unhandled error path in virtual's function body or a callee",
+      "severity": "medium",
+      "actionPriority": "medium",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "failureModes": [
+        "virtual returns an unexpected error"
       ],
       "effects": [
-        "Silent failure propagated to caller"
+        "silent failure propagated to virtual's caller"
       ],
+      "detectionControl": "unit tests"
+    },
+    {
+      "id": "FMEA-060",
+      "item": "virtual.SendHeader",
+      "component": "virtual",
+      "function": "SendHeader",
+      "file": "virtual/bus.go",
+      "failureMode": "virtual returns an unexpected error",
+      "effect": "silent failure propagated to virtual's caller",
+      "cause": "an unhandled error path in virtual's function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-VIRT-006",
         "REQ-VIRT-007",
         "REQ-VIRT-008",
@@ -1125,39 +1678,72 @@
         "REQ-VIRT-010",
         "REQ-VIRT-017",
         "REQ-VIRT-018"
-      ]
+      ],
+      "failureModes": [
+        "virtual returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to virtual's caller"
+      ],
+      "detectionControl": "requirement testing + unit tests"
     },
     {
+      "id": "FMEA-061",
+      "item": "virtual.SetSchedule",
       "component": "virtual",
       "function": "SetSchedule",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
-      "failure_modes": [
-        "Returns unexpected error"
+      "file": "virtual/bus.go",
+      "failureMode": "virtual returns an unexpected error",
+      "effect": "silent failure propagated to virtual's caller",
+      "cause": "an unhandled error path in virtual's function body or a callee",
+      "severity": "medium",
+      "actionPriority": "medium",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "failureModes": [
+        "virtual returns an unexpected error"
       ],
       "effects": [
-        "Silent failure propagated to caller"
+        "silent failure propagated to virtual's caller"
       ],
-      "severity": "medium",
-      "detection_control": "unit tests"
+      "detectionControl": "unit tests"
     },
     {
+      "id": "FMEA-062",
+      "item": "virtual.Subscribe",
       "component": "virtual",
       "function": "Subscribe",
-      "file": "/home/runner/work/go-LIN/go-LIN/virtual/bus.go",
-      "failure_modes": [
-        "Returns unexpected error"
-      ],
-      "effects": [
-        "Silent failure propagated to caller"
-      ],
+      "file": "virtual/bus.go",
+      "failureMode": "virtual returns an unexpected error",
+      "effect": "silent failure propagated to virtual's caller",
+      "cause": "an unhandled error path in virtual's function body or a callee",
       "severity": "high",
-      "detection_control": "requirement testing + unit tests",
-      "requirement_ids": [
+      "actionPriority": "high",
+      "mitigations": [
+        "add unit test coverage for every returned error path"
+      ],
+      "requirementIds": [
         "REQ-VIRT-011",
         "REQ-VIRT-012",
         "REQ-VIRT-013",
         "REQ-VIRT-014"
-      ]
+      ],
+      "failureModes": [
+        "virtual returns an unexpected error"
+      ],
+      "effects": [
+        "silent failure propagated to virtual's caller"
+      ],
+      "detectionControl": "requirement testing + unit tests"
     }
-  ]
+  ],
+  "summary": {
+    "total": 62,
+    "highPriority": 53,
+    "componentsAnalyzed": 62,
+    "componentsInProject": 62,
+    "coveragePct": 100,
+    "componentsInProjectMethod": "raw regex scan for top-level exported func declarations in non-test .go files under non-vendor/testdata/dot-directories (CountProjectFunctions) — independent of Scan's own go/ast parse, so a file Scan's parser rejects still counts toward the denominator; componentsAnalyzed counts entries Scan actually emitted (every exported function in every file it could parse — Scan does not curate a subset)"
+  }
 }
