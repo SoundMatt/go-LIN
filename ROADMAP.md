@@ -41,6 +41,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the detailed per-version changelog. Summary
 | v1.2.0 | Full ISO/IEC/DO compliance evidence pack, max coverage |
 | v1.3.0 | RELAY spec v1.11 conformance; `cmd/go-lin` RELAY CLI docs/Docker image; diagnostic frames, sporadic frames, LDF write-direction encoding, `stats` package; see CHANGELOG |
 | v1.4.0 | Audit fix pass: diagnostic-frame (0x3C/0x3D) classic-checksum bug, oversize-payload rejection, HARA ASIL recomputation, deprecated-alias cleanup, doc/traceability corrections; see CHANGELOG |
+| v1.5.0 | RELAY dependency bump v1.11.0 → `github.com/SoundMatt/RELAY/v2` v2.0.4 (spec v2.0 conformance); no LIN-relevant behavioral changes, verified against the real CLI; see CHANGELOG |
 
 ---
 

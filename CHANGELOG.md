@@ -6,6 +6,34 @@ canonical list. Dates are release dates (UTC-7, matching tag creation).
 
 ## [Unreleased]
 
+## [1.5.0] — 2026-07-30
+
+- chore: bump `github.com/SoundMatt/RELAY` v1.11.0 → `github.com/SoundMatt/RELAY/v2`
+  v2.0.4, tracking RELAY spec v1.12 ("c" as a valid CLI `language` value,
+  N/A — go-lin already reports `"go"`), v1.13 (deep-audit CLI/tooling fix
+  pass — RELAY-side `relay conform`/`relay interop`/`relay crossbar`
+  bugfixes, none of which go-LIN's CI invocation was exposed to: `--strict`
+  is already passed before the binary path in `.github/workflows/ci.yml`,
+  not after), v1.14 (§13.7.2 module-name registry expansion — RCP/DDS-only,
+  N/A to LIN), and v2.0 (MAJOR — RCP canonical-type replacement, RCP-only,
+  N/A to LIN; the only change relevant to every RELAY consumer was v2.0.4's
+  own fix, the `go.mod` `/v2` module-path suffix required for the v2 tag to
+  be `go install`/`go get`-able at all). Updated all six `relay
+  "github.com/SoundMatt/RELAY"` imports (`adapt.go`, `adapt_test.go`,
+  `lin.go`, `relay_vectors_test.go`, `cmd/go-lin/main.go`,
+  `cmd/go-lin/main_test.go`) to `github.com/SoundMatt/RELAY/v2`, and both
+  `.github/workflows/ci.yml` `relay` CLI install pins to
+  `go install github.com/SoundMatt/RELAY/v2/cmd/relay@v2.0.4`. Verified
+  against the real v2.0.4 CLI built from source: `relay conform --strict`
+  and `relay interop --strict --protocol LIN` both PASS with no new
+  findings; `lin.SpecVersion` (aliased from `relay.SpecVersion`) now
+  reports `"2.0"`. The three checked-in `testdata/relay-vectors/` LIN
+  golden vectors are byte-identical to RELAY v2.0.4's published
+  `spec/vectors/` — no vector drift. `go build ./...`, `go vet ./...`,
+  `go test ./...`, `go test ./... -race`, `gofusa check`, `gofusa trace
+  -req-coverage 100`, `gofusa trace -sec-tested 100`, `gofusa cyber`, and
+  `gofusa vuln` all pass with no new findings (#PR_NUMBER)
+
 ## [1.4.0] — 2026-07-30
 
 - fix: `master.Node.Diagnostics` now transmits LIN diagnostic frames
