@@ -58,7 +58,6 @@ with Matt Jones. The DCO sign-off transfers no copyright — it only affirms you
 | `ldf/` | LIN Description File (LDF) parser |
 | `master/` | LIN master node — schedule execution and header transmission |
 | `slave/` | LIN slave node — response publisher |
-| `transport/` | Physical-layer abstraction (serial/UART) |
 | `safety/` | E2E protection header (CRC, sequence counter) |
 | `cmd/lintool/` | CLI tool — `send`, `dump`, `ldf` subcommands |
 | `examples/quickstart/` | Docker quickstart |

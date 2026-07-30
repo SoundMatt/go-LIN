@@ -395,7 +395,7 @@ func FuzzSendHeader(f *testing.F) {
 			t.Fatal(err)
 		}
 		defer b.Close()
-		if id > lin.MaxID || len(data) == 0 || len(data) > lin.MaxDataLen {
+		if id > lin.LINMaxID || len(data) == 0 || len(data) > lin.LINMaxDataLen {
 			return
 		}
 		_ = b.Publish(id, data)

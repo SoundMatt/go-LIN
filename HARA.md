@@ -46,7 +46,7 @@ SEOOC (Safety Element Out Of Context) in automotive and industrial LIN bus syste
 | SG | Requirement IDs |
 |---|---|
 | SG-01 | REQ-LIN-003, REQ-LIN-004 |
-| SG-02 | REQ-LIN-004 |
+| SG-02 | REQ-LIN-008, REQ-LIN-009, REQ-LIN-010 |
 | SG-03 | REQ-LDF-002, REQ-LDF-003 |
 | SG-04 | REQ-SAFETY-004, REQ-SAFETY-005 |
 | SG-05 | REQ-LIN-001 |

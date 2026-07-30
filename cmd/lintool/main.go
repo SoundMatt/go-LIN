@@ -149,7 +149,7 @@ func parseID(s string) uint8 {
 	} else {
 		v, err = strconv.ParseUint(s, 10, 8)
 	}
-	if err != nil || v > lin.MaxID {
+	if err != nil || v > lin.LINMaxID {
 		fatal("invalid LIN frame ID %q (must be 0x00–0x3F)", s)
 	}
 	return uint8(v)
@@ -161,8 +161,8 @@ func parseHex(s string) []byte {
 	if err != nil {
 		fatal("invalid hex data %q: %v", s, err)
 	}
-	if len(b) == 0 || len(b) > lin.MaxDataLen {
-		fatal("data length %d is not in range 1–%d", len(b), lin.MaxDataLen)
+	if len(b) == 0 || len(b) > lin.LINMaxDataLen {
+		fatal("data length %d is not in range 1–%d", len(b), lin.LINMaxDataLen)
 	}
 	return b
 }

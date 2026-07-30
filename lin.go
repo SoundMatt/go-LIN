@@ -174,6 +174,17 @@ type Bus interface {
 	//fusa:req REQ-LIN-019
 	Publish(id uint8, data []byte) error
 
+	// PublishFrame registers a fully-formed response Frame for f.ID,
+	// preserving f.ChecksumType. Unlike Publish (which always uses the
+	// enhanced checksum), PublishFrame lets callers select the checksum
+	// type — required for diagnostic frames 0x3C/0x3D, which ISO 17987 /
+	// LIN 2.x §4.2.3 mandate carry the classic checksum. Passing a Frame
+	// with nil Data removes a previously registered response.
+	//
+	//fusa:req REQ-LIN-011
+	//fusa:req REQ-LIN-019
+	PublishFrame(f Frame) error
+
 	// Subscribe returns a channel that delivers frames matching any of the
 	// supplied filters. Pass nil to receive all frames.
 	// opts configures channel delivery (depth, back-pressure per relay §14).

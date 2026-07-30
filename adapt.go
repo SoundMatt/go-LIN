@@ -39,7 +39,10 @@ func (n *linNode) Protocol() relay.Protocol {
 func (n *linNode) Send(ctx context.Context, msg relay.Message) error {
 	id, err := strconv.ParseUint(msg.ID, 10, 8)
 	if err != nil || id > LINMaxID {
-		return fmt.Errorf("lin: invalid frame ID %q: %w", msg.ID, ErrNotConnected)
+		return fmt.Errorf("lin: invalid frame ID %q: %w", msg.ID, ErrInvalidFrame)
+	}
+	if len(msg.Payload) > LINMaxDataLen {
+		return fmt.Errorf("lin: payload length %d exceeds maximum %d: %w", len(msg.Payload), LINMaxDataLen, ErrPayloadTooLarge)
 	}
 	return n.bus.Publish(uint8(id), msg.Payload)
 }

@@ -60,8 +60,8 @@ func New(bus lin.Bus) *Node {
 //fusa:req REQ-SLAVE-004
 //fusa:req REQ-SLAVE-008
 func (n *Node) SetResponse(id uint8, data []byte) error {
-	if id > lin.MaxID {
-		return fmt.Errorf("slave: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.MaxID)
+	if id > lin.LINMaxID {
+		return fmt.Errorf("slave: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.LINMaxID)
 	}
 	if err := n.bus.Publish(id, data); err != nil {
 		return fmt.Errorf("slave: Publish: %w", err)
