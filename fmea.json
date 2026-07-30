@@ -4,7 +4,7 @@
   "tool": "go-FuSa",
   "toolVersion": "0.47.0",
   "language": "go",
-  "generatedAt": "2026-07-30T21:15:02.401702779Z",
+  "generatedAt": "2026-07-30T22:35:32.920451464Z",
   "format": "go-FuSa dFMEA v1",
   "module": "github.com/SoundMatt/go-LIN",
   "entries": [

@@ -1,7 +1,7 @@
 # Threat Analysis and Risk Assessment (TARA)
 
 **Module:** github.com/SoundMatt/go-LIN  
-**Generated:** 2026-07-30T21:15:02Z  
+**Generated:** 2026-07-30T22:35:33Z  
 **Standard:** ISO/SAE 21434:2021 Clause 15  
 **Coverage:** 8 / 15 assets (53.3%)
 

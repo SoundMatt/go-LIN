@@ -4,7 +4,7 @@
   "tool": "go-FuSa",
   "toolVersion": "0.47.0",
   "language": "go",
-  "generatedAt": "2026-07-30T21:15:02.719591811Z",
+  "generatedAt": "2026-07-30T22:35:33.181077971Z",
   "format": "go-FuSa TARA v1",
   "module": "github.com/SoundMatt/go-LIN",
   "threats": [
