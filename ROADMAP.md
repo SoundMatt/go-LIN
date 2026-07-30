@@ -40,6 +40,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the detailed per-version changelog. Summary
 | v1.1.0 | RELAY spec v1.10 conformance — §13.7 cross-language library architecture, §20 continuous conformance |
 | v1.2.0 | Full ISO/IEC/DO compliance evidence pack, max coverage |
 | v1.3.0 | RELAY spec v1.11 conformance; `cmd/go-lin` RELAY CLI docs/Docker image; diagnostic frames, sporadic frames, LDF write-direction encoding, `stats` package; see CHANGELOG |
+| v1.4.0 | Audit fix pass: diagnostic-frame (0x3C/0x3D) classic-checksum bug, oversize-payload rejection, HARA ASIL recomputation, deprecated-alias cleanup, doc/traceability corrections; see CHANGELOG |
 
 ---
 

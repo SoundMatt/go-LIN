@@ -6,6 +6,33 @@ canonical list. Dates are release dates (UTC-7, matching tag creation).
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-07-30
+
+- fix: `master.Node.Diagnostics` now transmits LIN diagnostic frames
+  (0x3C/0x3D) with the classic checksum required by ISO 17987 / LIN 2.x
+  §4.2.3, instead of the enhanced checksum every other frame uses; added
+  a checksum-type-aware `Bus.PublishFrame` and routed `Diagnostics`
+  through it (#72)
+- fix: `linNode.Send`/`virtual.Bus.Publish` now return
+  `lin.ErrPayloadTooLarge` for a payload exceeding `LINMaxDataLen`
+  instead of silently accepting it (#72)
+- fix: `linNode.Send` now returns `lin.ErrInvalidFrame` (previously
+  `ErrNotConnected`) for a malformed/out-of-range message ID, matching
+  `FromMessage` (#72)
+- fix(safety): recomputed every HARA hazard's `asil` in `.fusa-hara.json`
+  from its severity/exposure/controllability fields — all six were one
+  band too high (#72)
+- test: `TestDiagnostics_requestResponseRoundTrip` now asserts checksum
+  type/value on both the 0x3C request and 0x3D response frames (#72)
+- chore: replaced internal uses of the deprecated `lin.MaxID`/
+  `lin.MaxDataLen` aliases with `LINMaxID`/`LINMaxDataLen` (#72)
+- docs: `HARA.md` SG-02 now traces to the checksum requirements
+  (`REQ-LIN-008/009/010`) instead of the PID-parity requirement (#72)
+- docs: `sas.md` no longer reports `SVP.md`/`SCMP.md`/`SQAP.md` as
+  missing — all three exist at the repo root (#72)
+- docs: removed a `CONTRIBUTING.md` project-structure row for a
+  nonexistent `transport/` directory (#72)
+
 ## [1.3.0] — 2026-07-27
 
 - fix: `virtual.Bus.CloseWithDrain` now returns `lin.ErrTimeout` (and counts
