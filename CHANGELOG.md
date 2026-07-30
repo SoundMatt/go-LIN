@@ -32,7 +32,7 @@ canonical list. Dates are release dates (UTC-7, matching tag creation).
   `spec/vectors/` — no vector drift. `go build ./...`, `go vet ./...`,
   `go test ./...`, `go test ./... -race`, `gofusa check`, `gofusa trace
   -req-coverage 100`, `gofusa trace -sec-tested 100`, `gofusa cyber`, and
-  `gofusa vuln` all pass with no new findings (#PR_NUMBER)
+  `gofusa vuln` all pass with no new findings (#74)
 
 ## [1.4.0] — 2026-07-30
 
