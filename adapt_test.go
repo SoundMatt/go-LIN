@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	relay "github.com/SoundMatt/RELAY"
+	relay "github.com/SoundMatt/RELAY/v2"
 	lin "github.com/SoundMatt/go-LIN"
 	"github.com/SoundMatt/go-LIN/virtual"
 )

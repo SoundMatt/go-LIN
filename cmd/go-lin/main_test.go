@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	relay "github.com/SoundMatt/RELAY"
+	relay "github.com/SoundMatt/RELAY/v2"
 	lin "github.com/SoundMatt/go-LIN"
 )
 

@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	relay "github.com/SoundMatt/RELAY"
+	relay "github.com/SoundMatt/RELAY/v2"
 )
 
 // Adapt wraps bus as a relay.Node for use with protocol-agnostic applications.
