@@ -533,7 +533,7 @@ func (p *ldfParser) parseScheduleTables(db *DB) error {
 					delay, _ := parseUint(delayStr)
 					// resolve frame name → ID
 					id := frameIDByName(db, parts[0])
-					if id > lin.MaxID {
+					if id > lin.LINMaxID {
 						continue
 					}
 					entries = append(entries, lin.ScheduleEntry{ID: id, DelayMs: uint32(delay)})

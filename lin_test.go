@@ -37,7 +37,7 @@ func TestProtectID_P0(t *testing.T) {
 }
 
 func TestProtectID_allIDs(t *testing.T) {
-	for id := uint8(0); id <= lin.MaxID; id++ {
+	for id := uint8(0); id <= lin.LINMaxID; id++ {
 		pid := lin.ProtectID(id)
 		if pid&0x3F != id {
 			t.Errorf("ProtectID(0x%02X): lower 6 bits 0x%02X != id", id, pid&0x3F)
@@ -51,7 +51,7 @@ func TestProtectID_allIDs(t *testing.T) {
 //fusa:test REQ-LIN-007
 
 func TestVerifyPID_valid(t *testing.T) {
-	for id := uint8(0); id <= lin.MaxID; id++ {
+	for id := uint8(0); id <= lin.LINMaxID; id++ {
 		pid := lin.ProtectID(id)
 		got, err := lin.VerifyPID(pid)
 		if err != nil {
@@ -319,7 +319,7 @@ func TestFilterMatches_exact(t *testing.T) {
 
 func TestFilterMatches_all(t *testing.T) {
 	flt := lin.Filter{All: true}
-	for id := uint8(0); id <= lin.MaxID; id++ {
+	for id := uint8(0); id <= lin.LINMaxID; id++ {
 		if !flt.Matches(lin.Frame{ID: id, Data: []byte{1}}) {
 			t.Errorf("all-filter should match ID 0x%02X", id)
 		}

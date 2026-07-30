@@ -135,7 +135,7 @@ func TestSEOOC_LDFScheduleIDsValid(t *testing.T) {
 
 	frames := db.Frames()
 	for i, entry := range sched {
-		if entry.ID > lin.MaxID {
+		if entry.ID > lin.LINMaxID {
 			t.Errorf("schedule entry %d: ID 0x%02X exceeds MaxID", i, entry.ID)
 		}
 		if frames[entry.ID] == nil {
