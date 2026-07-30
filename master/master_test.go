@@ -347,11 +347,12 @@ func TestDiagnostics_requestResponseRoundTrip(t *testing.T) {
 	if err != nil {
 		t.Fatalf("resp.ToFrame: %v", err)
 	}
-	if err := bus.Publish(lin.LINDiagResponseID, respFrame.Data); err != nil {
-		t.Fatalf("Publish(0x3D): %v", err)
+	if err := bus.PublishFrame(respFrame); err != nil {
+		t.Fatalf("PublishFrame(0x3D): %v", err)
 	}
 
 	ch, _ := bus.Subscribe([]lin.Filter{{ID: lin.LINDiagRequestID}})
+	respCh, _ := bus.Subscribe([]lin.Filter{{ID: lin.LINDiagResponseID}})
 
 	n := master.New(bus)
 	req := lin.MasterRequestFrame{NAD: 0x01, SID: 0xB2, Data: []byte{0x01, 0x02}}
@@ -363,15 +364,37 @@ func TestDiagnostics_requestResponseRoundTrip(t *testing.T) {
 		t.Errorf("Diagnostics response = %+v, want %+v", got, resp)
 	}
 
-	// The request itself must actually have been transmitted on 0x3C.
+	// The request itself must actually have been transmitted on 0x3C, and
+	// diagnostic frames must carry the classic checksum (ISO 17987 §4.2.3).
 	select {
 	case sent := <-ch:
 		reqFrame, _ := req.ToFrame()
 		if string(sent.Data) != string(reqFrame.Data) {
 			t.Errorf("transmitted request data = % X, want % X", sent.Data, reqFrame.Data)
 		}
+		if sent.ChecksumType != lin.ClassicChecksum {
+			t.Errorf("0x3C request ChecksumType = %v, want ClassicChecksum", sent.ChecksumType)
+		}
+		wantCS := lin.CalcChecksum(lin.ProtectID(lin.LINDiagRequestID), sent.Data, lin.ClassicChecksum)
+		if sent.Checksum != wantCS {
+			t.Errorf("0x3C request Checksum = 0x%02X, want 0x%02X", sent.Checksum, wantCS)
+		}
 	case <-time.After(time.Second):
 		t.Fatal("timed out waiting for the request frame to be broadcast")
+	}
+
+	// The 0x3D response frame must likewise carry the classic checksum.
+	select {
+	case sent := <-respCh:
+		if sent.ChecksumType != lin.ClassicChecksum {
+			t.Errorf("0x3D response ChecksumType = %v, want ClassicChecksum", sent.ChecksumType)
+		}
+		wantCS := lin.CalcChecksum(lin.ProtectID(lin.LINDiagResponseID), sent.Data, lin.ClassicChecksum)
+		if sent.Checksum != wantCS {
+			t.Errorf("0x3D response Checksum = 0x%02X, want 0x%02X", sent.Checksum, wantCS)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("timed out waiting for the response frame to be broadcast")
 	}
 }
 

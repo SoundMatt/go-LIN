@@ -100,6 +100,9 @@ func (b *Bus) Publish(id uint8, data []byte) error {
 	if id > lin.LINMaxID {
 		return fmt.Errorf("lin/virtual: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.LINMaxID)
 	}
+	if len(data) > lin.LINMaxDataLen {
+		return fmt.Errorf("lin/virtual: payload length %d exceeds maximum %d: %w", len(data), lin.LINMaxDataLen, lin.ErrPayloadTooLarge)
+	}
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if b.closed {
@@ -135,6 +138,17 @@ func (b *Bus) PublishClassic(id uint8, data []byte) error {
 	copy(cp, data)
 	b.responses[id] = responseEntry{data: cp, checksumType: lin.ClassicChecksum}
 	return nil
+}
+
+// PublishFrame registers f.Data for f.ID, preserving f.ChecksumType so that
+// callers can select the classic checksum required for diagnostic frames
+// 0x3C/0x3D (ISO 17987 / LIN 2.x §4.2.3). A Frame with nil Data removes a
+// previously registered response.
+func (b *Bus) PublishFrame(f lin.Frame) error {
+	if f.ChecksumType == lin.ClassicChecksum {
+		return b.PublishClassic(f.ID, f.Data)
+	}
+	return b.Publish(f.ID, f.Data)
 }
 
 // SendHeader drives a frame exchange for the given ID.

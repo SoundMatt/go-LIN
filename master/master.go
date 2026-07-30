@@ -129,7 +129,7 @@ func (n *Node) Diagnostics(ctx context.Context, req lin.MasterRequestFrame) (lin
 	if err != nil {
 		return lin.SlaveResponseFrame{}, fmt.Errorf("master: diagnostics: %w", err)
 	}
-	if err := n.bus.Publish(f.ID, f.Data); err != nil {
+	if err := n.bus.PublishFrame(f); err != nil {
 		return lin.SlaveResponseFrame{}, fmt.Errorf("master: diagnostics: publish request: %w", err)
 	}
 	if _, err := n.bus.SendHeader(ctx, lin.LINDiagRequestID); err != nil {
@@ -161,12 +161,12 @@ func (n *Node) Diagnostics(ctx context.Context, req lin.MasterRequestFrame) (lin
 //
 //fusa:req REQ-MASTER-016
 func (n *Node) SetSporadicGroup(slotID uint8, candidates []uint8) error {
-	if slotID > lin.MaxID {
-		return fmt.Errorf("master: sporadic slot ID 0x%02X exceeds maximum 0x%02X", slotID, lin.MaxID)
+	if slotID > lin.LINMaxID {
+		return fmt.Errorf("master: sporadic slot ID 0x%02X exceeds maximum 0x%02X", slotID, lin.LINMaxID)
 	}
 	for i, id := range candidates {
-		if id > lin.MaxID {
-			return fmt.Errorf("master: sporadic candidate %d: ID 0x%02X exceeds maximum 0x%02X", i, id, lin.MaxID)
+		if id > lin.LINMaxID {
+			return fmt.Errorf("master: sporadic candidate %d: ID 0x%02X exceeds maximum 0x%02X", i, id, lin.LINMaxID)
 		}
 	}
 
@@ -283,8 +283,8 @@ func (n *Node) Run(ctx context.Context) error {
 //fusa:req REQ-MASTER-011
 func validateSchedule(entries []lin.ScheduleEntry) error {
 	for i, e := range entries {
-		if e.ID > lin.MaxID {
-			return fmt.Errorf("master: schedule entry %d: ID 0x%02X exceeds maximum 0x%02X", i, e.ID, lin.MaxID)
+		if e.ID > lin.LINMaxID {
+			return fmt.Errorf("master: schedule entry %d: ID 0x%02X exceeds maximum 0x%02X", i, e.ID, lin.LINMaxID)
 		}
 	}
 	return nil
