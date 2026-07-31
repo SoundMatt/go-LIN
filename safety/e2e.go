@@ -69,6 +69,9 @@ const (
 	ErrSequenceGap
 	// ErrHeaderTooShort means the payload is shorter than the 10-byte header.
 	ErrHeaderTooShort
+	// ErrIDMismatch means the transmitted DataID/SourceID did not match the
+	// Receiver's configured identity (masquerade / mis-addressing detection).
+	ErrIDMismatch
 )
 
 // E2EError is returned when an E2E safety check fails.
@@ -191,8 +194,19 @@ func (r *Receiver) Unwrap(data []byte) ([]byte, error) {
 		}
 	}
 
-	_ = dataID   // validated implicitly via CRC
-	_ = sourceID // validated implicitly via CRC
+	// Masquerade / mis-addressing detection: the transmitted DataID and
+	// SourceID MUST match this Receiver's configured identity. The CRC only
+	// proves the header is self-consistent; it does not bind the frame to the
+	// expected logical stream, so this check is what actually protects against
+	// a frame from a different DataID/SourceID being accepted.
+	if dataID != r.cfg.DataID || sourceID != r.cfg.SourceID {
+		return nil, &E2EError{
+			Kind:    ErrIDMismatch,
+			Counter: seq,
+			Message: fmt.Sprintf("identity mismatch: wire DataID=0x%04X SourceID=0x%04X, want DataID=0x%04X SourceID=0x%04X",
+				dataID, sourceID, r.cfg.DataID, r.cfg.SourceID),
+		}
+	}
 
 	r.mu.Lock()
 	defer r.mu.Unlock()

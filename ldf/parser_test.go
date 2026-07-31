@@ -339,6 +339,131 @@ func TestFrames_defensiveCopy(t *testing.T) {
 	}
 }
 
+// ── go-LIN-01: frame ID/length range validation ──────────────────────────────
+//
+// Regression coverage for a bug where parseFrameHeader discarded the
+// length-parse error and never range-checked ID or length. A frame with a
+// negative length made DB.Encode panic via make([]byte, f.Length); an
+// out-of-range ID (e.g. 300) was silently truncated to a valid-looking 6-bit
+// ID via uint8(id), corrupting the frame table under the wrong key.
+
+//fusa:test REQ-LDF-005
+//fusa:test REQ-SEC-001
+
+func TestParse_rejectsNegativeFrameLength(t *testing.T) {
+	const input = `
+Frames {
+  BadFrame: 0x10, MasterNode, -4 {
+    EngineSpeed, 0;
+  }
+}
+`
+	db, err := ldf.Parse(strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	if f := db.Frame(0x10); f != nil {
+		t.Fatalf("Frame(0x10) = %+v, want nil (frame with negative length must be rejected, not stored)", f)
+	}
+	// The original bug manifested here: make([]byte, f.Length) with a
+	// negative Length panics. Encode on the rejected ID must simply report
+	// "unknown frame" (nil), never panic.
+	if out := db.Encode(0x10, nil); out != nil {
+		t.Fatalf("Encode(0x10) = % X, want nil for a rejected frame", out)
+	}
+}
+
+func TestParse_rejectsOutOfRangeFrameID(t *testing.T) {
+	const input = `
+Frames {
+  BadFrame: 300, MasterNode, 4 {
+    EngineSpeed, 0;
+  }
+}
+`
+	db, err := ldf.Parse(strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	// 300 truncated via a bare uint8() cast wraps to 300-256=44 (0x2C). The
+	// fix must reject the frame outright, not store it under the truncated
+	// ID, silently corrupting whatever legitimate frame lives at 0x2C.
+	if f := db.Frame(0x2C); f != nil {
+		t.Fatalf("Frame(0x2C) = %+v, want nil (out-of-range ID must not be silently truncated into the table)", f)
+	}
+	if len(db.Frames()) != 0 {
+		t.Fatalf("Frames() = %d entries, want 0", len(db.Frames()))
+	}
+}
+
+// A frame rejected for an out-of-range ID/length must not swallow
+// subsequently well-formed frames in the same Frames section — the parser
+// must skip past the bad frame's body, not mistake its closing brace for the
+// Frames section's own closing brace.
+func TestParse_badFrameDoesNotSwallowLaterFrames(t *testing.T) {
+	const input = `
+Frames {
+  BadFrame: 300, MasterNode, 4 {
+    EngineSpeed, 0;
+  }
+  GoodFrame: 0x20, SlaveB, 2 {
+    WindowPos, 0;
+  }
+}
+`
+	db, err := ldf.Parse(strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	f := db.Frame(0x20)
+	if f == nil {
+		t.Fatal("Frame(0x20) = nil, want GoodFrame to still be parsed after a preceding invalid frame")
+	}
+	if f.Name != "GoodFrame" {
+		t.Errorf("frame Name = %q, want GoodFrame", f.Name)
+	}
+}
+
+// ── go-LIN-A3: negative signal-ref bit offset ────────────────────────────────
+//
+// Regression coverage for a bug where the bit offset in a frame's signal
+// reference was parsed with the error discarded, allowing a negative
+// BitOffset to reach extractBits/packBits and rely on incidental Go
+// shift/comparison semantics to avoid a panic rather than being rejected by
+// design.
+
+//fusa:test REQ-LDF-006
+
+func TestParse_rejectsNegativeSignalBitOffset(t *testing.T) {
+	const input = `
+Signals {
+  EngineSpeed: 16, 0x0000, MasterNode, SlaveA;
+}
+Frames {
+  EngineFrame: 0x10, MasterNode, 4 {
+    EngineSpeed, -8;
+  }
+}
+`
+	db, err := ldf.Parse(strings.NewReader(input))
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	f := db.Frame(0x10)
+	if f == nil {
+		t.Fatal("Frame(0x10) = nil, want the frame itself to still be parsed")
+	}
+	for _, ref := range f.Signals {
+		if ref.Name == "EngineSpeed" {
+			t.Fatalf("signal ref %+v: negative BitOffset must be rejected, not stored", ref)
+		}
+	}
+	// Encode/Decode must remain panic-safe even though the signal ref was
+	// dropped (it simply won't appear in the packed/decoded output).
+	_ = db.Encode(0x10, map[string]uint64{"EngineSpeed": 1})
+	_ = db.Decode(0x10, []byte{0, 0, 0, 0})
+}
+
 func FuzzParse(f *testing.F) {
 	f.Add(sampleLDF)
 	f.Add("")
@@ -354,6 +479,12 @@ func FuzzParse(f *testing.F) {
 		_ = db.Signals()
 		for id := uint8(0); id <= 0x3F; id++ {
 			_ = db.Frame(id)
+			// Regression for go-LIN-01: a structurally-valid-but-malicious
+			// LDF (e.g. a negative or oversize frame length) must never make
+			// DB.Encode panic (makeslice with a negative/huge length) or
+			// over-allocate. Every frame Parse actually accepted must be
+			// safe to Encode.
+			_ = db.Encode(id, nil)
 		}
 	})
 }

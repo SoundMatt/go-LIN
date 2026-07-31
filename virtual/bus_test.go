@@ -92,6 +92,41 @@ func TestPublish_rejectsHighID(t *testing.T) {
 	}
 }
 
+// TestPublish_rejectsEmptyPayload is the regression test for go-LIN-A2: the
+// virtual bus must never broadcast a 0-data-byte frame (LIN Specification
+// Package 2.2A: the data field carries 1-8 bytes), matching what
+// lin.ValidateFrame itself already rejects. Publish(id, nil) removes a
+// registration and must remain accepted; Publish(id, []byte{}) — non-nil,
+// zero-length — must be rejected the same way over-length data already is.
+func TestPublish_rejectsEmptyPayload(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer b.Close()
+	if err := b.Publish(0x10, []byte{}); err == nil {
+		t.Error("expected error for non-nil empty payload")
+	}
+	// nil must still be accepted (it removes any existing registration).
+	if err := b.Publish(0x10, nil); err != nil {
+		t.Errorf("Publish(id, nil) should still succeed, got %v", err)
+	}
+}
+
+func TestPublishClassic_rejectsEmptyPayload(t *testing.T) {
+	b, err := virtual.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer b.Close()
+	if err := b.PublishClassic(0x10, []byte{}); err == nil {
+		t.Error("expected error for non-nil empty payload")
+	}
+	if err := b.PublishClassic(0x10, nil); err != nil {
+		t.Errorf("PublishClassic(id, nil) should still succeed, got %v", err)
+	}
+}
+
 func TestPublish_afterClose(t *testing.T) {
 	b, err := virtual.New()
 	if err != nil {

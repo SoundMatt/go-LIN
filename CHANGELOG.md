@@ -6,6 +6,38 @@ canonical list. Dates are release dates (UTC-7, matching tag creation).
 
 ## [Unreleased]
 
+- fix: `ldf.parseFrameHeader` now rejects (rather than silently corrupting)
+  a frame whose ID is outside 0x00–0x3F or whose declared length is
+  outside 0–8 bytes — previously a negative length (e.g. from
+  `f: 0x10, MASTER, -4;`) reached `DB.Encode`'s `make([]byte, f.Length)`
+  and panicked (`runtime error: makeslice: len out of range`, CWE-789 DoS
+  on untrusted LDF input), and an out-of-range ID (e.g. `300`) was
+  silently truncated via a bare `uint8()` cast, corrupting whatever frame
+  already lived at the truncated ID. A frame rejected this way is now
+  properly skipped rather than swallowing every subsequent frame in the
+  same `Frames` section (the previous single-`continue` mistook the
+  rejected frame's own closing brace for the section's closing brace).
+  Signal-ref bit offsets with a negative value (also previously discarded
+  the parse error) are now rejected the same way rather than relying on
+  incidental Go shift/comparison semantics to avoid a panic (#76)
+- fix(safety): `safety.Receiver.Unwrap` now compares the wire-transmitted
+  `DataID`/`SourceID` against the receiver's configured `Config` and
+  returns a new `ErrIDMismatch` on mismatch — previously the CRC check
+  alone was (incorrectly, per the code's own now-corrected comment)
+  treated as sufficient masquerade protection, so a frame protected under
+  a different `DataID`/`SourceID` than the receiver's was accepted
+  without error (#76)
+- fix(virtual): `Bus.Publish`/`Bus.PublishClassic` now reject a non-nil,
+  zero-length payload the same way they already reject an over-length
+  one, so the virtual bus can never broadcast a 0-data-byte frame that
+  `lin.ValidateFrame` itself would consider malformed (LIN Specification
+  Package 2.2A: the data field carries 1–8 bytes); `PublishClassic` also
+  gained the `LINMaxDataLen` over-length guard `Publish` already had (#76)
+- chore(ci): pinned all third-party and first-party GitHub Actions in
+  `.github/workflows/` to immutable commit SHAs (with a `# vX` comment for
+  readability) instead of mutable version tags, matching the repo's own
+  SLSA/supply-chain evidence posture (#76)
+
 ## [1.5.0] — 2026-07-30
 
 - chore: bump `github.com/SoundMatt/RELAY` v1.11.0 → `github.com/SoundMatt/RELAY/v2`
