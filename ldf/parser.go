@@ -441,6 +441,15 @@ func (p *ldfParser) parseFrames(db *DB) error {
 			p.next()
 			fr, err := parseFrameHeader(line)
 			if err != nil {
+				// Skip past this frame's body (up to and including its
+				// closing brace) so a single invalid frame header does not
+				// swallow subsequently well-formed frames or get mistaken
+				// for the closing brace of the whole Frames section.
+				for p.pos < len(p.lines) {
+					if p.next() == "}" {
+						break
+					}
+				}
 				continue
 			}
 			// parse signal refs
@@ -456,7 +465,14 @@ func (p *ldfParser) parseFrames(db *DB) error {
 				parts := strings.SplitN(inner, ",", 2)
 				if len(parts) == 2 {
 					sigName := strings.TrimSpace(parts[0])
-					offset, _ := parseInt(strings.TrimSpace(parts[1]))
+					offset, err := parseInt(strings.TrimSpace(parts[1]))
+					if err != nil || offset < 0 {
+						// Malformed or negative bit offset: skip this signal
+						// ref rather than let extractBits/packBits receive a
+						// negative offset (would rely on incidental Go shift/
+						// comparison semantics to avoid a panic).
+						continue
+					}
 					fr.Signals = append(fr.Signals, SignalRef{Name: sigName, BitOffset: int(offset)})
 				}
 			}
@@ -486,8 +502,14 @@ func parseFrameHeader(line string) (*Frame, error) {
 	if err != nil {
 		return nil, fmt.Errorf("ldf: invalid frame ID in %q: %w", line, err)
 	}
+	if id < 0 || id > int64(lin.LINMaxID) {
+		return nil, fmt.Errorf("ldf: frame ID %d out of range 0-%d in %q", id, lin.LINMaxID, line)
+	}
 	publisher := strings.TrimSpace(parts[1])
-	length, _ := parseInt(strings.TrimSpace(parts[2]))
+	length, err := parseInt(strings.TrimSpace(parts[2]))
+	if err != nil || length < 0 || length > int64(lin.LINMaxDataLen) {
+		return nil, fmt.Errorf("ldf: frame length out of range 0-%d in %q", lin.LINMaxDataLen, line)
+	}
 	return &Frame{
 		Name:      name,
 		ID:        uint8(id),

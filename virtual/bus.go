@@ -100,6 +100,9 @@ func (b *Bus) Publish(id uint8, data []byte) error {
 	if id > lin.LINMaxID {
 		return fmt.Errorf("lin/virtual: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.LINMaxID)
 	}
+	if data != nil && len(data) == 0 {
+		return fmt.Errorf("lin/virtual: payload must not be empty: %w", lin.ErrInvalidFrame)
+	}
 	if len(data) > lin.LINMaxDataLen {
 		return fmt.Errorf("lin/virtual: payload length %d exceeds maximum %d: %w", len(data), lin.LINMaxDataLen, lin.ErrPayloadTooLarge)
 	}
@@ -123,6 +126,12 @@ func (b *Bus) Publish(id uint8, data []byte) error {
 func (b *Bus) PublishClassic(id uint8, data []byte) error {
 	if id > lin.LINMaxID {
 		return fmt.Errorf("lin/virtual: frame ID 0x%02X exceeds maximum 0x%02X", id, lin.LINMaxID)
+	}
+	if data != nil && len(data) == 0 {
+		return fmt.Errorf("lin/virtual: payload must not be empty: %w", lin.ErrInvalidFrame)
+	}
+	if len(data) > lin.LINMaxDataLen {
+		return fmt.Errorf("lin/virtual: payload length %d exceeds maximum %d: %w", len(data), lin.LINMaxDataLen, lin.ErrPayloadTooLarge)
 	}
 	b.mu.Lock()
 	defer b.mu.Unlock()

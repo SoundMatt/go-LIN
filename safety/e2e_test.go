@@ -210,6 +210,61 @@ func TestUnwrap_sequenceGap(t *testing.T) {
 	}
 }
 
+// ── go-LIN-02: masquerade / mis-addressing detection (ErrIDMismatch) ─────────
+//
+// Regression coverage for a bug where Receiver.Unwrap never compared the
+// wire-transmitted DataID/SourceID against its own configured Config: the
+// CRC only proved the header was self-consistent, not that it belonged to
+// the expected logical stream, so a frame protected under a different
+// DataID/SourceID than the receiver's was silently accepted.
+
+//fusa:test REQ-SAFETY-001
+//fusa:test REQ-SAFETY-002
+//fusa:test REQ-SEC-002
+
+func TestUnwrap_rejectsDataIDMismatch(t *testing.T) {
+	// Protected under a different DataID than the receiver expects, but
+	// otherwise perfectly well-formed (correct CRC, correct sequence).
+	wrongDataID := safety.Config{DataID: cfg.DataID + 1, SourceID: cfg.SourceID}
+	p := safety.NewProtector(wrongDataID)
+	r := safety.NewReceiver(cfg)
+
+	protected := p.Protect([]byte{0x01, 0x02})
+	_, err := r.Unwrap(protected)
+	if err == nil {
+		t.Fatal("expected E2E error for DataID masquerade, got nil")
+	}
+	var e2e *safety.E2EError
+	if !errors.As(err, &e2e) {
+		t.Fatalf("expected *E2EError, got %T", err)
+	}
+	if e2e.Kind != safety.ErrIDMismatch {
+		t.Errorf("ErrorKind = %v, want ErrIDMismatch", e2e.Kind)
+	}
+}
+
+func TestUnwrap_rejectsSourceIDMismatch(t *testing.T) {
+	// Protected under a different SourceID than the receiver expects — same
+	// masquerade class, different field, both of which the CRC alone does
+	// not bind to the receiver's expected identity.
+	wrongSourceID := safety.Config{DataID: cfg.DataID, SourceID: cfg.SourceID + 1}
+	p := safety.NewProtector(wrongSourceID)
+	r := safety.NewReceiver(cfg)
+
+	protected := p.Protect([]byte{0x01, 0x02})
+	_, err := r.Unwrap(protected)
+	if err == nil {
+		t.Fatal("expected E2E error for SourceID masquerade, got nil")
+	}
+	var e2e *safety.E2EError
+	if !errors.As(err, &e2e) {
+		t.Fatalf("expected *E2EError, got %T", err)
+	}
+	if e2e.Kind != safety.ErrIDMismatch {
+		t.Errorf("ErrorKind = %v, want ErrIDMismatch", e2e.Kind)
+	}
+}
+
 // ── REQ-SAFETY-010: Unwrap returns original payload ──────────────────────────
 
 //fusa:test REQ-SAFETY-010
