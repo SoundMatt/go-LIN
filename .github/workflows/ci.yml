@@ -144,11 +144,15 @@ jobs:
       - name: relay conform --strict
         run: relay conform --strict /tmp/go-lin
 
-  # ── RELAY interop behavioural conformance (spec §11.2 / §20.2) ────────────
-  # Drives the CLI's `convert` command with the LIN golden vectors and confirms
-  # its relay.Message output is EQUIVALENT to the reference implementation.
-  relay-interop:
-    name: RELAY interop (LIN)
+  # ── RELAY behavioural conformance (spec §11.2 / §20.2) ────────────────────
+  # Drives the CLI's `convert` command with RELAY's own embedded LIN golden
+  # vectors and confirms its relay.Message output is EQUIVALENT to RELAY's
+  # reference conversion. This is self-consistency against RELAY's own
+  # vectors, not third-party interoperability against an independent LIN
+  # peer — named `relay-conformance` accordingly (SoundMatt/RELAY THEME-K
+  # #125, docs/INTEROP-ARCHITECTURE.md's naming discipline, INTEROP-07).
+  relay-conformance:
+    name: RELAY conformance (LIN)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
